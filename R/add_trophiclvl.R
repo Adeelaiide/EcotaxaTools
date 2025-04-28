@@ -29,7 +29,7 @@ add.trophiclvl <- function(taxo, output){
   liste.choix <- zo %>% mutate(Category=paste0(zo$Type,">",zo$Sub_type)) %>%
     select(-object_annotation_hierarchy2, -Value) %>% distinct()
   liste.value <- data.frame(Value=c(-1,1,1.5,2,2.5,3,3.5),
-                            Trophic=c("None","Autotroph","Mixotroph","Grazer","Omnivore","Predator","Unknown"))
+                            Trophic=c("None","Phototroph","Mixotroph","Grazer","Omnivorous","Predator","Unknown"))
   non <- zoo$object_annotation_hierarchy2[is.na(zoo$Type)]
 
   if(sum(is.na(zoo$Type)>0)) {
