@@ -2,3 +2,4 @@ This package is useful to compute biovolumes, NBSS, or to launch a routine on ec
 To install package : </br>
 install.packages("devtools") </br>
 devtools::install_github("Adeelaiide/EcotaxaTools", force=T) </br>
+test
