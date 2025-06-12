@@ -22,10 +22,10 @@ NBSS.plot <- function(x, taxon, bv.type, samples="all"){
   N <- length(taxon)
   myColors <- colorRampPalette(brewer.pal(8, "Set2"))(N)
 
-  if(samples=="all") samples <- unique(x$sample_id)
+  if(samples=="all") samples <- unique(x$sample_num)
 
   if(taxon=="total") {
-    g <- x %>% filter(type==bv.type, sample_id %in% samples) %>% group_by(sample_id, max, norm) %>%
+    g <- x %>% filter(type==bv.type, sample_num %in% samples) %>% group_by(sample_num, max, norm) %>%
       summarise(BV=sum(BV, na.rm=T)) %>%
       ggplot(aes(x=max, y=BV/norm)) +
       geom_line() +
@@ -34,7 +34,7 @@ NBSS.plot <- function(x, taxon, bv.type, samples="all"){
       scale_y_log10("NBSS (mm\u00b3.mm\u207B\u00b3.m\u207B\u00b3)", labels=trans_format('log10',math_format(10^.x))) +
       theme_minimal()
   } else {
-    g <- x %>% filter(type==bv.type, object_annotation_category %in% taxon, sample_id %in% samples) %>%
+    g <- x %>% filter(type==bv.type, object_annotation_category %in% taxon, sample_num %in% samples) %>%
       ggplot(aes(x=max, y=BV/norm, color=taxon)) +
       geom_line() +
       scale_color_manual(values = myColors) +
