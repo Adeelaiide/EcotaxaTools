@@ -134,7 +134,7 @@ graph.sample <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
     theme_minimal()
 
   # Map
-  meta.x <- filter(metadata, sample_id==unique(x$sample_id))
+  meta.x <- filter(metadata, sample_num==unique(x$sample_num))
   # ex = 3
   # latmin <- min(meta.x$object_lat, na.rm=T)-ex
   # lonmin <- min(meta.x$object_lon, na.rm=T)-ex
