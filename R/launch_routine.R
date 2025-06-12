@@ -135,8 +135,8 @@ if (!is.null(mainpath) && mainpath != "") {
   dev.off()
 
   # for each sample
-  for (i in unique(bss$sample_id)) {
-    bss %>% filter(sample_id==i) %>% graph.sample(metadata, taxo) %>%
+  for (i in unique(bss$sample_num)) {
+    bss %>% filter(sample_num==i) %>% graph.sample(metadata, taxo) %>%
       ggsave(filename=file.path(path.graph, paste0(i,".jpg")),
              width=297, height=210, units = "mm")
   }
