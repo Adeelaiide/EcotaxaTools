@@ -160,7 +160,7 @@ graph.sample <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
   ptot <- ggarrange(p1, p2, p3, p7, p5, p4, p6, p8,
                  common.legend = T, legend="bottom",
                  ncol=4, nrow=2) %>%
-    annotate_figure(top=unique(x$sample_id), fig.lab.face="bold")
+    annotate_figure(top=unique(x$sample_num), fig.lab.face="bold")
 
   # sf_use_s2(TRUE)
 
