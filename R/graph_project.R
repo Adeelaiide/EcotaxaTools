@@ -22,8 +22,8 @@
 graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
 
   x <- filter(x, type==bv.type) %>% merge(taxo, "object_annotation_hierarchy", all.x=T)
-  t <- metadata %>% select(sample_id, object_time, object_date) %>%
-    mutate(time=as.POSIXct(paste(object_date, object_time))) %>% select(sample_id, time)
+  t <- metadata %>% select(sample_num, object_time, object_date) %>%
+    mutate(time=as.POSIXct(paste(object_date, object_time))) %>% select(sample_num, time)
   x <- merge(x, t, all.x=T)
   x$max <- bv_to_esdum(x$max)
 
@@ -62,20 +62,18 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
   # BIOVOLUME TOTAL/SAMPLE
   # ----------------------------------------------------------------------------
   # living/not-living/temporary
-  print(ggplot(x, aes(x=reorder(sample_id, time, decreasing=T), y=BV, fill=n1)) +
+  print(ggplot(x, aes(x=reorder(sample_num, time, decreasing=T), y=BV, fill=n1)) +
           geom_bar(stat="identity") +
           scale_fill_brewer("paired") +
           scale_y_continuous("BV (mm3.m-3)") +
-          coord_flip() +
           xlab(NULL) +
           ggtitle("Total biovolume") +
           theme_minimal())
 
-  print(ggplot(x, aes(x=reorder(sample_id, time, decreasing=T), y=AB, fill=n1)) +
+  print(ggplot(x, aes(x=reorder(sample_num, time, decreasing=T), y=AB, fill=n1)) +
           geom_bar(stat="identity") +
           scale_fill_brewer("paired") +
           scale_y_continuous("AB") +
-          coord_flip() +
           xlab(NULL) +
           ggtitle("Total abundance") +
           theme_minimal())
@@ -83,21 +81,19 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
   # living only
   N <- length(unique(x$Sub_type[x$n1=="living"]))
   print(x %>% filter(n1=="living") %>%
-          ggplot(aes(x=reorder(sample_id, time, decreasing=T), y=BV, fill=Sub_type)) +
+          ggplot(aes(x=reorder(sample_num, time, decreasing=T), y=BV, fill=Sub_type)) +
           geom_bar(stat="identity") +
           scale_fill_manual(values = colorRampPalette(brewer.pal(8, "Set2"))(N)) +
           scale_y_continuous("BV (mm3.m-3)") +
-          coord_flip() +
           xlab(NULL) +
           ggtitle("Biovolume of the living") +
           theme_minimal())
 
   print(x %>% filter(n1=="living") %>%
-          ggplot(aes(x=reorder(sample_id, time, decreasing=T), y=AB, fill=Sub_type)) +
+          ggplot(aes(x=reorder(sample_num, time, decreasing=T), y=AB, fill=Sub_type)) +
           geom_bar(stat="identity") +
           scale_fill_manual(values = colorRampPalette(brewer.pal(8, "Set2"))(N)) +
           scale_y_continuous("AB") +
-          coord_flip() +
           xlab(NULL) +
           ggtitle("Abundance of the living") +
           theme_minimal())
@@ -105,21 +101,19 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
   # not living only
   N <- length(unique(x$Sub_type[x$n1=="not-living"]))
   print(x %>% filter(n1=="not-living") %>%
-          ggplot(aes(x=reorder(sample_id, time, decreasing=T), y=BV, fill=Sub_type)) +
+          ggplot(aes(x=reorder(sample_num, time, decreasing=T), y=BV, fill=Sub_type)) +
           geom_bar(stat="identity") +
           scale_fill_manual(values = colorRampPalette(brewer.pal(8, "Set2"))(N)) +
           scale_y_continuous("BV (mm3.m-3)") +
-          coord_flip() +
           xlab(NULL) +
           ggtitle("Biovolume of the not-living") +
           theme_minimal())
 
   print(x %>% filter(n1=="not-living") %>%
-          ggplot(aes(x=reorder(sample_id, time, decreasing=T), y=AB, fill=Sub_type)) +
+          ggplot(aes(x=reorder(sample_num, time, decreasing=T), y=AB, fill=Sub_type)) +
           geom_bar(stat="identity") +
           scale_fill_manual(values = colorRampPalette(brewer.pal(8, "Set2"))(N)) +
           scale_y_continuous("AB") +
-          coord_flip() +
           xlab(NULL) +
           ggtitle("Abundance of the not-living") +
           theme_minimal())
@@ -128,8 +122,8 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
   if(living.only==T) x <- x %>% filter(n1=="living")
 
   print(x %>%
-          group_by(sample_id, max, class) %>% summarise(BV=sum(BV/norm, na.rm=T), time=unique(time)) %>%
-          ggplot(aes(x=max, fill=BV, y=reorder(sample_id, time, decreasing=T))) +
+          group_by(sample_num, max, class) %>% summarise(BV=sum(BV/norm, na.rm=T), time=unique(time)) %>%
+          ggplot(aes(x=max, fill=BV, y=reorder(sample_num, time, decreasing=T))) +
           geom_tile() +
           ylab(NULL) +
           scale_x_log10("Size (um)", labels=trans_format('log10',math_format(10^.x))) +
@@ -139,10 +133,10 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           ggtitle("NBSS on the living") +
           theme_minimal())
 
-  print(x %>% group_by(sample_id, max, time) %>% summarise(BV=sum(BV/norm, na.rm=T)) %>%
+  print(x %>% group_by(sample_num, max, time) %>% summarise(BV=sum(BV/norm, na.rm=T)) %>%
           ggplot(aes(x=max, y=BV)) +
           geom_line() +
-          facet_wrap(~reorder(sample_id, time), strip.position="top") +
+          facet_wrap(~reorder(sample_num, time), strip.position="top") +
           scale_x_log10("Size (um)", labels=trans_format('log10',math_format(10^.x))) +
           scale_y_log10("NBSS (mm3.mm-3.m-3)", labels=trans_format('log10',math_format(10^.x))) +
           ggtitle("NBSS on the living") +
@@ -153,19 +147,19 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
   # Relative BSS
   N <- length(unique(x$Sub_type))
   print(x %>%
-          group_by(sample_id, class) %>% mutate(rel = BV/sum(BV, na.rm=T)*100) %>%
-          group_by(sample_id, class, max, Sub_type) %>% summarise(rel=sum(rel, na.rm=T)) %>%
+          group_by(sample_num, class) %>% mutate(rel = BV/sum(BV, na.rm=T)*100) %>%
+          group_by(sample_num, class, max, Sub_type) %>% summarise(rel=sum(rel, na.rm=T)) %>%
           ggplot(aes(x=max, y=rel, fill=Sub_type)) +
           geom_col() +
           scale_fill_manual(values = colorRampPalette(brewer.pal(8, "Set2"))(N)) +
           scale_x_log10("Size (um)", labels=trans_format('log10',math_format(10^.x))) +
-          facet_wrap(~sample_id, strip.position="top") +
+          facet_wrap(~sample_num, strip.position="top") +
           ggtitle("Relative BSS of the living") +
           theme_minimal())
 
   # diversity
-  print(x %>% group_by(object_annotation_category, sample_id) %>%
-          summarise(AB=sum(AB, na.rm=T)) %>% group_by(sample_id) %>%
+  print(x %>% group_by(object_annotation_category, sample_num) %>%
+          summarise(AB=sum(AB, na.rm=T)) %>% group_by(sample_num) %>%
           summarise(Shannon=vegan::diversity(AB)) %>%
           ggplot(aes(y=sample_id, x=Shannon)) +
           geom_col() +
@@ -179,7 +173,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
   x$categorie[x$Value==2] <- "Grazers"
   x$categorie[x$Value==2.5] <- "Omnivorous"
   x$categorie[x$Value==3] <- "Predators"
-  ggplot(x, aes(x=reorder(sample_id, time, decreasing=T), y=BV, fill=reorder(categorie,Value))) +
+  ggplot(x, aes(x=reorder(sample_num, time, decreasing=T), y=BV, fill=reorder(categorie,Value))) +
     geom_col() +
     scale_fill_brewer(palette="Set2", na.value="grey") +
     coord_flip() +
