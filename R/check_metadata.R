@@ -31,6 +31,7 @@ check_metadata <- function(path, output) {
              sample_concentrated_sample_volume = ifelse("sample_concentrated_sample_volume" %in% colnames(.), sample_concentrated_sample_volume, NA),
              sample_dilution_factor = ifelse("sample_dilution_factor" %in% colnames(.), sample_dilution_factor, NA)) %>%
       mutate(sample_dilution_factor = as.numeric(gsub(",", ".",sample_dilution_factor))) %>%
+      mutate(sample_num = as.numeric(factor(sample_id, levels = unique(sample_id)))) %>%
       select(sample_id,
              acq_id,
              unique_id,
@@ -39,18 +40,17 @@ check_metadata <- function(path, output) {
              object_time,
              object_lat,
              object_lon,
-             sample_id,
              sample_operator,
              percentValidated,
              number_object,
              acq_nb_frame,
-
              sample_total_volume,
              sample_concentrated_sample_volume,
              acq_celltype,
              acq_imaged_volume,
              process_pixel,
-             sample_dilution_factor) %>%
+             sample_dilution_factor,
+             sample_num) %>%
       distinct() %>% group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup()
 
     return(metadata)
