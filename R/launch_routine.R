@@ -37,10 +37,10 @@ if (!is.null(mainpath) && mainpath != "") {
 }
 
   # Create a new directory for created files
-  if (!file.exists(file.path(mainpath, paste0("EcoTaxa_data_analysis_",format(Sys.time(), "%Y-%m-%d %Hh%M"))))) {
-    dir.create(file.path(mainpath, paste0("EcoTaxa_data_analysis_",format(Sys.time(), "%Y-%m-%d %Hh%M"))))
+  if (!file.exists(file.path(mainpath, paste0("EcoTaxa_data_analysis_",format(Sys.time(), "%Y-%m-%d %H%M"))))) {
+    dir.create(file.path(mainpath, paste0("EcoTaxa_data_analysis_",format(Sys.time(), "%Y-%m-%d %H%M"))))
   }
-  output <- file.path(mainpath, paste0("EcoTaxa_data_analysis_",format(Sys.time(), "%Y-%m-%d %Hh%M")))
+  output <- file.path(mainpath, paste0("EcoTaxa_data_analysis_",format(Sys.time(), "%Y-%m-%d %H%M")))
 
 
   # COMPUTE DATA
