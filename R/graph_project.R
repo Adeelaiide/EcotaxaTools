@@ -127,7 +127,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
 
   # not living only
   N <- length(unique(x$Sub_type[x$n1=="non_living"]))
-  print(x %>% filter(n1=="not_living") %>%
+  print(x %>% filter(n1=="non_living") %>%
           ggplot(aes(x=reorder(sample_num, time, decreasing=T), y=BV, fill=Sub_type)) +
           geom_bar(stat="identity") +
           scale_fill_brewer(palette="Set2", na.value="grey") +
