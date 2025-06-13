@@ -6,7 +6,7 @@
 #' object_annotation_hierarchy2 = object annotation hierarchy from ecotaxa with corrected delim >.
 #' Type = OTU main type "Living, non-living, etc."
 #' Sub_Type = OTU sub type "Diatoms, Copepods, etc."
-#' Value = Trophic level "Predators = 3 ... Autotroph = 1, NA = 3.5 and none = -1"
+#' Value = Trophic level "Unknown = 3.5, Predators = 3, Omnivorous = 2.5, Grazer = 2, Mixotrophe = 1.5, Phototroph = 1 and None = -1"
 #'
 #' @param taxo OTU table generated with "add_taxo" containing trophic levels and main OTU groups.
 #' @param output file output to save the new zoo table if edited.
@@ -21,8 +21,8 @@ add.trophiclvl <- function(taxo, output){
   zoo <- merge(taxo, zo, all.x=T)
   zoo$Type[zoo$n1=="temporary"] <- "temporary"
   zoo$Sub_type[zoo$n1=="temporary"] <- "temporary"
-  zoo$Type[zoo$n1=="not-living"] <- "non_living"
-  zoo$Sub_type[zoo$n1=="not-living"] <- zoo$n2[zoo$n1=="not-living"]
+  zoo$Type[zoo$n1=="not_living"] <- "non_living"
+  zoo$Sub_type[zoo$n1=="not_living"] <- zoo$n2[zoo$n1=="not_living"]
   zoo$Value[zoo$Type=="non_living"] <- -1
 
   # find  objects who are not in the otu database
@@ -51,8 +51,8 @@ add.trophiclvl <- function(taxo, output){
       zoo <- merge(taxo, zo, all.x=T)
       zoo$Type[zoo$n1=="temporary"] <- "temporary"
       zoo$Sub_type[zoo$n1=="temporary"] <- "temporary"
-      zoo$Type[zoo$n1=="not-living"] <- "non_living"
-      zoo$Sub_type[zoo$n1=="not-living"] <- zoo$n2[zoo$n1=="not-living"]
+      zoo$Type[zoo$n1=="not_living"] <- "non_living"
+      zoo$Sub_type[zoo$n1=="not_living"] <- zoo$n2[zoo$n1=="not_living"]
       zoo$Value[zoo$Type=="non_living"] <- -1
       zoo$Type[is.na(zoo$Type)] <- "temporary"
       zoo$Sub_type[is.na(zoo$Type)] <- "temporary"
@@ -67,8 +67,8 @@ add.trophiclvl <- function(taxo, output){
         zoo <- merge(taxo, zo, all.x=T)
         zoo$Type[zoo$n1=="temporary"] <- "temporary"
         zoo$Sub_type[zoo$n1=="temporary"] <- "temporary"
-        zoo$Type[zoo$n1=="not-living"] <- "non_living"
-        zoo$Sub_type[zoo$n1=="not-living"] <- zoo$n2[zoo$n1=="not-living"]
+        zoo$Type[zoo$n1=="not_living"] <- "non_living"
+        zoo$Sub_type[zoo$n1=="not_living"] <- zoo$n2[zoo$n1=="not_living"]
         zoo$Value[zoo$Type=="non_living"] <- -1
         zoo$Type[is.na(zoo$Type)] <- "temporary"
         zoo$Sub_type[is.na(zoo$Type)] <- "temporary"
