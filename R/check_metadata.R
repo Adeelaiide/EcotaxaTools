@@ -58,9 +58,10 @@ check_metadata <- function(path, output) {
 
   metadata <- do.call("rbind", lapply(path, meta_file))
   metadata <- arrange(metadata, object_date, object_time)
+  
   # Each unique sample_id will get a unique sequential number
-  # metadata <- metadata %>%
-  # mutate(sample_num = as.numeric(factor(sample_id, levels = unique(sample_id))))
+  metadata <- metadata %>%
+  mutate(sample_num = as.numeric(factor(sample_id, levels = unique(sample_id))))
 
   # Save original
   write_csv2(metadata, file.path(output,"metadata","original_metadata.csv"))
