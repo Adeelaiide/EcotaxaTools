@@ -22,8 +22,8 @@
 graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
 
   x <- filter(x, type==bv.type) %>% merge(taxo, "object_annotation_hierarchy", all.x=T)
-  t <- metadata %>% select(sample_num, object_time, object_date) %>%
-    mutate(time=as.POSIXct(paste(object_date, object_time))) %>% select(sample_num, time)
+  t <- metadata %>% select(sample_id, sample_num, object_time, object_date) %>%
+    mutate(time=as.POSIXct(paste(object_date, object_time))) %>% select(sample_id, sample_num, time)
   x <- merge(x, t, all.x=T)
   x$max <- bv_to_esdum(x$max)
 
@@ -99,23 +99,23 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           theme_minimal())
 
   # not living only
-  N <- length(unique(x$Sub_type[x$n1=="not-living"]))
-  print(x %>% filter(n1=="not-living") %>%
+  N <- length(unique(x$Sub_type[x$n1=="not_living"]))
+  print(x %>% filter(n1=="not_living") %>%
           ggplot(aes(x=reorder(sample_num, time, decreasing=T), y=BV, fill=Sub_type)) +
           geom_bar(stat="identity") +
           scale_fill_manual(values = colorRampPalette(brewer.pal(8, "Set2"))(N)) +
           scale_y_continuous("BV (mm3.m-3)") +
           xlab(NULL) +
-          ggtitle("Biovolume of the not-living") +
+          ggtitle("Biovolume of the not_living") +
           theme_minimal())
 
-  print(x %>% filter(n1=="not-living") %>%
+  print(x %>% filter(n1=="not_living") %>%
           ggplot(aes(x=reorder(sample_num, time, decreasing=T), y=AB, fill=Sub_type)) +
           geom_bar(stat="identity") +
           scale_fill_manual(values = colorRampPalette(brewer.pal(8, "Set2"))(N)) +
           scale_y_continuous("AB") +
           xlab(NULL) +
-          ggtitle("Abundance of the not-living") +
+          ggtitle("Abundance of the not_living") +
           theme_minimal())
 
   # 4. NBSS on living
