@@ -164,7 +164,7 @@ graph.sample <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
     geom_sf(data = world_robinson, color=NA, fill="gray54") +
     geom_sf(data = meta.point, size=0.8, color="red") +
     theme_bw()
-
+}
   ptot <- ggarrange(p1, p2, p3, p7, p5, p4, p6, p8,
                  common.legend = T, legend="bottom",
                  ncol=4, nrow=2) %>%
