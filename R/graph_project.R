@@ -95,7 +95,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           scale_y_continuous("BV (mm3.m-3)") +
           xlab(NULL) +
           ggtitle("Total biovolume") +
-          theme_classic())
+          theme_minimal())
 
   print(ggplot(x, aes(x=reorder(sample_num, time, decreasing=T), y=AB, fill=n1)) +
           geom_bar(stat="identity") +
@@ -103,7 +103,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           scale_y_continuous("AB") +
           xlab(NULL) +
           ggtitle("Total abundance") +
-          theme_classic())
+          theme_minimal())
 
   # living only
   N <- length(unique(x$Sub_type[x$n1=="living"]))
@@ -114,7 +114,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           scale_y_continuous("BV (mm3.m-3)") +
           xlab(NULL) +
           ggtitle("Biovolume of the living") +
-          theme_classic())
+          theme_minimal())
 
   print(x %>% filter(n1=="living") %>%
           ggplot(aes(x=reorder(sample_num, time, decreasing=T), y=AB, fill=Sub_type)) +
@@ -123,27 +123,27 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           scale_y_continuous("AB") +
           xlab(NULL) +
           ggtitle("Abundance of the living") +
-          theme_classic())
+          theme_minimal())
 
   # not living only
   N <- length(unique(x$Sub_type[x$n1=="not_living"]))
   print(x %>% filter(n1=="not_living") %>%
           ggplot(aes(x=reorder(sample_num, time, decreasing=T), y=BV, fill=Sub_type)) +
           geom_bar(stat="identity") +
-          scale_fill_manual(values = colorRampPalette(brewer.pal(8, "Set2"))(N)) +
+          scale_fill_brewer(palette="Set2", na.value="grey") +
           scale_y_continuous("BV (mm3.m-3)") +
           xlab(NULL) +
           ggtitle("Biovolume of the not_living") +
-          theme_classic())
+          theme_minimal())
 
   print(x %>% filter(n1=="not_living") %>%
           ggplot(aes(x=reorder(sample_num, time, decreasing=T), y=AB, fill=Sub_type)) +
           geom_bar(stat="identity") +
-          scale_fill_manual(values = colorRampPalette(brewer.pal(8, "Set2"))(N)) +
+          scale_fill_brewer(palette="Set2", na.value="grey") +
           scale_y_continuous("AB") +
           xlab(NULL) +
           ggtitle("Abundance of the not_living") +
-          theme_classic())
+          theme_minimal())
 
   # 4. NBSS on living
   if(living.only==T) x <- x %>% filter(n1=="living")
@@ -158,7 +158,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
                              labels=trans_format('log10',math_format(10^.x)),
                              trans="log10", option="turbo") +
           ggtitle("NBSS on the living") +
-          theme_classic())
+          theme_minimal())
 
   print(x %>% group_by(sample_num, max, time) %>% summarise(BV=sum(BV/norm, na.rm=T)) %>%
           ggplot(aes(x=max, y=BV)) +
@@ -167,7 +167,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           scale_x_log10("Size (um)", labels=trans_format('log10',math_format(10^.x))) +
           scale_y_log10("NBSS (mm3.mm-3.m-3)", labels=trans_format('log10',math_format(10^.x))) +
           ggtitle("NBSS on the living") +
-          theme_classic())
+          theme_minimal())
 
 
 
@@ -182,7 +182,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           scale_x_log10("Size (um)", labels=trans_format('log10',math_format(10^.x))) +
           facet_wrap(~sample_num, strip.position="top") +
           ggtitle("Relative BSS of the living") +
-          theme_classic())
+          theme_minimal())
 
   # diversity
   print(x %>% group_by(object_annotation_category, sample_num) %>%
@@ -192,7 +192,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           geom_col() +
           ylab(NULL) +
           ggtitle("Diversity") +
-          theme_classic())
+          theme_minimal())
 
   # trophic levels
   x$categorie[x$Value==1] <- "Phototrophs"
@@ -207,6 +207,6 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
     xlab(NULL) +
     ylab("Biovolume (mm3.m-3)") +
     ggtitle("Trophic level biovolume") +
-    theme_classic()
+    theme_minimal()
 
 }
