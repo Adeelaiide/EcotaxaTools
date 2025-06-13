@@ -126,7 +126,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           theme_minimal())
 
   # not living only
-  N <- length(unique(x$Sub_type[x$n1=="not_living"]))
+  N <- length(unique(x$Sub_type[x$n1=="non_living"]))
   print(x %>% filter(n1=="not_living") %>%
           ggplot(aes(x=reorder(sample_num, time, decreasing=T), y=BV, fill=Sub_type)) +
           geom_bar(stat="identity") +
@@ -136,7 +136,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           ggtitle("Biovolume of the not_living") +
           theme_minimal())
 
-  print(x %>% filter(n1=="not_living") %>%
+  print(x %>% filter(n1=="non_living") %>%
           ggplot(aes(x=reorder(sample_num, time, decreasing=T), y=AB, fill=Sub_type)) +
           geom_bar(stat="identity") +
           scale_fill_brewer(palette="Set2", na.value="grey") +
@@ -185,10 +185,10 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           theme_minimal())
 
   # diversity
-  print(x %>% group_by(object_annotation_category, sample_num) %>%
-          summarise(AB=sum(AB, na.rm=T)) %>% group_by(sample_num) %>%
+  print(x %>% group_by(object_annotation_category, sample_id) %>%
+          summarise(AB=sum(AB, na.rm=T)) %>% group_by(sample_id) %>%
           summarise(Shannon=vegan::diversity(AB)) %>%
-          ggplot(aes(y=sample_num, x=Shannon)) +
+          ggplot(aes(y=sample_id, x=Shannon)) +
           geom_col() +
           ylab(NULL) +
           ggtitle("Diversity") +
