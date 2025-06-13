@@ -35,11 +35,6 @@ graph.sample <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
     taxo <- filter(taxo, n1=="living")
   }
 
-  # Define colors according to common taxonomy vector
-  N <- length(unique(taxo$Sub_type))
-  myColors <- colorRampPalette(brewer.pal(8, "Set2"))(N)
-  names(myColors) <- unique(taxo$Sub_type)
-
   # ------------------------------------------------------------------------------
   # Resume
   div <- x %>% group_by(object_annotation_category) %>%
@@ -52,7 +47,7 @@ graph.sample <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
     "\nShannon Index:\n",
     round(div,4))
   p1 <- ggplot() +
-    annotate("text", x = 1, y=10, size=3, label = text) +
+    annotate("text", x = 1, y=10, size=4, label = text) +
     theme_void()
 
   # Relative abundance
@@ -61,12 +56,12 @@ graph.sample <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
   p2 <- x %>% group_by(Sub_type) %>%
     summarise(per=sum(AB, na.rm=T)/tot*100) %>%
     ggplot(aes(x="", y=per, fill=Sub_type)) +
-    geom_bar(stat="identity", width=1, color="white") +
-    scale_fill_manual(values = myColors) +
+    geom_bar(stat="identity", width=1, size=0.15, color="black") +
+    plankton_groups_colFill +
     coord_polar("y", start=0) +
     ggtitle("Relative abundance") +
     theme_void() +
-    theme(plot.title = element_text(hjust = 0.5))
+    theme(plot.title = element_text(hjust = 0.5, vjust = -4,size = 10,face = "bold"))
 
   # Relative biovolume
   tot <- sum(sum(x$BV, na.rm=T))
@@ -74,46 +69,45 @@ graph.sample <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
   p3 <- x %>% group_by(Sub_type) %>%
     summarise(per=sum(BV, na.rm=T)/tot*100) %>%
     ggplot(aes(x="", y=per, fill=Sub_type)) +
-    geom_bar(stat="identity", width=0.25, color="white") +
-    scale_fill_manual(values = myColors) +
+    geom_bar(stat="identity", width=0.25, size=0.15, color="black") +
+    plankton_groups_colFill +
     coord_polar("y", start=0) +
     ggtitle("Relative biovolume") +
     theme_void() +
-    theme(plot.title = element_text(hjust = 0.5))
+    theme(plot.title = element_text(hjust = 0.5, vjust = -4,size = 10,face = "bold"))
 
   # NBSS
   p4 <- x %>% group_by(max) %>% summarise(BV=sum(BV/norm, na.rm=T)) %>%
     ggplot(aes(x=bv_to_esdum(max), y=BV)) +
-    geom_point(size=3) +
-    geom_line(size=1) +
-    scale_x_log10("Size (\u00b5m)") +
+     geom_point(size=2, fill="lightgrey", colour="black",shape=21) +
+    scale_x_log10("Size on ESD (\u00b5m)") +
     scale_y_log10("NBSS (mm\u00b3.mm\u207B\u00b3.m\u207B\u00b3)", labels=trans_format('log10',math_format(10^.x))) +
-    theme_minimal() +
+    theme_bw() +
     ggtitle("NBSS") +
-    theme(plot.title = element_text(hjust = 0.5))
+    theme(plot.title = element_text(hjust = 0.5, size = 10,face = "bold"), legend.text = element_text(size = 0.5))
 
   # BSS
   p5 <- x %>% group_by(max) %>% summarise(BV=sum(BV, na.rm=T)) %>%
     ggplot(aes(x=bv_to_esdum(max), y=BV)) +
-    geom_point(size=3) +
-    geom_line(size=1) +
-    scale_x_log10("Size (\u00b5m)") +
+    geom_point(size=2, fill="lightgrey", colour="black",shape=21) +
+    scale_x_log10("Size on ESD (\u00b5m)") +
     scale_y_log10("BSS (mm\u00b3.m\u207B\u00b3)", labels=trans_format('log10',math_format(10^.x))) +
-    theme_minimal() +
+    theme_bw() +
     ggtitle("BSS") +
-    theme(plot.title = element_text(hjust = 0.5))
+    theme(plot.title = element_text(hjust = 0.5, size = 10,face = "bold"), legend.text = element_text(size = 0.5))
 
   # BV compo/size class
   p6 <- x %>% group_by(Sub_type, max, class) %>%
     group_by(class) %>% mutate(per = BV/sum(BV, na.rm=T)*100) %>%
     group_by(class, max, Sub_type) %>% summarise(per=sum(per, na.rm=T)) %>%
     ggplot(aes(x=bv_to_esdum(max), y=per, fill=Sub_type)) +
-    geom_col() +
-    scale_fill_manual(values = myColors) +
+    geom_col(position = "fill", width = 0.02) +
+    plankton_groups_colFill +
     ylab("Biovolume (%)") +
-    scale_x_log10("Size (\u00b5m)") +
-    ggtitle("BV composition by sub_type") +
-    theme_minimal()
+    scale_x_log10("Size on ESD (\u00b5m)") +
+    ggtitle("Biovolume composition per size class") +
+    theme_classic() +
+    theme(plot.title = element_text(hjust = 0.5, size = 10,face = "bold"), legend.text = element_text(size = 0.5))
 
   # Trophic pyramid p7
   x$categorie[x$Value==1] <- "Phototrophs"
@@ -129,38 +123,52 @@ graph.sample <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
     scale_fill_brewer(palette="Set2") +
     coord_flip() +
     xlab(NULL) +
-    ylab("Biovolume (mm\u00b3.m\u207B\u00b3)") +
+    ylab("log biovolume +1 (mm\u00b3.m\u207B\u00b3)") +
     ggtitle("Trophic level biovolume") +
-    theme_minimal()
+    theme_classic()
 
   # Map
-  meta.x <- filter(metadata, sample_num==unique(x$sample_num))
-  # ex = 3
-  # latmin <- min(meta.x$object_lat, na.rm=T)-ex
-  # lonmin <- min(meta.x$object_lon, na.rm=T)-ex
-  # latmax <- max(meta.x$object_lat, na.rm=T)+ex
-  # lonmax <- max(meta.x$object_lon, na.rm=T)+ex
-  #
-  # if(latmin<(-90)) latmin <- (-90)
-  # if(lonmin<(-180)) lonmin <- -180
-  # if(latmax>90) latmax <- 90
-  # if(lonmax>180) lonmax <- 180
-
-  # sf_use_s2(FALSE)
-
+    ##Extract Lat/Lon, load world map and convert xy points as sf objects
+  meta.x <- filter(metadata, sample_id==unique(x$sample_id))
   worldmap <- ne_countries(scale = 'medium', type = 'map_units', returnclass = 'sf')
-  #  st_crop(xmin=lonmin, xmax=lonmax, ymax=latmax, ymin=latmin)
-  meta.point <- st_as_sf(meta.x, coords=c("object_lon","object_lat"), crs=st_crs(worldmap))
+  meta.point <- st_as_sf(meta.x, coords=c("object_lon","object_lat"), crs=4326)
+
+  ##Problem with Pacific ocean projections
+  if(any(meta.x$object_lon >= 130) | any(meta.x$object_lon <= -110)) {
+
+    # Transform longitudes : [-180,180] → [0,360]
+    meta.x <- meta.x %>%
+      mutate(object_lon_wrapped = ifelse(object_lon < 0, object_lon + 360, object_lon))
+    meta.point <- st_as_sf(meta.x, coords=c("object_lon_wrapped","object_lat"), crs=4326)
+
+    #Set Robinson projection centered on Pacific
+    robinson <- "+proj=robin +lon_0=180 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
+    world_robinson<- worldmap %>%
+      st_break_antimeridian(lon_0 = 180) %>%
+      st_transform(crs = robinson)
+
+    p8 <- ggplot() +
+      geom_sf(data = world_robinson, color=NA, fill="gray54",) +
+      geom_sf(data = meta.point, size=1, color="red") +
+      theme_bw()
+
+  }else{
+
+    #Set Robinson projection centered on Atlantic
+    robinson <- "+proj=robin +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
+    world_robinson<- worldmap %>%
+      #st_break_antimeridian(lon_0 = 180) %>%
+      st_transform(crs = robinson)
 
   p8 <- ggplot() +
-    geom_sf(data = worldmap, color=NA, fill="gray54") +
+    geom_sf(data = world_robinson, color=NA, fill="gray54") +
     geom_sf(data = meta.point, size=0.8, color="red") +
     theme_bw()
 
   ptot <- ggarrange(p1, p2, p3, p7, p5, p4, p6, p8,
                  common.legend = T, legend="bottom",
                  ncol=4, nrow=2) %>%
-    annotate_figure(top=unique(x$sample_num), fig.lab.face="bold")
+    annotate_figure(top=unique(x$sample_id), fig.lab.face="bold")
 
   # sf_use_s2(TRUE)
 
