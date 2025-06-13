@@ -83,7 +83,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
   print(x %>% filter(n1=="living") %>%
           ggplot(aes(x=reorder(sample_num, time, decreasing=T), y=BV, fill=Sub_type)) +
           geom_bar(stat="identity") +
-          scale_fill_manual(values = colorRampPalette(brewer.pal(8, "Set2"))(N)) +
+          plankton_groups_colFill +
           scale_y_continuous("BV (mm3.m-3)") +
           xlab(NULL) +
           ggtitle("Biovolume of the living") +
@@ -92,7 +92,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
   print(x %>% filter(n1=="living") %>%
           ggplot(aes(x=reorder(sample_num, time, decreasing=T), y=AB, fill=Sub_type)) +
           geom_bar(stat="identity") +
-          scale_fill_manual(values = colorRampPalette(brewer.pal(8, "Set2"))(N)) +
+          plankton_groups_colFill +
           scale_y_continuous("AB") +
           xlab(NULL) +
           ggtitle("Abundance of the living") +
