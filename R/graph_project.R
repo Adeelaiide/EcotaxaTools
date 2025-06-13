@@ -178,7 +178,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           group_by(sample_num, class, max, Sub_type) %>% summarise(rel=sum(rel, na.rm=T)) %>%
           ggplot(aes(x=max, y=rel, fill=Sub_type)) +
           geom_col() +
-          scale_fill_manual(values = colorRampPalette(brewer.pal(8, "Set2"))(N)) +
+          plankton_groups_colFill +
           scale_x_log10("Size (um)", labels=trans_format('log10',math_format(10^.x))) +
           facet_wrap(~sample_num, strip.position="top") +
           ggtitle("Relative BSS of the living") +
