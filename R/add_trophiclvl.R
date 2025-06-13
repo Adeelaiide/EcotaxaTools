@@ -46,7 +46,7 @@ add.trophiclvl <- function(taxo, output){
       replace <- replace %>% separate(Category, into=c("Type","Sub_type")) %>%
         merge(liste.value, "Trophic") %>% select(-Trophic)
       zo <- bind_rows(zo, replace) %>% as.data.frame()
-      write_csv2(zo, file.path(output,"resumes", "trophic_affiliation_of_organisms.csv"))
+      write_csv2(zo, file.path(output,"summary", "trophic_affiliation_of_organisms.csv"))
       # Restart the process and ignore if NA
       zoo <- merge(taxo, zo, all.x=T)
       zoo$Type[zoo$n1=="temporary"] <- "temporary"
