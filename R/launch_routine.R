@@ -1,14 +1,14 @@
 
 #' EcotaxaTools
 #'
-#' A routine to compute biovolumes and save updated csv files. Save also table resume for each taxonomic group and figures to check the data.
+#' A routine to compute biovolumes and save updated csv files. Save also summary tables for each taxonomic group and figures to check the data.
 #' 1. Choose a directory and create a new one inside to save results.
 #' 2. Use function check_metadata to allow metadata edit.
 #' 3. Compute biovolume and BSS tables with chosen metadata.
-#' 4. Save results and resume tables (AB or BV for each taxa by sample).
+#' 4. Save results and summary tables (AB or BV for each taxa by sample).
 #' 5. Graphical output : metadata, project and samples.
 #'
-#' @return Biovolumes, dataframes and resume tables, figures to check the data.
+#' @return Biovolumes, dataframes and summary tables, figures to check the data.
 #' @export
 #'
 #' @examples EcotaxaTools()
@@ -48,7 +48,35 @@ if (!is.null(mainpath) && mainpath != "") {
   # Check metadata
   check_metadata(path, output)
 
-  # Compute biovolumes and resume to BSS (warning : not normalized by size class)
+  
+  # Set common color palette
+  plankton_groups_colors <- c("#709699", #cyanobacteria
+               "#F2F2F2", #detritus
+               "#FAFABA", #other
+               "#C9C4FF", #ciliophora
+               "#B5D493", #dinoflagellata
+               "#FAD4EB", #rhizaria
+               "#1A9C75", #bacillariophyta
+               "#E3E699", #dictyochophyceae
+               "#EDB022", #crustacea
+               "#E88F6B", #copepoda
+               "#B0D6E0", #chaetognatha
+               "#3B638A", #tunicata
+               "#6999C7", #cnidaria
+               "#C68181", #mollusca
+               "#668F3B", #coccolithophyceae
+               "#FFD3CF", #other_unidentified
+               "#0073BD" #plastics
+               )
+  
+  names(plankton_groups_colors)<- c("cyanobacteria","detritus","other","ciliophora","dinoflagellata",
+                     "rhizaria","bacillariophyta","dictyochophyceae","crustacea",
+                     "copepoda","chaetognatha","tunicata","cnidaria","mollusca",
+                     "coccolithophyceae","other_unidentified","plastics")
+  plankton_groups_colScale <- scale_colour_manual(name = "taxonomic group",values = plankton_groups_colors)
+  plankton_groups_colFill <- scale_fill_manual(name = "taxonomic group",values = plankton_groups_colors)
+
+  # Compute biovolumes and BSS summary (warning : not normalized by size class)
   yesno <- dlg_message("IMPORTANT: Do you want to select the edited metadata or another metadata table ? If not the original metadata will be used.", type="yesno")$res
 
   if(yesno=="yes") {
@@ -59,15 +87,15 @@ if (!is.null(mainpath) && mainpath != "") {
   }
 
 
-  # RESUME DATA AND SAVING TABLES
+  # SUMMARY DATA AND SAVING TABLES
   # ------------------------------------------------------------------------------
   # Create directory
-  if (!file.exists(file.path(output,"resumes"))) {
-    dir.create(file.path(output,"resumes"))
+  if (!file.exists(file.path(output,"summary"))) {
+    dir.create(file.path(output,"summary"))
   }
-  path.resume <- file.path(output,"resumes")
+  path.summary <- file.path(output,"summary")
 
-  # Global resume table without size class
+  # Global summary table without size class
   res <- bss %>% group_by(sample_id, object_annotation_category, type) %>%
     summarize(AB = sum(AB, na.rm=T),
               BV= sum(BV, na.rm=T))
@@ -81,10 +109,10 @@ if (!is.null(mainpath) && mainpath != "") {
     tot <- t[1,] %>% mutate(object_annotation_category="Total") # sum by sample
     tot[-1] <- t(colSums(t[-1], na.rm=T))
     t <- rbind(t, tot)
-    write_csv2(t, file.path(path.resume, paste0("BV_",bv.type,".csv")))
+    write_csv2(t, file.path(path.summary, paste0("Biovolume_",bv.type,".csv")))
   }
 
-  # Resume table for Abundance (same for elli, plain, etc.)
+  # Summary table for Abundance (same for elli, plain, etc.)
   t <- res %>% filter(type=="plain") %>% select(-type, -BV) %>%
     pivot_wider(names_from = sample_id,
                 values_from = AB)
@@ -92,7 +120,7 @@ if (!is.null(mainpath) && mainpath != "") {
   tot <- t[1,] %>% mutate(object_annotation_category="Total") # sum by sample
   tot[-1] <- t(colSums(t[-1], na.rm=T))
   t <- rbind(t, tot)
-  write_csv2(t, file.path(path.resume, "AB.csv"))
+  write_csv2(t, file.path(path.summary, "Abundance.csv"))
 
   # Unite taxonomiques
   taxo <- add.taxo(unique(bss$object_annotation_hierarchy)) %>% add.trophiclvl(., output)
@@ -104,10 +132,10 @@ if (!is.null(mainpath) && mainpath != "") {
   metadata[is.na(metadata)] <- 1
 
   # Saving tables
-  write_csv2(metadata, file.path(path.resume, "metadata_used.csv"))
-  write_csv2(bss, file.path(path.resume, "BSS.csv"))
-  write_csv2(res, file.path(path.resume, "resume_all.csv"))
-  write_csv2(taxo, file.path(path.resume, "taxo.csv"))
+  write_csv2(metadata, file.path(path.summary, "metadata_used.csv"))
+  write_csv2(bss, file.path(path.summary, "BSS.csv"))
+  write_csv2(res, file.path(path.summary, "summary_all.csv"))
+  write_csv2(taxo, file.path(path.summary, "taxo.csv"))
 
 
   # GRAPHICAL OUPUTS
@@ -135,8 +163,8 @@ if (!is.null(mainpath) && mainpath != "") {
   dev.off()
 
   # for each sample
-  for (i in unique(bss$sample_num)) {
-    bss %>% filter(sample_num==i) %>% graph.sample(metadata, taxo) %>%
+  for (i in unique(bss$sample_id)) {
+    bss %>% filter(sample_id==i) %>% graph.sample(metadata, taxo) %>%
       ggsave(filename=file.path(path.graph, paste0(i,".jpg")),
              width=297, height=210, units = "mm")
   }
