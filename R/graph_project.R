@@ -51,8 +51,8 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
                      "rhizaria","bacillariophyta","dictyochophyceae","crustacea",
                      "copepoda","chaetognatha","tunicata","cnidaria","mollusca",
                      "coccolithophyceae","other_unidentified","plastics")
-  plankton_groups_colScale <- scale_colour_manual(name = "taxonomic group",values = plankton_groups_colors)
-  plankton_groups_colFill <- scale_fill_manual(name = "taxonomic group",values = plankton_groups_colors)
+  plankton_groups_colScale <- scale_colour_manual(name = "Taxonomic group",values = plankton_groups_colors)
+  plankton_groups_colFill <- scale_fill_manual(name = "Taxonomic group",values = plankton_groups_colors)
 
   # RESUME OF THE PROJECT
   # ----------------------------------------------------------------------------
