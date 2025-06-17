@@ -1,9 +1,9 @@
 #' graph.project
 #'
-#' Print ggplot graphics to resume the project (comparison of all samples).
+#' Print ggplot graphics to summarise the project (comparison of all samples).
 #' Return :
-#' 1. Text resume of all the project
-#' 2. live/not-live/temporary BV and AB graph
+#' 1. Text summary of all the project
+#' 2. living/not-living/temporary BV and AB graph
 #' 3. Not-Living and Living (based on the OTU database) BV and AB graph
 #' 4. NBSS (color and curve)
 #' 5. Relative NBSS
@@ -15,7 +15,7 @@
 #' @param bv.type elli, plain or riddled biovolume. default is "elli"
 #' @param living.only TRUE by default, for NBSS plots
 #'
-#' @return A set of graphics to resume the project.
+#' @return A set of graphics to summarise the project.
 #' @export
 #'
 #' @examples graph.project(x=bss table of all the project, metadata, taxo=trophic_affiliation_of_organisms.csv, bv.type="elli", living.only=TRUE)
@@ -54,7 +54,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
   plankton_groups_colScale <- scale_colour_manual(name = "Taxonomic group",values = plankton_groups_colors)
   plankton_groups_colFill <- scale_fill_manual(name = "Taxonomic group",values = plankton_groups_colors)
 
-  # RESUME OF THE PROJECT
+  # SUMMARY OF THE PROJECT
   # ----------------------------------------------------------------------------
   div.all <- x %>% group_by(object_annotation_category) %>%
     summarise(AB=sum(AB, na.rm=T)) %>% select(AB) %>% vegan::diversity()
