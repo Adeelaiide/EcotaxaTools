@@ -127,22 +127,22 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
 
   # not living only
   N <- length(unique(x$Sub_type[x$n1=="non_living"]))
-  print(x %>% filter(n1=="non_living") %>%
+  print(x %>% filter(n1=="not-living") %>%
           ggplot(aes(x=reorder(sample_num, time, decreasing=T), y=BV, fill=Sub_type)) +
           geom_bar(stat="identity") +
           scale_fill_brewer(palette="Set2", na.value="grey") +
           scale_y_continuous("BV (mm3.m-3)") +
           xlab(NULL) +
-          ggtitle("Biovolume of the not_living") +
+          ggtitle("Biovolume of the non_living") +
           theme_minimal())
 
-  print(x %>% filter(n1=="non_living") %>%
+  print(x %>% filter(n1=="not-living") %>%
           ggplot(aes(x=reorder(sample_num, time, decreasing=T), y=AB, fill=Sub_type)) +
           geom_bar(stat="identity") +
           scale_fill_brewer(palette="Set2", na.value="grey") +
           scale_y_continuous("AB") +
           xlab(NULL) +
-          ggtitle("Abundance of the not_living") +
+          ggtitle("Abundance of the non_living") +
           theme_minimal())
 
   # 4. NBSS on living
