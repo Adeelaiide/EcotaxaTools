@@ -6,7 +6,7 @@
 #' @param path path to the directory containing all the tsv files
 #' @param output path to the output directory where the results are saved
 #'
-#' @return return a metadata resume of the directory and save the results
+#' @return return a metadata summary of the directory and save the results
 #' @export
 #'
 #' @examples check_metadata(path=project.directory, output=where to save results)
