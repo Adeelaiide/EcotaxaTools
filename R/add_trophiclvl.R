@@ -21,8 +21,8 @@ add.trophiclvl <- function(taxo, output){
   zoo <- merge(taxo, zo, all.x=T)
   zoo$Type[zoo$n1=="temporary"] <- "temporary"
   zoo$Sub_type[zoo$n1=="temporary"] <- "temporary"
-  zoo$Type[zoo$n1=="not_living"] <- "non_living"
-  zoo$Sub_type[zoo$n1=="not_living"] <- zoo$n2[zoo$n1=="not_living"]
+  zoo$Type[zoo$n1=="not-living"] <- "non_living"
+  zoo$Sub_type[zoo$n1=="not-living"] <- zoo$n2[zoo$n1=="not-living"]
   zoo$Value[zoo$Type=="non_living"] <- -1
 
   # find  objects who are not in the otu database
@@ -67,8 +67,8 @@ add.trophiclvl <- function(taxo, output){
         zoo <- merge(taxo, zo, all.x=T)
         zoo$Type[zoo$n1=="temporary"] <- "temporary"
         zoo$Sub_type[zoo$n1=="temporary"] <- "temporary"
-        zoo$Type[zoo$n1=="not_living"] <- "non_living"
-        zoo$Sub_type[zoo$n1=="not_living"] <- zoo$n2[zoo$n1=="not_living"]
+        zoo$Type[zoo$n1=="not-living"] <- "non_living"
+        zoo$Sub_type[zoo$n1=="not-living"] <- zoo$n2[zoo$n1=="not-living"]
         zoo$Value[zoo$Type=="non_living"] <- -1
         zoo$Type[is.na(zoo$Type)] <- "temporary"
         zoo$Sub_type[is.na(zoo$Type)] <- "temporary"
