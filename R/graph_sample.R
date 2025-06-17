@@ -2,8 +2,8 @@
 
 #' graph.sample
 #'
-#' Return ggplot graphics to resume one sample.
-#' 1. Text resume
+#' Return ggplot graphics to summarise one sample.
+#' 1. Text summary
 #' 2. Relative AB and BV
 #' 3. Trophic pyramid
 #' 4. BSS and NBSS
@@ -16,7 +16,7 @@
 #' @param living.only TRUE by default
 #' @param taxo taxonomic table generated with "add_trophiclvl" and "add_taxo"
 #'
-#' @return A set of graphics to resume the sample.
+#' @return A set of graphics to summarise the sample.
 #' @export
 #'
 #' @examples graph.sample(x=bss of one sample, metadata, trophic_affiliation_of_organisms.csv, bv.type="elli", living.only=TRUE)
