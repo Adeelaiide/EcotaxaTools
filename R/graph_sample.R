@@ -180,23 +180,13 @@ p7<-ggplot(plot_data) +
   geom_rect(aes(xmin = xmin, ymin = ymin, xmax = xmax, ymax = ymax, fill = trophic_group_name), color = "black", linewidth = 0.5) +
   scale_fill_manual(values = color_map_troph, name = "Trophic groups") +
   labs(x = "Log Biovolume +1 (mm³⋅m⁻³)", y = NULL) +
-  ggtitle("Trophic level biovolume") + 
+  ggtitle("Trophic pyramid") + 
   theme_classic() +
-  theme(
-    plot.title = element_text(hjust = 0.5, size = 10), 
-    axis.title.x = element_text(size = 8),           
-    legend.title = element_text(size = 10, hjust = 0.5), 
-    legend.text = element_text(size = 8),               
-    legend.position = c(0.13, 0.15), 
-    legend.justification = c("left", "bottom"), 
-    legend.direction = "horizontal",             
-    legend.box = "horizontal",                   
-    legend.box.just = "left",
-    legend.key.size = unit(0.5, "cm"),           
-    legend.spacing.x = unit(0.2, "cm"),         
-    legend.spacing.y = unit(0.2, "cm"),          
-    legend.background = element_rect(fill = "white", color = "grey", linewidth = 0.5)) +
-  guides(fill = guide_legend(ncol = 2))
+  theme(plot.title = element_text(hjust = 0.5, size = 10), 
+  axis.title.x = element_text(size = 8) +
+  axis.line.y = element_blank(), 
+  axis.line.x = element_line(colour = "black")) +
+  scale_y_continuous(breaks = scales::breaks_pretty(n = 5)(plot_data$ymin, plot_data$ymax) %>% .[. != 0])
 
   # Map
     ##Extract Lat/Lon, load world map and convert xy points as sf objects
