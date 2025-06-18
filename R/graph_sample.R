@@ -176,7 +176,7 @@ graph.sample <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
     #ggtitle("Trophic level biovolume") +
    # theme_classic()
 
-p7<- <- ggplot(plot_data) +
+p7<-ggplot(plot_data) +
   geom_rect(aes(xmin = xmin, ymin = ymin, xmax = xmax, ymax = ymax, fill = trophic_group_name), color = "black", linewidth = 0.5) +
   scale_fill_manual(values = color_map_troph, name = "Trophic groups") +
   labs(x = "Log Biovolume +1 (mm³⋅m⁻³)", y = NULL) +
