@@ -14,7 +14,7 @@
 #' @examples EcotaxaTools()
 EcotaxaTools <- function() {
   # Definition de l'instrument
-  instru <- dlg_list(c("PlanktoScope", "FlowCam","ZooScan","IFCB", "UVP"), title="Instrument")$res
+  instru <- dlg_list(c("PlanktoScope", "FlowCam","ZooScan","IFCB"), title="Instrument")$res
 
   # Fichiers (faire option selection seulement certains fichiers?)
   start <- dlg_message("Please select the data directory. All the tsv files in this directory will be processed.", type="okcancel")$res
