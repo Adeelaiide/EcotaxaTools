@@ -137,14 +137,17 @@ graph.sample <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
     theme(plot.title = element_text(hjust = 0.5, size = 10,face = "bold"), legend.text = element_text(size = 0.5))
 
   # Trophic pyramid p7
-  x$categorie[x$Value==1] <- "Phototrophs"
-  x$categorie[x$Value==1.5] <- "Mixotrophs"
-  x$categorie[x$Value==2] <- "Grazers"
-  x$categorie[x$Value==2.5] <- "Omnivorous"
-  x$categorie[x$Value==3] <- "Predators"
-  x$categorie[x$Value==3.5] <- "Unknown"
-  x$categorie[x$Value==-1] <- "None"
+  # Create a colum with the trophic categories
+  x <- x %>% mutate(categorie = case_when(
+      Value == 1 ~ "Phototrophs",
+      Value == 1.5 ~ "Mixotrophs",
+      Value == 2 ~ "Grazers",
+      Value == 2.5 ~ "Omnivorous",
+      Value == 3 ~ "Predators",
+      Value == 3.5 ~ "Unknown",
+      Value == -1 ~ "None"))
 
+#Create color map for each trophic category
  color_map_troph <- c(
   "None" = "#FFFFFF", 
   "Phototrophs" = "#66B064",  
@@ -153,6 +156,16 @@ graph.sample <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
   "Omnivorous" = "#FFEBA8", 
   "Predators" = "#C75426", 
   "Unknown" = "#E6E6E6")
+
+ # Calculus of the required variables for geom_rect: xmin, ymin, xmax, and ymax
+ plot_data <- x %>%
+  mutate(trophic_level_num = Value,half_width = log(BV + 1), 
+    xmin = -half_width,
+    xmax = half_width,
+    ymin = trophic_level_num - 0.25,
+    ymax = trophic_level_num + 0.25,
+    trophic_group_name = factor(categorie, levels = names(color_map_troph))) %>%
+  arrange(trophic_level_num)
 
   #p7 <- ggplot(x, aes(x=reorder(categorie,Value), y=BV)) +
    # geom_col() +
@@ -163,31 +176,27 @@ graph.sample <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
     #ggtitle("Trophic level biovolume") +
    # theme_classic()
 
-p7<- ggplot(x, aes(x=reorder(categorie,Value), y=BV)) +
-   geom_tile(aes(x = 0, y = Value, width = ((log(BV) + 1) * 2), height = 0.5, fill = categorie), color = "black", linewidth = 0.5) +
-    scale_fill_manual(values = color_map_troph, name = "Trophic groups") +
-    labs(x = "Log Biovolume +1 (mm³/m³)\n(Equivalent abundance)", y = NULL) +
-  ggtitle("Trophic Pyramids") +
-  theme_minimal() + 
+p7<- <- ggplot(plot_data) +
+  geom_rect(aes(xmin = xmin, ymin = ymin, xmax = xmax, ymax = ymax, fill = trophic_group_name), color = "black", linewidth = 0.5) +
+  scale_fill_manual(values = color_map_troph, name = "Trophic groups") +
+  labs(x = "Log Biovolume +1 (mm³⋅m⁻³)", y = NULL) +
+  ggtitle("Trophic level biovolume") + 
+  theme_classic() +
   theme(
-    plot.title = element_text(hjust = 0.5, size = 12), # Center and size title
-    axis.title.x = element_text(size = 8),
-    axis.text.y = element_blank(), # Remove y-axis numbers/labels as they are implied by the levels
-    axis.ticks.y = element_blank(), # Remove y-axis ticks
-    panel.grid.major.y = element_blank(), # Remove horizontal grid lines
-    panel.grid.minor.y = element_blank(),
-    legend.title = element_text(size = 10, hjust = 0.5), # Legend title font size and center
-    legend.text = element_text(size = 8), # Legend item font size
-    legend.position = c(0.15, 0.25), # Example: Adjust these values to fine-tune position
-    legend.justification = c("left", "bottom"), # Justify the legend box from its bottom-left corner
-    legend.direction = "horizontal", # Arrange items horizontally
-    legend.box = "horizontal", # Arrange legend keys and labels horizontally
+    plot.title = element_text(hjust = 0.5, size = 10), 
+    axis.title.x = element_text(size = 8),           
+    legend.title = element_text(size = 10, hjust = 0.5), 
+    legend.text = element_text(size = 8),               
+    legend.position = c(0.13, 0.15), 
+    legend.justification = c("left", "bottom"), 
+    legend.direction = "horizontal",             
+    legend.box = "horizontal",                   
     legend.box.just = "left",
-    legend.key.size = unit(0.5, "cm"), # Adjust legend key size if needed
-    legend.spacing.x = unit(0.2, "cm"), # Spacing between legend items
-    legend.spacing.y = unit(0.2, "cm"),
+    legend.key.size = unit(0.5, "cm"),           
+    legend.spacing.x = unit(0.2, "cm"),         
+    legend.spacing.y = unit(0.2, "cm"),          
     legend.background = element_rect(fill = "white", color = "grey", linewidth = 0.5)) +
-    guides(fill = guide_legend(ncol = 2, title = "Trophic groups"))
+  guides(fill = guide_legend(ncol = 2))
 
   # Map
     ##Extract Lat/Lon, load world map and convert xy points as sf objects
