@@ -34,7 +34,33 @@ graph.sample <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
     x <- filter(x, n1=="living")
     taxo <- filter(taxo, n1=="living")
   }
- 
+
+ # Set color palette
+  plankton_groups_colors <- c("#709699", #cyanobacteria
+               "#F2F2F2", #detritus
+               "#FAFABA", #other
+               "#C9C4FF", #ciliophora
+               "#B5D493", #dinoflagellata
+               "#FAD4EB", #rhizaria
+               "#1A9C75", #bacillariophyta
+               "#E3E699", #dictyochophyceae
+               "#EDB022", #crustacea
+               "#E88F6B", #copepoda
+               "#B0D6E0", #chaetognatha
+               "#3B638A", #tunicata
+               "#6999C7", #cnidaria
+               "#C68181", #mollusca
+               "#668F3B", #coccolithophyceae
+               "#FFD3CF", #other_unidentified
+               "#0073BD" #plastics
+               )
+  
+  names(plankton_groups_colors)<- c("cyanobacteria","detritus","other","ciliophora","dinoflagellata",
+                     "rhizaria","bacillariophyta","dictyochophyceae","crustacea",
+                     "copepoda","chaetognatha","tunicata","cnidaria","mollusca",
+                     "coccolithophyceae","other_unidentified","plastics")
+  plankton_groups_colScale <- scale_colour_manual(name = "Taxonomic group",values = plankton_groups_colors)
+  plankton_groups_colFill <- scale_fill_manual(name = "Taxonomic group",values = plankton_groups_colors)
 
   # ------------------------------------------------------------------------------
   # Resume
@@ -119,14 +145,51 @@ graph.sample <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
   x$categorie[x$Value==3.5] <- "Unknown"
   x$categorie[x$Value==-1] <- "None"
 
-  p7 <- ggplot(x, aes(x=reorder(categorie,Value), y=BV)) +
-    geom_col() +
-    scale_fill_brewer(palette="Set2") +
-    coord_flip() +
-    xlab(NULL) +
-    ylab("log biovolume +1 (mm\u00b3.m\u207B\u00b3)") +
-    ggtitle("Trophic level biovolume") +
-    theme_classic()
+ color_map_troph <- c(
+  "None" = "#FFFFFF", 
+  "Phototrophs" = "#66B064",  
+  "Mixotrophs" = "#A0C487",
+  "Grazers" = "#4D8ABA", 
+  "Omnivorous" = "#FFEBA8", 
+  "Predators" = "#C75426", 
+  "Unknown" = "#E6E6E6")
+
+  #p7 <- ggplot(x, aes(x=reorder(categorie,Value), y=BV)) +
+   # geom_col() +
+   # scale_fill_brewer(palette="Set2") +
+   # coord_flip() +
+   # xlab(NULL) +
+    #ylab("log biovolume +1 (mm\u00b3.m\u207B\u00b3)") +
+    #ggtitle("Trophic level biovolume") +
+   # theme_classic()
+
+p7<- geom_rect(
+    aes(xmin = xmin, ymin = ymin, xmax = xmax, ymax = ymax, fill = trophic_group_name),
+    color = "black", # Add a black border to each rectangle for clarity
+    linewidth = 0.5) +
+    color_map_troph +
+    labs(x = "Log Biovolume +1 (mm³/m³)\n(Equivalent abundance)", y = NULL) +
+  ggtitle("Trophic Pyramids") +
+  theme_minimal() + 
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 12), # Center and size title
+    axis.title.x = element_text(size = 8),
+    axis.text.y = element_blank(), # Remove y-axis numbers/labels as they are implied by the levels
+    axis.ticks.y = element_blank(), # Remove y-axis ticks
+    panel.grid.major.y = element_blank(), # Remove horizontal grid lines
+    panel.grid.minor.y = element_blank(),
+    legend.title = element_text(size = 10, hjust = 0.5), # Legend title font size and center
+    legend.text = element_text(size = 8), # Legend item font size
+    legend.position = c(0.15, 0.25), # Example: Adjust these values to fine-tune position
+    legend.justification = c("left", "bottom"), # Justify the legend box from its bottom-left corner
+    legend.direction = "horizontal", # Arrange items horizontally
+    legend.box = "horizontal", # Arrange legend keys and labels horizontally
+    legend.box.just = "left",
+    legend.key.size = unit(0.5, "cm"), # Adjust legend key size if needed
+    legend.spacing.x = unit(0.2, "cm"), # Spacing between legend items
+    legend.spacing.y = unit(0.2, "cm"),
+    legend.background = element_rect(fill = "white", color = "grey", linewidth = 0.5)) +
+    guides(fill = guide_legend(ncol = 2, title = "Trophic groups"))
 
   # Map
     ##Extract Lat/Lon, load world map and convert xy points as sf objects
