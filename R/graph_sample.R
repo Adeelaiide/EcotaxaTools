@@ -185,8 +185,9 @@ p7<-ggplot(plot_data) +
   theme(plot.title = element_text(hjust = 0.5, size = 10), 
   axis.title.x = element_text(size = 8),
   axis.line.y = element_blank(), 
-  axis.line.x = element_line(colour = "black")) +
-  scale_y_continuous(breaks = scales::breaks_pretty(n = 5)(plot_data$ymin, plot_data$ymax) %>% .[. != 0])
+  axis.line.x = element_line(colour = "black"),
+  axis.text.y = element_blank(),
+  axis.ticks.y = element_blank()) 
 
   # Map
     ##Extract Lat/Lon, load world map and convert xy points as sf objects
