@@ -164,7 +164,7 @@ graph.sample <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
    # theme_classic()
 
 p7<- ggplot(x, aes(x=reorder(categorie,Value), y=BV)) +
-   geom_tile(aes(x = 0, y = Value, width = ((log(BV) + 1) * 2), height = 0.5, fill = trophic_group_name), color = "black", linewidth = 0.5) +
+   geom_tile(aes(x = 0, y = Value, width = ((log(BV) + 1) * 2), height = 0.5, fill = categorie), color = "black", linewidth = 0.5) +
     scale_fill_manual(values = color_map_troph, name = "Trophic groups") +
     labs(x = "Log Biovolume +1 (mm³/m³)\n(Equivalent abundance)", y = NULL) +
   ggtitle("Trophic Pyramids") +
