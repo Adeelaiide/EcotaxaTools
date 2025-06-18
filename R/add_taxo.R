@@ -24,7 +24,7 @@ add.taxo <- function(object_hierarchy_vector){
     separate_wider_delim(n, delim=">", names_sep = "", too_few = "align_start", cols_remove=F) %>%
     apply(1, rep.last) %>% t() %>% as.data.frame() %>%
     rename(object_annotation_hierarchy=nn) %>%
-    mutate(object_annotation_hierarchy2 = gsub("<",">",object_annotation_hierarchy))
+    mutate(object_annotation_hierarchy2 = gsub("<".">",object_annotation_hierarchy))
 
   return(taxo)
 }
