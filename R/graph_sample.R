@@ -163,10 +163,8 @@ graph.sample <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
     #ggtitle("Trophic level biovolume") +
    # theme_classic()
 
-p7<- geom_rect(
-    aes(xmin = xmin, ymin = ymin, xmax = xmax, ymax = ymax, fill = trophic_group_name),
-    color = "black", # Add a black border to each rectangle for clarity
-    linewidth = 0.5) +
+p7<- ggplot(x, aes(x=reorder(categorie,Value), y=BV)) +
+    geom_rect(aes(xmin = xmin, ymin = ymin, xmax = xmax, ymax = ymax, fill = trophic_group_name), color = "black", linewidth = 0.5) +
     color_map_troph +
     labs(x = "Log Biovolume +1 (mm³/m³)\n(Equivalent abundance)", y = NULL) +
   ggtitle("Trophic Pyramids") +
