@@ -27,6 +27,34 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
   x <- merge(x, t, all.x=T)
   x$max <- bv_to_esdum(x$max)
 
+   # Set color palette
+  plankton_groups_colors <- c("#709699", #cyanobacteria
+               "#F2F2F2", #detritus
+               "#FAFABA", #other
+               "#C9C4FF", #ciliophora
+               "#B5D493", #dinoflagellata
+               "#FAD4EB", #rhizaria
+               "#1A9C75", #bacillariophyta
+               "#E3E699", #dictyochophyceae
+               "#EDB022", #crustacea
+               "#E88F6B", #copepoda
+               "#B0D6E0", #chaetognatha
+               "#3B638A", #tunicata
+               "#6999C7", #cnidaria
+               "#C68181", #mollusca
+               "#668F3B", #coccolithophyceae
+               "#FFD3CF", #other_unidentified
+               "#0073BD" #plastics
+               )
+  
+  names(plankton_groups_colors)<- c("cyanobacteria","detritus","other","ciliophora","dinoflagellata",
+                     "rhizaria","bacillariophyta","dictyochophyceae","crustacea",
+                     "copepoda","chaetognatha","tunicata","cnidaria","mollusca",
+                     "coccolithophyceae","other_unidentified","plastics")
+  plankton_groups_colScale <- scale_colour_manual(name = "Taxonomic group",values = plankton_groups_colors)
+  plankton_groups_colFill <- scale_fill_manual(name = "Taxonomic group",values = plankton_groups_colors)
+
+
    # SUMMARY OF THE PROJECT
   # ----------------------------------------------------------------------------
   div.all <- x %>% group_by(object_annotation_category) %>%
@@ -62,7 +90,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
   # BIOVOLUME TOTAL/SAMPLE
   # ----------------------------------------------------------------------------
   # living/not-living/temporary
-  print(ggplot(x, aes(x=reorder(sample_num, time, decreasing=T), y=BV, fill=n1)) +
+  print(ggplot(x, aes(x=sample_num, y=BV, fill=n1)) +
           geom_bar(stat="identity") +
           scale_fill_brewer("paired") +
           scale_y_continuous("BV (mm3.m-3)") +
@@ -70,7 +98,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           ggtitle("Total biovolume") +
           theme_minimal())
 
-  print(ggplot(x, aes(x=reorder(sample_num, time, decreasing=T), y=AB, fill=n1)) +
+  print(ggplot(x, aes(x=sample_num, y=AB, fill=n1)) +
           geom_bar(stat="identity") +
           scale_fill_brewer("paired") +
           scale_y_continuous("AB") +
@@ -81,7 +109,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
   # living only
   N <- length(unique(x$Sub_type[x$n1=="living"]))
   print(x %>% filter(n1=="living") %>%
-          ggplot(aes(x=reorder(sample_num, time, decreasing=T), y=BV, fill=Sub_type)) +
+          ggplot(aes(x=sample_num, y=BV, fill=Sub_type)) +
           geom_bar(stat="identity") +
           plankton_groups_colFill +
           scale_y_continuous("BV (mm3.m-3)") +
@@ -90,7 +118,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           theme_minimal())
 
   print(x %>% filter(n1=="living") %>%
-          ggplot(aes(x=reorder(sample_num, time, decreasing=T), y=AB, fill=Sub_type)) +
+          ggplot(aes(x=sample_num, y=AB, fill=Sub_type)) +
           geom_bar(stat="identity") +
           plankton_groups_colFill +
           scale_y_continuous("AB") +
@@ -101,7 +129,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
   # not living only
   N <- length(unique(x$Sub_type[x$n1=="non_living"]))
   print(x %>% filter(n1=="not-living") %>%
-          ggplot(aes(x=reorder(sample_num, time, decreasing=T), y=BV, fill=Sub_type)) +
+          ggplot(aes(x=sample_num, y=BV, fill=Sub_type)) +
           geom_bar(stat="identity") +
           scale_fill_brewer(palette="Set2", na.value="grey") +
           scale_y_continuous("BV (mm3.m-3)") +
@@ -110,7 +138,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           theme_minimal())
 
   print(x %>% filter(n1=="not-living") %>%
-          ggplot(aes(x=reorder(sample_num, time, decreasing=T), y=AB, fill=Sub_type)) +
+          ggplot(aes(x=sample_num, y=AB, fill=Sub_type)) +
           geom_bar(stat="identity") +
           scale_fill_brewer(palette="Set2", na.value="grey") +
           scale_y_continuous("AB") +
@@ -123,7 +151,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
 
   print(x %>%
           group_by(sample_num, max, class) %>% summarise(BV=sum(BV/norm, na.rm=T), time=unique(time)) %>%
-          ggplot(aes(x=max, fill=BV, y=reorder(sample_num, time, decreasing=T))) +
+          ggplot(aes(x=max, fill=BV, y=sample_num)) +
           geom_tile() +
           ylab(NULL) +
           scale_x_log10("Size (um)", labels=trans_format('log10',math_format(10^.x))) +
@@ -136,12 +164,11 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
   print(x %>% group_by(sample_num, max, time) %>% summarise(BV=sum(BV/norm, na.rm=T)) %>%
           ggplot(aes(x=max, y=BV)) +
           geom_line() +
-          facet_wrap(~reorder(sample_num, time), strip.position="top") +
+          facet_wrap(~sample_num, strip.position="top") +
           scale_x_log10("Size (um)", labels=trans_format('log10',math_format(10^.x))) +
           scale_y_log10("NBSS (mm3.mm-3.m-3)", labels=trans_format('log10',math_format(10^.x))) +
           ggtitle("NBSS on the living") +
           theme_minimal())
-
 
 
   # Relative BSS
@@ -173,7 +200,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
   x$categorie[x$Value==2] <- "Grazers"
   x$categorie[x$Value==2.5] <- "Omnivorous"
   x$categorie[x$Value==3] <- "Predators"
-  ggplot(x, aes(x=reorder(sample_num, time, decreasing=T), y=BV, fill=reorder(categorie,Value))) +
+  ggplot(x, aes(x=sample_num, y=BV, fill=reorder(categorie,Value))) +
     geom_col() +
     scale_fill_brewer(palette="Set2", na.value="grey") +
     labs(fill="Trophic level") +
