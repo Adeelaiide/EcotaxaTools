@@ -91,7 +91,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
   print(ggplot(x, aes(x=factor(sample_num), y=BV, fill=n1)) +
           geom_bar(stat="identity") +
           scale_fill_brewer("paired") +
-          scale_y_continuous("BV (mm3.m-3)") +
+          scale_y_continuous("Biovolume (mm3.m-3)") +
           xlab(NULL) +
           ggtitle("Total biovolume") +
           theme_minimal() +
@@ -100,7 +100,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
   print(ggplot(x, aes(x=factor(sample_num), y=AB, fill=n1)) +
           geom_bar(stat="identity") +
           scale_fill_brewer("paired") +
-          scale_y_continuous("AB") +
+          scale_y_continuous("Abundance (ind.m-3)") +
           xlab(NULL) +
           ggtitle("Total abundance") +
           theme_minimal()+
@@ -166,7 +166,7 @@ print(x %>% filter(n1 == "living" & Sub_Type != "detritus") %>%
           ggplot(aes(x=factor(sample_num), y=BV, fill=Sub_type)) +
           geom_bar(stat="identity") +
           scale_fill_brewer(palette="Set2", na.value="grey") +
-          scale_y_continuous("BV (mm3.m-3)") +
+          scale_y_continuous("Biovolume (mm3.m-3)") +
           xlab(NULL) +
           ggtitle("Biovolume of the non_living") +
           theme_minimal() +
@@ -176,14 +176,14 @@ print(x %>% filter(n1 == "living" & Sub_Type != "detritus") %>%
           ggplot(aes(x=factor(sample_num), y=AB, fill=Sub_type)) +
           geom_bar(stat="identity") +
           scale_fill_brewer(palette="Set2", na.value="grey") +
-          scale_y_continuous("AB") +
+          scale_y_continuous("Abundance (ind.m-3)") +
           xlab(NULL) +
           ggtitle("Abundance of the non_living") +
           theme_minimal() +
           theme(axis.text.x = element_text(angle = 45,vjust = 0.5, hjust = 1)))
 
   # 4. NBSS on living
-  if(living.only==T) x <- x %>% filter(n1=="living")
+  if(living.only==T) x <- x %>% filter(n1=="living" & Sub_Type != "detritus")
 
   print(x %>%
           group_by(sample_num, max, class) %>% summarise(BV=sum(BV/norm, na.rm=T), time=unique(time)) %>%
@@ -215,9 +215,10 @@ print(x %>% filter(n1 == "living" & Sub_Type != "detritus") %>%
           ggplot(aes(x=max, y=rel, fill=Sub_type)) +
           geom_col() +
           plankton_groups_colFill +
+          scale_y_continuous("BSS (%)")
           scale_x_log10("Size (um)", labels=trans_format('log10',math_format(10^.x))) +
           facet_wrap(~sample_num, strip.position="top") +
-          ggtitle("Relative BSS of the living") +
+          ggtitle("Relative BSS") +
           theme_minimal())
 
   # diversity
