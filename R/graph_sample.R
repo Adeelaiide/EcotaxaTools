@@ -149,7 +149,7 @@ graph.sample <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
 
 #Create color map for each trophic category
  color_map_troph <- c(
-  "None" = "#FFFFFF", 
+  "None" = "#555555", 
   "Phototrophs" = "#66B064",  
   "Mixotrophs" = "#A0C487",
   "Grazers" = "#4D8ABA", 
