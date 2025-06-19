@@ -144,7 +144,7 @@ print(x %>% filter(n1=="living") %>%
     xlab(NULL) +
     ggtitle("Relative biovolume of the living") +
     theme_void() +
-    theme(plot.title = element_text(hjust = 0.5, hjust = 1)))
+    theme(plot.title = element_text(vjust = 0.5, hjust = 1)))
   
   # Relative abundance
   totab <- sum(sum(x$AB, na.rm=T))
@@ -158,7 +158,7 @@ print(x %>% filter(n1=="living") %>%
     xlab(NULL) +
     ggtitle("Relative abundance of the living") +
     theme_minimal() +
-    theme(plot.title = element_text(hjust = 0.5, hjust = 1)))
+    theme(plot.title = element_text(vjust = 0.5, hjust = 1)))
 
   # not living only
   N <- length(unique(x$Sub_type[x$n1=="non_living"]))
