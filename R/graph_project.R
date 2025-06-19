@@ -194,7 +194,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
   print(x %>% group_by(object_annotation_category, sample_num) %>%
           summarise(AB=sum(AB, na.rm=T)) %>% group_by(sample_num) %>%
           summarise(Shannon=vegan::diversity(AB)) %>%
-          ggplot(aes(y=sample_num, x=Shannon)) +
+          ggplot(aes(x=sample_num, y=Shannon)) +
           geom_col() +
           coord_flip() +
           ylab(NULL) +
