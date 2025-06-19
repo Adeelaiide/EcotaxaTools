@@ -133,12 +133,11 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           theme(axis.text.x = element_text(vjust = 0.5, hjust = 1)))
 
   # Relative biovolume
-  totbv <- sum(sum(x$BV, na.rm=T))
-print(x %>% filter(n1=="living") %>%
-    group_by(Sub_type) %>%
+  totbv <- sum(sum(x$BV[x$n1 == "living"], na.rm=T))
+print(x %>% group_by(Sub_type) %>%
     summarise(per_bv=sum(BV, na.rm=T)/totbv*100) %>%
     ggplot(aes(x=factor(sample_num), y=per_bv, fill=Sub_type)) +
-    geom_bar(stat="identity", width=0.25, size=0.15, color="black") +
+    geom_bar(stat="identity") +
     plankton_groups_colFill +
     scale_y_continuous(" Relative biovolume (%)") +
     xlab(NULL) +
@@ -147,12 +146,11 @@ print(x %>% filter(n1=="living") %>%
     theme(plot.title = element_text(vjust = 0.5, hjust = 1)))
   
   # Relative abundance
-  totab <- sum(sum(x$AB, na.rm=T))
-  print(x %>% filter(n1=="living") %>%
-    group_by(Sub_type) %>%
+  totab <- sum(sum(x$AB[x$n1 == "living"], na.rm=T))
+  print(x %>% group_by(Sub_type) %>%
     summarise(per_ab=sum(AB, na.rm=T)/totab*100) %>%
     ggplot(aes(x=factor(sample_num), y=per_ab, fill=Sub_type)) +
-    geom_bar(stat="identity", width=1, size=0.15, color="black") +
+    geom_bar(stat="identity") +
     plankton_groups_colFill +
     scale_y_continuous(" Relative abundance (%)") +
     xlab(NULL) +
