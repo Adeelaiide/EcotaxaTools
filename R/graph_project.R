@@ -238,8 +238,7 @@ print(ggplot(plot_data) +
   scale_y_continuous(breaks = plot_data$trophic_level_num) +
   labs(x = "Log Biovolume +1 (mm³⋅m⁻³)", y = NULL) +
   ggtitle("Trophic pyramid") + 
-  theme_classic() +
-  theme(plot.title = element_text(hjust = 0.5, size = 10,face = "bold")))
+  theme_classic())
 
 
 }
