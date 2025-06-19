@@ -90,7 +90,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
   # BIOVOLUME TOTAL/SAMPLE
   # ----------------------------------------------------------------------------
   # living/not-living/temporary
-  print(ggplot(x, aes(x=sample_num, y=BV, fill=n1)) +
+  print(ggplot(x, aes(x=factor(sample_num), y=BV, fill=n1)) +
           geom_bar(stat="identity") +
           scale_fill_brewer("paired") +
           scale_y_continuous("BV (mm3.m-3)") +
@@ -99,7 +99,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           theme_minimal() +
           theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)))
 
-  print(ggplot(x, aes(x=sample_num, y=AB, fill=n1)) +
+  print(ggplot(x, aes(x=factor(sample_num), y=AB, fill=n1)) +
           geom_bar(stat="identity") +
           scale_fill_brewer("paired") +
           scale_y_continuous("AB") +
@@ -111,7 +111,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
   # living only
   N <- length(unique(x$Sub_type[x$n1=="living"]))
   print(x %>% filter(n1=="living") %>%
-          ggplot(aes(x=sample_num, y=BV, fill=Sub_type)) +
+          ggplot(aes(x=factor(sample_num), y=BV, fill=Sub_type)) +
           geom_bar(stat="identity") +
           plankton_groups_colFill +
           scale_y_continuous("BV (mm3.m-3)") +
@@ -121,7 +121,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)))
 
   print(x %>% filter(n1=="living") %>%
-          ggplot(aes(x=sample_num, y=AB, fill=Sub_type)) +
+          ggplot(aes(x=factor(sample_num), y=AB, fill=Sub_type)) +
           geom_bar(stat="identity") +
           plankton_groups_colFill +
           scale_y_continuous("AB") +
@@ -133,7 +133,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
   # not living only
   N <- length(unique(x$Sub_type[x$n1=="non_living"]))
   print(x %>% filter(n1=="not-living") %>%
-          ggplot(aes(x=sample_num, y=BV, fill=Sub_type)) +
+          ggplot(aes(x=factor(sample_num), y=BV, fill=Sub_type)) +
           geom_bar(stat="identity") +
           scale_fill_brewer(palette="Set2", na.value="grey") +
           scale_y_continuous("BV (mm3.m-3)") +
@@ -143,7 +143,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)))
 
   print(x %>% filter(n1=="not-living") %>%
-          ggplot(aes(x=sample_num, y=AB, fill=Sub_type)) +
+          ggplot(aes(x=factor(sample_num), y=AB, fill=Sub_type)) +
           geom_bar(stat="identity") +
           scale_fill_brewer(palette="Set2", na.value="grey") +
           scale_y_continuous("AB") +
