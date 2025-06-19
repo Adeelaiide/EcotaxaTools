@@ -196,6 +196,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           summarise(Shannon=vegan::diversity(AB)) %>%
           ggplot(aes(y=sample_num, x=Shannon)) +
           geom_col() +
+          coord_flip() +
           ylab(NULL) +
           ggtitle("Diversity") +
           theme_minimal())
