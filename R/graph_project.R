@@ -96,7 +96,8 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           scale_y_continuous("BV (mm3.m-3)") +
           xlab(NULL) +
           ggtitle("Total biovolume") +
-          theme_minimal())
+          theme_minimal() +
+          theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)))
 
   print(ggplot(x, aes(x=sample_num, y=AB, fill=n1)) +
           geom_bar(stat="identity") +
@@ -104,7 +105,8 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           scale_y_continuous("AB") +
           xlab(NULL) +
           ggtitle("Total abundance") +
-          theme_minimal())
+          theme_minimal()+
+          theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)))
 
   # living only
   N <- length(unique(x$Sub_type[x$n1=="living"]))
@@ -115,7 +117,8 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           scale_y_continuous("BV (mm3.m-3)") +
           xlab(NULL) +
           ggtitle("Biovolume of the living") +
-          theme_minimal())
+          theme_minimal() +
+          theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)))
 
   print(x %>% filter(n1=="living") %>%
           ggplot(aes(x=sample_num, y=AB, fill=Sub_type)) +
@@ -124,7 +127,8 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           scale_y_continuous("AB") +
           xlab(NULL) +
           ggtitle("Abundance of the living") +
-          theme_minimal())
+          theme_minimal() +
+          theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)))
 
   # not living only
   N <- length(unique(x$Sub_type[x$n1=="non_living"]))
@@ -135,7 +139,8 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           scale_y_continuous("BV (mm3.m-3)") +
           xlab(NULL) +
           ggtitle("Biovolume of the non_living") +
-          theme_minimal())
+          theme_minimal() +
+          theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)))
 
   print(x %>% filter(n1=="not-living") %>%
           ggplot(aes(x=sample_num, y=AB, fill=Sub_type)) +
@@ -144,7 +149,8 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           scale_y_continuous("AB") +
           xlab(NULL) +
           ggtitle("Abundance of the non_living") +
-          theme_minimal())
+          theme_minimal() +
+          theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)))
 
   # 4. NBSS on living
   if(living.only==T) x <- x %>% filter(n1=="living")
@@ -188,25 +194,57 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
   print(x %>% group_by(object_annotation_category, sample_id) %>%
           summarise(AB=sum(AB, na.rm=T)) %>% group_by(sample_id) %>%
           summarise(Shannon=vegan::diversity(AB)) %>%
-          ggplot(aes(y=sample_id, x=Shannon)) +
+          ggplot(aes(y=sample_num, x=Shannon)) +
           geom_col() +
           ylab(NULL) +
           ggtitle("Diversity") +
           theme_minimal())
 
   # trophic levels
-  x$categorie[x$Value==1] <- "Phototrophs"
-  x$categorie[x$Value==1.5] <- "Mixotrophs"
-  x$categorie[x$Value==2] <- "Grazers"
-  x$categorie[x$Value==2.5] <- "Omnivorous"
-  x$categorie[x$Value==3] <- "Predators"
-  ggplot(x, aes(x=sample_num, y=BV, fill=reorder(categorie,Value))) +
-    geom_col() +
-    scale_fill_brewer(palette="Set2", na.value="grey") +
-    labs(fill="Trophic level") +
-    xlab(NULL) +
-    ylab("Biovolume (mm3.m-3)") +
-    ggtitle("Trophic level biovolume") +
-    theme_minimal()
+ # Create a colum with the trophic categories
+  x <- x %>% mutate(categorie = case_when(
+      Value == 1 ~ "Phototrophs",
+      Value == 1.5 ~ "Mixotrophs",
+      Value == 2 ~ "Grazers",
+      Value == 2.5 ~ "Omnivorous",
+      Value == 3 ~ "Predators",
+      Value == 3.5 ~ "Unknown",
+      Value == -1 ~ "None"))
+
+#Create color map for each trophic category
+ color_map_troph <- c(
+  "None" = "#FFFFFF", 
+  "Phototrophs" = "#66B064",  
+  "Mixotrophs" = "#A0C487",
+  "Grazers" = "#4D8ABA", 
+  "Omnivorous" = "#FFEBA8", 
+  "Predators" = "#C75426", 
+  "Unknown" = "#E6E6E6")
+
+ # Calculus of the required variables for geom_rect: xmin, ymin, xmax, and ymax
+ plot_data <- x %>%
+  mutate(trophic_level_num = Value,half_width = log(BV + 1), 
+    xmin = -half_width,
+    xmax = half_width,
+    ymin = trophic_level_num - 0.25,
+    ymax = trophic_level_num + 0.25,
+    trophic_group_name = factor(categorie, levels = names(color_map_troph))) %>%
+  arrange(trophic_level_num)
+
+print(ggplot(plot_data) +
+  geom_rect(aes(xmin = xmin, ymin = ymin, xmax = xmax, ymax = ymax, fill = trophic_group_name)) +
+  scale_fill_manual(values = color_map_troph, name = "Trophic groups") +
+  scale_y_continuous(breaks = plot_data$trophic_level_num) +
+  labs(x = "Log Biovolume +1 (mm³⋅m⁻³)", y = NULL) +
+  ggtitle("Trophic pyramid") + 
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5, size = 10,face = "bold"), 
+        legend.text = element_text(size = 0.5),
+        axis.title.x = element_text(size = 8),
+        axis.line.x = element_line(colour = "black"),
+        axis.text.y = element_text(size = 8, hjust = 1), 
+        axis.ticks.y = element_line(colour = "black"),   
+        axis.line.y = element_line(colour = "black")))
+
 
 }
