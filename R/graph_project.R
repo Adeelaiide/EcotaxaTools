@@ -134,9 +134,9 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
 
   # Relative biovolume
   totbv <- sum(sum(x$BV, na.rm=T))
-print(x %>% group_by(Sub_type) %>%
+print(x %>% filter(n1=="living") %>%
+    group_by(Sub_type) %>%
     summarise(per_bv=sum(BV, na.rm=T)/totbv*100) %>%
-    filter(n1=="living") %>%
     ggplot(aes(x=factor(sample_num), y=per_bv, fill=Sub_type)) +
     geom_bar(stat="identity", width=0.25, size=0.15, color="black") +
     plankton_groups_colFill +
@@ -148,9 +148,9 @@ print(x %>% group_by(Sub_type) %>%
   
   # Relative abundance
   totab <- sum(sum(x$AB, na.rm=T))
-  print(x %>% group_by(Sub_type) %>%
+  print(x %>% filter(n1=="living") %>%
+    group_by(Sub_type) %>%
     summarise(per_ab=sum(AB, na.rm=T)/totab*100) %>%
-    filter(n1=="living") %>%
     ggplot(aes(x=factor(sample_num), y=per_ab, fill=Sub_type)) +
     geom_bar(stat="identity", width=1, size=0.15, color="black") +
     plankton_groups_colFill +
