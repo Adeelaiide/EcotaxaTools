@@ -240,7 +240,7 @@ p7<-ggplot(plot_data) +
           theme_bw()
 
   sf_use_s2(TRUE)
-}
+ 
   ptot <- ggarrange(p1, p2, p3, p7, p5, p4, p6, p8,
                  common.legend = T, legend="bottom",
                  ncol=4, nrow=2) %>%
