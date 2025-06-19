@@ -237,7 +237,7 @@ p7<-ggplot(plot_data) +
           geom_sf(data = worldmap, color=NA, fill="gray54") +
           geom_sf(data = meta.point, size=1, aes(color=time)) +
           ggtitle("Sampling map") +
-          theme_bw())
+          theme_bw()
 
   sf_use_s2(TRUE)
 }
