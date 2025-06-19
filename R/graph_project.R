@@ -97,7 +97,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           xlab(NULL) +
           ggtitle("Total biovolume") +
           theme_minimal() +
-          theme(axis.text.x = element_text(vjust = 0.5, hjust = 1)))
+          theme(axis.text.x = element_text(angle = 45,vjust = 0.5, hjust = 1)))
 
   print(ggplot(x, aes(x=factor(sample_num), y=AB, fill=n1)) +
           geom_bar(stat="identity") +
@@ -106,7 +106,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           xlab(NULL) +
           ggtitle("Total abundance") +
           theme_minimal()+
-          theme(axis.text.x = element_text(vjust = 0.5, hjust = 1)))
+          theme(axis.text.x = element_text(angle = 45,vjust = 0.5, hjust = 1)))
 
   # living only
   N <- length(unique(x$Sub_type[x$n1=="living"]))
@@ -119,7 +119,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           xlab(NULL) +
           ggtitle("Totale biovolume of the living") +
           theme_minimal() +
-          theme(axis.text.x = element_text(vjust = 0.5, hjust = 1)))
+          theme(axis.text.x = element_text(angle = 45,vjust = 0.5, hjust = 1)))
 
   # Total abundance 
   print(x %>% filter(n1=="living") %>%
@@ -130,33 +130,37 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           xlab(NULL) +
           ggtitle("Totale abundance of the living") +
           theme_minimal() +
-          theme(axis.text.x = element_text(vjust = 0.5, hjust = 1)))
+          theme(axis.text.x = element_text(angle = 45,vjust = 0.5, hjust = 1)))
 
   # Relative biovolume
-  totbv <- sum(sum(x$BV[x$n1 == "living"], na.rm=T))
-print(x %>% group_by(sample_num, Sub_type) %>%
-    summarise(per_bv=sum(BV, na.rm=T)/totbv*100) %>%
+print(x %>% filter(n1 == "living") %>%
+    group_by(sample_num) %>%
+    mutate(totbv = sum(BV, na.rm = TRUE)) %>%
+    group_by(sample_num, Sub_type) %>%
+    summarise(per_bv = ifelse(first(totbv) == 0, 0, sum(BV, na.rm=T) / first(totbv) * 100), .groups = 'drop') %>%
     ggplot(aes(x=factor(sample_num), y=per_bv, fill=Sub_type)) +
-    geom_bar(stat="identity") +
+    geom_bar(stat="identity", position = "stack") +
     plankton_groups_colFill +
-    scale_y_continuous(" Relative biovolume (%)") +
+    scale_y_continuous(" Relative biovolume (%)", limits = c(0, 100)) +
     xlab(NULL) +
     ggtitle("Relative biovolume of the living") +
-    theme_void() +
-    theme(plot.title = element_text(vjust = 0.5, hjust = 1)))
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45,vjust = 0.5, hjust = 1)))
   
   # Relative abundance
-  totab <- sum(sum(x$AB[x$n1 == "living"], na.rm=T))
-  print(x %>% group_by(sample_num, Sub_type) %>%
-    summarise(per_ab=sum(AB, na.rm=T)/totab*100) %>%
+ print(x %>% filter(n1 == "living") %>%
+    group_by(sample_num) %>%
+    mutate(totab = sum(AB, na.rm = TRUE)) %>%
+    group_by(sample_num, Sub_type) %>%
+    summarise(per_ab = ifelse(first(totab) == 0, 0, sum(AB, na.rm=T) / first(totab) * 100), .groups = 'drop') %>%
     ggplot(aes(x=factor(sample_num), y=per_ab, fill=Sub_type)) +
-    geom_bar(stat="identity") +
+    geom_bar(stat="identity", position = "stack") +
     plankton_groups_colFill +
-    scale_y_continuous(" Relative abundance (%)") +
+    scale_y_continuous(" Relative abundance (%)", limits = c(0, 100)) +
     xlab(NULL) +
     ggtitle("Relative abundance of the living") +
     theme_minimal() +
-    theme(plot.title = element_text(vjust = 0.5, hjust = 1)))
+    theme(axis.text.x = element_text(angle = 45,vjust = 0.5, hjust = 1)))
 
   # not living only
   N <- length(unique(x$Sub_type[x$n1=="non_living"]))
@@ -168,7 +172,7 @@ print(x %>% group_by(sample_num, Sub_type) %>%
           xlab(NULL) +
           ggtitle("Biovolume of the non_living") +
           theme_minimal() +
-          theme(axis.text.x = element_text(vjust = 0.5, hjust = 1)))
+          theme(axis.text.x = element_text(angle = 45,vjust = 0.5, hjust = 1)))
 
   print(x %>% filter(n1=="not-living") %>%
           ggplot(aes(x=factor(sample_num), y=AB, fill=Sub_type)) +
@@ -178,7 +182,7 @@ print(x %>% group_by(sample_num, Sub_type) %>%
           xlab(NULL) +
           ggtitle("Abundance of the non_living") +
           theme_minimal() +
-          theme(axis.text.x = element_text(vjust = 0.5, hjust = 1)))
+          theme(axis.text.x = element_text(angle = 45,vjust = 0.5, hjust = 1)))
 
   # 4. NBSS on living
   if(living.only==T) x <- x %>% filter(n1=="living")
