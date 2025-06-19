@@ -131,7 +131,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           theme(axis.text.x = element_text(angle = 45,vjust = 0.5, hjust = 1)))
 
   # Relative biovolume
-print(x %>% filter(n1 == "living") %>%
+print(x %>% filter(n1 == "living" & Sub_Type != "detritus") %>%
     group_by(sample_num) %>%
     mutate(totbv = sum(BV, na.rm = TRUE)) %>%
     group_by(sample_num, Sub_type) %>%
@@ -146,7 +146,7 @@ print(x %>% filter(n1 == "living") %>%
     theme(axis.text.x = element_text(angle = 45,vjust = 0.5, hjust = 1)))
   
   # Relative abundance
- print(x %>% filter(n1 == "living") %>%
+ print(x %>% filter(n1 == "living" & Sub_Type != "detritus") %>%
     group_by(sample_num) %>%
     mutate(totab = sum(AB, na.rm = TRUE)) %>%
     group_by(sample_num, Sub_type) %>%
