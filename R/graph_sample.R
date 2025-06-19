@@ -37,7 +37,6 @@ graph.sample <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
 
  # Set color palette
   plankton_groups_colors <- c("#709699", #cyanobacteria
-               "#F2F2F2", #detritus
                "#FAFABA", #other
                "#C9C4FF", #ciliophora
                "#B5D493", #dinoflagellata
@@ -52,13 +51,12 @@ graph.sample <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
                "#C68181", #mollusca
                "#668F3B", #coccolithophyceae
                "#FFD3CF", #other_unidentified
-               "#0073BD" #plastics
                )
   
-  names(plankton_groups_colors)<- c("cyanobacteria","detritus","other","ciliophora","dinoflagellata",
+  names(plankton_groups_colors)<- c("cyanobacteria","other","ciliophora","dinoflagellata",
                      "rhizaria","bacillariophyta","dictyochophyceae","crustacea",
                      "copepoda","chaetognatha","tunicata","cnidaria","mollusca",
-                     "coccolithophyceae","other_unidentified","plastics")
+                     "coccolithophyceae","other_unidentified")
   plankton_groups_colScale <- scale_colour_manual(name = "Taxonomic group",values = plankton_groups_colors)
   plankton_groups_colFill <- scale_fill_manual(name = "Taxonomic group",values = plankton_groups_colors)
 
