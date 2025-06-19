@@ -167,15 +167,6 @@ graph.sample <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
     trophic_group_name = factor(categorie, levels = names(color_map_troph))) %>%
   arrange(trophic_level_num)
 
-  #p7 <- ggplot(x, aes(x=reorder(categorie,Value), y=BV)) +
-   # geom_col() +
-   # scale_fill_brewer(palette="Set2") +
-   # coord_flip() +
-   # xlab(NULL) +
-    #ylab("log biovolume +1 (mm\u00b3.m\u207B\u00b3)") +
-    #ggtitle("Trophic level biovolume") +
-   # theme_classic()
-
 p7<-ggplot(plot_data) +
   geom_rect(aes(xmin = xmin, ymin = ymin, xmax = xmax, ymax = ymax, fill = trophic_group_name)) +
   scale_fill_manual(values = color_map_troph, name = "Trophic groups") +
@@ -189,11 +180,7 @@ p7<-ggplot(plot_data) +
         axis.line.x = element_line(colour = "black"),
         axis.text.y = element_text(size = 8, hjust = 1), 
         axis.ticks.y = element_line(colour = "black"),   
-        axis.line.y = element_line(colour = "black"),
-        panel.grid.major.x = element_blank(), 
-        panel.grid.minor.x = element_blank(), 
-        panel.grid.major.y = element_blank(), 
-        panel.grid.minor.y = element_blank()) 
+        axis.line.y = element_line(colour = "black"))
 
   # Map
     ##Extract Lat/Lon, load world map and convert xy points as sf objects
