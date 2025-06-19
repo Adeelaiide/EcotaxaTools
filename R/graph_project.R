@@ -239,8 +239,7 @@ print(ggplot(plot_data) +
   labs(x = "Log Biovolume +1 (mm³⋅m⁻³)", y = NULL) +
   ggtitle("Trophic pyramid") + 
   theme_classic() +
-  theme(plot.title = element_text(hjust = 0.5, size = 10,face = "bold"), 
-        legend.text = element_text(size = 0.5),
+  theme(plot.title = element_text(hjust = 0.5, size = 10,face = "bold"),
         axis.title.x = element_text(size = 8),
         axis.line.x = element_line(colour = "black"),
         axis.text.y = element_text(size = 8, hjust = 1), 
