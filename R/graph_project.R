@@ -134,7 +134,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
 
   # Relative biovolume
   totbv <- sum(sum(x$BV[x$n1 == "living"], na.rm=T))
-print(x %>% group_by(Sub_type) %>%
+print(x %>% group_by(sample_num, Sub_type) %>%
     summarise(per_bv=sum(BV, na.rm=T)/totbv*100) %>%
     ggplot(aes(x=factor(sample_num), y=per_bv, fill=Sub_type)) +
     geom_bar(stat="identity") +
@@ -147,7 +147,7 @@ print(x %>% group_by(Sub_type) %>%
   
   # Relative abundance
   totab <- sum(sum(x$AB[x$n1 == "living"], na.rm=T))
-  print(x %>% group_by(Sub_type) %>%
+  print(x %>% group_by(sample_num, Sub_type) %>%
     summarise(per_ab=sum(AB, na.rm=T)/totab*100) %>%
     ggplot(aes(x=factor(sample_num), y=per_ab, fill=Sub_type)) +
     geom_bar(stat="identity") +
