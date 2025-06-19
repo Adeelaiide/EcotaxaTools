@@ -67,10 +67,10 @@ graph.sample <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
   div <- x %>% group_by(object_annotation_category) %>%
     summarise(AB=sum(AB, na.rm=T)) %>% select(AB) %>% vegan::diversity()
   text = paste0(
-    "\n\nTotal absolute abundance (ind.m-3):\n",
-    round(sum(x$AB, na.rm=T),4),
-    "\nTotal absolute biovolume (mm3.mm-3):\n",
-    round(sum(x$BV, na.rm=T),4),
+    "\n\nTotal abundance (ind.m-3):\n",
+    round(sum(x$AB, na.rm=T),2),
+    "\nTotal biovolume (mm3.mm-3):\n",
+    round(sum(x$BV, na.rm=T),2),
     "\nShannon Index:\n",
     round(div,4))
   p1 <- ggplot() +
