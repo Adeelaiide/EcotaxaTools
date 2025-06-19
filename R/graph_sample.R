@@ -178,41 +178,68 @@ p7<-ggplot(plot_data) +
 
   # Map
     ##Extract Lat/Lon, load world map and convert xy points as sf objects
-  meta.x <- filter(metadata, sample_id==unique(x$sample_id))
-  worldmap <- ne_countries(scale = 'medium', type = 'map_units', returnclass = 'sf')
-  meta.point <- st_as_sf(meta.x, coords=c("object_lon","object_lat"), crs=4326)
+ # meta.x <- filter(metadata, sample_id==unique(x$sample_id))
+ # worldmap <- ne_countries(scale = 'medium', type = 'map_units', returnclass = 'sf')
+ # meta.point <- st_as_sf(meta.x, coords=c("object_lon","object_lat"), crs=4326)
 
   ##Problem with Pacific ocean projections
-  if(any(meta.x$object_lon >= 130) | any(meta.x$object_lon <= -110)) {
+ # if(any(meta.x$object_lon >= 130) | any(meta.x$object_lon <= -110)) {
 
     # Transform longitudes : [-180,180] → [0,360]
-    meta.x <- meta.x %>%
-      mutate(object_lon_wrapped = ifelse(object_lon < 0, object_lon + 360, object_lon))
-    meta.point <- st_as_sf(meta.x, coords=c("object_lon_wrapped","object_lat"), crs=4326)
+  #  meta.x <- meta.x %>%
+#mutate(object_lon_wrapped = ifelse(object_lon < 0, object_lon + 360, object_lon))
+   # meta.point <- st_as_sf(meta.x, coords=c("object_lon_wrapped","object_lat"), crs=4326)
 
     #Set Robinson projection centered on Pacific
-    robinson <- "+proj=robin +lon_0=180 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
-    world_robinson<- worldmap %>%
-      st_break_antimeridian(lon_0 = 180) %>%
-      st_transform(crs = robinson)
+    #robinson <- "+proj=robin +lon_0=180 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
+   # world_robinson<- worldmap %>%
+   #   st_break_antimeridian(lon_0 = 180) %>%
+     # st_transform(crs = robinson)
 
-    p8 <- ggplot() +
-      geom_sf(data = world_robinson, color=NA, fill="gray54",) +
-      geom_sf(data = meta.point, size=1, color="red") +
-      theme_bw()
+    #p8 <- ggplot() +
+     # geom_sf(data = world_robinson, color=NA, fill="gray54",) +
+     # geom_sf(data = meta.point, size=1, color="red") +
+     # theme_bw()
 
-  }else{
+ # }else{
 
     #Set Robinson projection centered on Atlantic
-    robinson <- "+proj=robin +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
-    world_robinson<- worldmap %>%
+    #robinson <- "+proj=robin +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
+    #world_robinson<- worldmap %>%
       #st_break_antimeridian(lon_0 = 180) %>%
-      st_transform(crs = robinson)
+     # st_transform(crs = robinson)
 
-  p8 <- ggplot() +
-    geom_sf(data = world_robinson, color=NA, fill="gray54") +
-    geom_sf(data = meta.point, size=0.8, color="red") +
-    theme_bw()
+  #p8 <- ggplot() +
+   # geom_sf(data = world_robinson, color=NA, fill="gray54") +
+   #geom_sf(data = meta.point, size=0.8, color="red") +
+    #theme_bw()
+
+   ex = 3
+  latmin <- min(metadata$object_lat, na.rm=T)-ex
+  lonmin <- min(metadata$object_lon, na.rm=T)-ex
+  latmax <- max(metadata$object_lat, na.rm=T)+ex
+  lonmax <- max(metadata$object_lon, na.rm=T)+ex
+
+  if(latmin<(-90)) latmin <- (-90)
+  if(lonmin<(-180)) lonmin <- -180
+  if(latmax>90) latmax <- 90
+  if(lonmax>180) lonmax <- 180
+
+  metadata$time <- as.POSIXct(paste(metadata$object_date, metadata$object_time))
+
+  sf_use_s2(FALSE)
+
+  worldmap <- ne_countries(scale = 'medium', type = 'map_units', returnclass = 'sf') %>%
+    st_crop(xmin=lonmin, xmax=lonmax, ymax=latmax, ymin=latmin)
+  meta.point <- st_as_sf(metadata, coords=c("object_lon","object_lat"), crs=st_crs(worldmap))
+
+  p8 <-ggplot() +
+          geom_sf(data = worldmap, color=NA, fill="gray54") +
+          geom_sf(data = meta.point, size=1, aes(color=time)) +
+          ggtitle("Sampling map") +
+          theme_bw())
+
+  sf_use_s2(TRUE)
 }
   ptot <- ggarrange(p1, p2, p3, p7, p5, p4, p6, p8,
                  common.legend = T, legend="bottom",
