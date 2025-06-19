@@ -179,13 +179,16 @@ graph.sample <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
 p7<-ggplot(plot_data) +
   geom_rect(aes(xmin = xmin, ymin = ymin, xmax = xmax, ymax = ymax, fill = trophic_group_name), color = "black", linewidth = 0.5) +
   scale_fill_manual(values = color_map_troph, name = "Trophic groups") +
+  scale_y_continuous(breaks = plot_data$trophic_level_num) +
   labs(x = "Log Biovolume +1 (mm³⋅m⁻³)", y = NULL) +
   ggtitle("Trophic pyramid") + 
   theme_classic() +
   theme(plot.title = element_text(hjust = 0.5, size = 10), 
   axis.title.x = element_text(size = 8),
-  axis.line.y = element_blank(), 
-  axis.line.x = element_line(colour = "black")) 
+  axis.line.x = element_line(colour = "black"),
+  axis.text.y = element_text(size = 8, hjust = 1), 
+  axis.ticks.y = element_line(colour = "black"),   
+  axis.line.y = element_line(colour = "black")) 
 
   # Map
     ##Extract Lat/Lon, load world map and convert xy points as sf objects
