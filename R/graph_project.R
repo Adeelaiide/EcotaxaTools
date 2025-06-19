@@ -67,27 +67,27 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
     "\nNumber of samples:\n",
     length(unique(x$sample_id)),
     "\nMean abundance (ind.m-3):\n",
-    round(mean(x$AB, na.rm=T),4)," ~",round(sd(x$AB, na.rm=T),4),
+    round(mean(x$AB, na.rm=T),2)," ~",round(sd(x$AB, na.rm=T),2),
     "\nMean biovolume (mm3.mm-3):\n",
-    round(mean(x$BV, na.rm=T),4)," ~",round(sd(x$BV, na.rm=T),4),
+    round(mean(x$BV, na.rm=T),2)," ~",round(sd(x$BV, na.rm=T),2),
     "\nShannon Index:\n",
-    round(div.all,4),
+    round(div.all,2),
 
     "\n\n\nLIVING ONLY:\n",
     "\nNumber of samples:\n",
     length(unique(x$sample_id[x$n1=="living"])),
     "\nMean abundance (ind.m-3):\n",
-    round(mean(x$AB[x$n1=="living"], na.rm=T),4)," ~",round(sd(x$AB[x$n1=="living"], na.rm=T),4),
+    round(mean(x$AB[x$n1=="living"], na.rm=T),2)," ~",round(sd(x$AB[x$n1=="living"], na.rm=T),2),
     "\nMean biovolume (mm3.mm-3):\n",
-    round(mean(x$BV[x$n1=="living"], na.rm=T),4)," ~",round(sd(x$BV[x$n1=="living"], na.rm=T),4),
+    round(mean(x$BV[x$n1=="living"], na.rm=T),2)," ~",round(sd(x$BV[x$n1=="living"], na.rm=T),2),
     "\nShannon Index:\n",
-    round(div,4))
+    round(div,2))
 
   print(ggplot() +
           annotate("text", x = 1, y=10, size=3, label = text) +
           theme_void())
 
-  # BIOVOLUME TOTAL/SAMPLE
+  # BIOVOLUME AND ABUNDANCE TOTAL OF THE PROJECT
   # ----------------------------------------------------------------------------
   # living/not-living/temporary
   print(ggplot(x, aes(x=factor(sample_num), y=BV, fill=n1)) +
@@ -110,25 +110,55 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
 
   # living only
   N <- length(unique(x$Sub_type[x$n1=="living"]))
+  # Total biovolume 
   print(x %>% filter(n1=="living") %>%
           ggplot(aes(x=factor(sample_num), y=BV, fill=Sub_type)) +
           geom_bar(stat="identity") +
           plankton_groups_colFill +
-          scale_y_continuous("BV (mm3.m-3)") +
+          scale_y_continuous("Biovolume (mm3.m-3)") +
           xlab(NULL) +
-          ggtitle("Biovolume of the living") +
+          ggtitle("Totale biovolume of the living") +
           theme_minimal() +
           theme(axis.text.x = element_text(vjust = 0.5, hjust = 1)))
 
+  # Total abundance 
   print(x %>% filter(n1=="living") %>%
           ggplot(aes(x=factor(sample_num), y=AB, fill=Sub_type)) +
           geom_bar(stat="identity") +
           plankton_groups_colFill +
-          scale_y_continuous("AB") +
+          scale_y_continuous("Abundance (ind.m-3)") +
           xlab(NULL) +
-          ggtitle("Abundance of the living") +
+          ggtitle("Totale abundance of the living") +
           theme_minimal() +
           theme(axis.text.x = element_text(vjust = 0.5, hjust = 1)))
+
+  # Relative biovolume
+  totbv <- sum(sum(x$BV, na.rm=T))
+print(x %>% group_by(Sub_type) %>%
+    summarise(per_bv=sum(BV, na.rm=T)/totbv*100) %>%
+    filter(n1=="living") %>%
+    ggplot(aes(x=factor(sample_num), y=per_bv, fill=Sub_type)) +
+    geom_bar(stat="identity", width=0.25, size=0.15, color="black") +
+    plankton_groups_colFill +
+    scale_y_continuous(" Relative biovolume (%)") +
+    xlab(NULL) +
+    ggtitle("Relative biovolume of the living") +
+    theme_void() +
+    theme(plot.title = element_text(hjust = 0.5, hjust = 1)))
+  
+  # Relative abundance
+  totab <- sum(sum(x$AB, na.rm=T))
+  print(x %>% group_by(Sub_type) %>%
+    summarise(per_ab=sum(AB, na.rm=T)/totab*100) %>%
+    filter(n1=="living") %>%
+    ggplot(aes(x=factor(sample_num), y=per_ab, fill=Sub_type)) +
+    geom_bar(stat="identity", width=1, size=0.15, color="black") +
+    plankton_groups_colFill +
+    scale_y_continuous(" Relative abundance (%)") +
+    xlab(NULL) +
+    ggtitle("Relative abundance of the living") +
+    theme_minimal() +
+    theme(plot.title = element_text(hjust = 0.5, hjust = 1)))
 
   # not living only
   N <- length(unique(x$Sub_type[x$n1=="non_living"]))
