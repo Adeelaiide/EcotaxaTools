@@ -72,7 +72,7 @@ graph.sample <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
     "\nTotal biovolume (mm3.mm-3):\n",
     round(sum(x$BV, na.rm=T),2),
     "\nShannon Index:\n",
-    round(div,4))
+    round(div,2))
   p1 <- ggplot() +
     annotate("text", x = 1, y=10, size=4, label = text) +
     theme_void()
