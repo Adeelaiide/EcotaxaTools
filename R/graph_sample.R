@@ -177,7 +177,7 @@ graph.sample <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
    # theme_classic()
 
 p7<-ggplot(plot_data) +
-  geom_rect(aes(xmin = xmin, ymin = ymin, xmax = xmax, ymax = ymax, fill = trophic_group_name), color = "black", linewidth = 0.5) +
+  geom_rect(aes(xmin = xmin, ymin = ymin, xmax = xmax, ymax = ymax, fill = trophic_group_name)) +
   scale_fill_manual(values = color_map_troph, name = "Trophic groups") +
   scale_y_continuous(breaks = plot_data$trophic_level_num) +
   labs(x = "Log Biovolume +1 (mm³⋅m⁻³)", y = NULL) +
@@ -189,7 +189,7 @@ p7<-ggplot(plot_data) +
         axis.line.x = element_line(colour = "black"),
         axis.text.y = element_text(size = 8, hjust = 1), 
         axis.ticks.y = element_line(colour = "black"),   
-        axis.line.y = element_blank(),
+        axis.line.y = element_line(colour = "black"),
         panel.grid.major.x = element_blank(), 
         panel.grid.minor.x = element_blank(), 
         panel.grid.major.y = element_blank(), 
