@@ -97,7 +97,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           xlab(NULL) +
           ggtitle("Total biovolume") +
           theme_minimal() +
-          theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)))
+          theme(axis.text.x = element_text(vjust = 0.5, hjust = 1)))
 
   print(ggplot(x, aes(x=factor(sample_num), y=AB, fill=n1)) +
           geom_bar(stat="identity") +
@@ -106,7 +106,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           xlab(NULL) +
           ggtitle("Total abundance") +
           theme_minimal()+
-          theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)))
+          theme(axis.text.x = element_text(vjust = 0.5, hjust = 1)))
 
   # living only
   N <- length(unique(x$Sub_type[x$n1=="living"]))
@@ -118,7 +118,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           xlab(NULL) +
           ggtitle("Biovolume of the living") +
           theme_minimal() +
-          theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)))
+          theme(axis.text.x = element_text(vjust = 0.5, hjust = 1)))
 
   print(x %>% filter(n1=="living") %>%
           ggplot(aes(x=factor(sample_num), y=AB, fill=Sub_type)) +
@@ -128,7 +128,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           xlab(NULL) +
           ggtitle("Abundance of the living") +
           theme_minimal() +
-          theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)))
+          theme(axis.text.x = element_text(vjust = 0.5, hjust = 1)))
 
   # not living only
   N <- length(unique(x$Sub_type[x$n1=="non_living"]))
@@ -140,7 +140,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           xlab(NULL) +
           ggtitle("Biovolume of the non_living") +
           theme_minimal() +
-          theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)))
+          theme(axis.text.x = element_text(vjust = 0.5, hjust = 1)))
 
   print(x %>% filter(n1=="not-living") %>%
           ggplot(aes(x=factor(sample_num), y=AB, fill=Sub_type)) +
@@ -150,7 +150,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           xlab(NULL) +
           ggtitle("Abundance of the non_living") +
           theme_minimal() +
-          theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)))
+          theme(axis.text.x = element_text(vjust = 0.5, hjust = 1)))
 
   # 4. NBSS on living
   if(living.only==T) x <- x %>% filter(n1=="living")
@@ -197,7 +197,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           ggplot(aes(x=sample_num, y=Shannon)) +
           geom_col() +
           coord_flip() +
-          ylab(NULL) +
+          xlab(NULL) +
           ggtitle("Diversity") +
           theme_minimal())
 
