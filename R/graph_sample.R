@@ -170,7 +170,7 @@ graph.sample <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
 p7<-ggplot(plot_data) +
   geom_rect(aes(xmin = xmin, ymin = ymin, xmax = xmax, ymax = ymax, fill = trophic_group_name)) +
   scale_fill_manual(values = color_map_troph, name = "Trophic groups") +
-  scale_y_continuous(breaks = plot_data$trophic_level_num) +
+  scale_y_continuous(breaks = plot_data$trophic_level_num, labels = trophic_group_name) +
   labs(x = "Log Biovolume +1 (mm³⋅m⁻³)", y = NULL) +
   ggtitle("Trophic pyramid") + 
   theme_classic() +
