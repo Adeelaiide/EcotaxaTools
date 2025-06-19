@@ -189,7 +189,7 @@ p7<-ggplot(plot_data) +
         axis.line.x = element_line(colour = "black"),
         axis.text.y = element_text(size = 8, hjust = 1), 
         axis.ticks.y = element_line(colour = "black"),   
-        axis.line.y = element_line(colour = "black"),
+        axis.line.y = element_blank(),
         panel.grid.major.x = element_blank(), 
         panel.grid.minor.x = element_blank(), 
         panel.grid.major.y = element_blank(), 
