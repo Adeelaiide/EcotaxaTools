@@ -13,7 +13,7 @@
 #'
 #' @examples EcotaxaTools()
 EcotaxaTools <- function() {
-  # Definition de l'instrument
+  # Choose your instrument
   instru <- dlg_list(c("PlanktoScope", "FlowCam","ZooScan","IFCB"), title="Instrument")$res
 
   # Files 
