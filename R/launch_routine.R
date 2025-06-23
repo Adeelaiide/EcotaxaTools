@@ -42,8 +42,14 @@ if (!is.null(mainpath) && mainpath != "") {
   }
   output <- file.path(mainpath, paste0("EcoTaxa_data_analysis_",format(Sys.time(), "%Y-%m-%d %H%M")))
 
+  # COMPUTE DATA
+  # ------------------------------------------------------------------------------
+  # Check metadata
+  check_metadata(path, output)
+
   # Set common color palette
   plankton_groups_colors <- c("#709699", #cyanobacteria
+               "#F2F2F2", #detritus
                "#FAFABA", #other
                "#C9C4FF", #ciliophora
                "#B5D493", #dinoflagellata
@@ -58,20 +64,16 @@ if (!is.null(mainpath) && mainpath != "") {
                "#C68181", #mollusca
                "#668F3B", #coccolithophyceae
                "#FFD3CF", #other_unidentified
-              )
-  
-  names(plankton_groups_colors)<- c("cyanobacteria","other","ciliophora","dinoflagellata",
+               "#0073BD" #plastics
+               )
+
+  names(plankton_groups_colors)<- c("cyanobacteria","detritus","other","ciliophora","dinoflagellata",
                      "rhizaria","bacillariophyta","dictyochophyceae","crustacea",
                      "copepoda","chaetognatha","tunicata","cnidaria","mollusca",
-                     "coccolithophyceae","other_unidentified")
+                     "coccolithophyceae","other_unidentified","plastics")
   plankton_groups_colScale <- scale_colour_manual(name = "taxonomic group",values = plankton_groups_colors)
   plankton_groups_colFill <- scale_fill_manual(name = "taxonomic group",values = plankton_groups_colors)
 
-  
-  # COMPUTE DATA
-  # ------------------------------------------------------------------------------
-  # Check metadata
-  check_metadata(path, output)
 
   # Compute biovolumes and BSS summary (warning : not normalized by size class)
   yesno <- dlg_message("IMPORTANT: Do you want to select the edited metadata or another metadata table ? If not the original metadata will be used.", type="yesno")$res
