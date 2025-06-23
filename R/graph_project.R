@@ -217,7 +217,7 @@ print(x %>% group_by(sample_num) %>%
           ggplot(aes(x=max, y=rel, fill=Sub_type)) +
           geom_col() +
           plankton_groups_colFill +
-          scale_y_continuous("BSS (%)")
+          scale_y_continuous("BSS (%)") +
           scale_x_log10("Size (um)", labels=trans_format('log10',math_format(10^.x))) +
           facet_wrap(~sample_num, strip.position="top") +
           ggtitle("Relative BSS") +
