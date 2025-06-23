@@ -186,7 +186,7 @@ print(x %>% group_by(sample_num) %>%
           theme(axis.text.x = element_text(angle = 45,vjust = 0.5, hjust = 1)))
 
   # 4. NBSS on living
-  if(living.only==T) x <- x %>% filter(n1=="living" & Sub_Type != "detritus")
+  if(living.only==T) x <- x %>% filter(n1=="living" & Sub_type != "detritus")
 
   print(x %>%
           group_by(sample_num, max, class) %>% summarise(BV=sum(BV/norm, na.rm=T), time=unique(time)) %>%
