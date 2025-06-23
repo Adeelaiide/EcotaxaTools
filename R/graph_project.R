@@ -141,7 +141,7 @@ print(x %>% mutate(BV = replace_na(BV, 0)) %>%
     summarise(per_bv = ifelse(first(totbv) == 0, 0, sum(BV, na.rm=T) / first(totbv) * 100), .groups = 'drop') %>%
     ggplot(aes(x=factor(sample_num), y=per_bv, fill=Sub_type)) +
     geom_bar(stat="identity", position = "stack") +
-    plankton_groups_colFill +
+    #plankton_groups_colFill +
     scale_y_continuous(" Relative biovolume (%)", limits = c(0, 100)) +
     xlab(NULL) +
     ggtitle("Relative biovolume of the living") +
@@ -158,7 +158,7 @@ print(x %>% mutate(BV = replace_na(BV, 0)) %>%
     summarise(per_ab = ifelse(first(totab) == 0, 0, sum(AB, na.rm=T) / first(totab) * 100), .groups = 'drop') %>%
     ggplot(aes(x=factor(sample_num), y=per_ab, fill=Sub_type)) +
     geom_bar(stat="identity", position = "stack") +
-    plankton_groups_colFill +
+    #plankton_groups_colFill +
     scale_y_continuous(" Relative abundance (%)", limits = c(0, 100)) +
     xlab(NULL) +
     ggtitle("Relative abundance of the living") +
