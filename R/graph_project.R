@@ -133,9 +133,10 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
 
   # Relative biovolume
 print(x %>% mutate(BV = replace_na(BV, 0)) %>%
-    #filter(n1 == "living" & Sub_type != "detritus") %>%
+    filter(n1 == "living" & Sub_type != "detritus") %>%
     group_by(sample_num) %>%
     mutate(totbv = sum(BV, na.rm = TRUE)) %>%
+    filter(totbv > 0) %>%
     group_by(sample_num, Sub_type) %>%
     summarise(per_bv = ifelse(first(totbv) == 0, 0, sum(BV, na.rm=T) / first(totbv) * 100), .groups = 'drop') %>%
     ggplot(aes(x=factor(sample_num), y=per_bv, fill=Sub_type)) +
@@ -149,9 +150,10 @@ print(x %>% mutate(BV = replace_na(BV, 0)) %>%
   
   # Relative abundance
  print(x %>% mutate(AB = replace_na(AB, 0)) %>%
-    #filter(n1 == "living") %>%
+    filter(n1 == "living" & Sub_type != "detritus") %>%
     group_by(sample_num) %>%
     mutate(totab = sum(AB, na.rm = TRUE)) %>%
+    filter(totbv > 0) %>%
     group_by(sample_num, Sub_type) %>%
     summarise(per_ab = ifelse(first(totab) == 0, 0, sum(AB, na.rm=T) / first(totab) * 100), .groups = 'drop') %>%
     ggplot(aes(x=factor(sample_num), y=per_ab, fill=Sub_type)) +
