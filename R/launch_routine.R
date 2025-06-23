@@ -121,7 +121,7 @@ if (!is.null(mainpath) && mainpath != "") {
   t <- rbind(t, tot)
   write_csv2(t, file.path(path.summary, "Abundance.csv"))
 
-  # Unite taxonomiques
+  # For the taxonomy
   taxo <- add.taxo(unique(bss$object_annotation_hierarchy)) %>% add.trophiclvl(., output)
 
   # Search for metadata if not loaded already
