@@ -35,32 +35,7 @@ graph.sample <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
     taxo <- filter(taxo, n1=="living")
   }
 
- # Set color palette
-  plankton_groups_colors <- c("#709699", #cyanobacteria
-               "#FAFABA", #other
-               "#C9C4FF", #ciliophora
-               "#B5D493", #dinoflagellata
-               "#FAD4EB", #rhizaria
-               "#1A9C75", #bacillariophyta
-               "#E3E699", #dictyochophyceae
-               "#EDB022", #crustacea
-               "#E88F6B", #copepoda
-               "#B0D6E0", #chaetognatha
-               "#3B638A", #tunicata
-               "#6999C7", #cnidaria
-               "#C68181", #mollusca
-               "#668F3B", #coccolithophyceae
-               "#FFD3CF", #other_unidentified
-               )
-  
-  names(plankton_groups_colors)<- c("cyanobacteria","other","ciliophora","dinoflagellata",
-                     "rhizaria","bacillariophyta","dictyochophyceae","crustacea",
-                     "copepoda","chaetognatha","tunicata","cnidaria","mollusca",
-                     "coccolithophyceae","other_unidentified")
-  plankton_groups_colScale <- scale_colour_manual(name = "Taxonomic group",values = plankton_groups_colors)
-  plankton_groups_colFill <- scale_fill_manual(name = "Taxonomic group",values = plankton_groups_colors)
-
-  # ------------------------------------------------------------------------------
+ # ------------------------------------------------------------------------------
   # Resume
   div <- x %>% group_by(object_annotation_category) %>%
     summarise(AB=sum(AB, na.rm=T)) %>% select(AB) %>% vegan::diversity()
