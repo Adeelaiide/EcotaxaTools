@@ -131,9 +131,10 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           theme(axis.text.x = element_text(angle = 45,vjust = 0.5, hjust = 1)))
 
   # Relative biovolume
-print(x %>% filter(n1 == "living" & Sub_Type != "detritus") %>%
-    group_by(sample_num) %>%
+print(x %>% group_by(sample_num) %>%
     mutate(totbv = sum(BV, na.rm = TRUE)) %>%
+    ungroup() %>%
+    filter(n1 == "living" & Sub_Type != "detritus") %>%
     group_by(sample_num, Sub_type) %>%
     summarise(per_bv = ifelse(first(totbv) == 0, 0, sum(BV, na.rm=T) / first(totbv) * 100), .groups = 'drop') %>%
     ggplot(aes(x=factor(sample_num), y=per_bv, fill=Sub_type)) +
@@ -146,9 +147,10 @@ print(x %>% filter(n1 == "living" & Sub_Type != "detritus") %>%
     theme(axis.text.x = element_text(angle = 45,vjust = 0.5, hjust = 1)))
   
   # Relative abundance
- print(x %>% filter(n1 == "living" & Sub_Type != "detritus") %>%
-    group_by(sample_num) %>%
+ print(x %>% group_by(sample_num) %>%
     mutate(totab = sum(AB, na.rm = TRUE)) %>%
+    ungroup() %>%
+    filter(n1 == "living" & Sub_Type != "detritus") %>%
     group_by(sample_num, Sub_type) %>%
     summarise(per_ab = ifelse(first(totab) == 0, 0, sum(AB, na.rm=T) / first(totab) * 100), .groups = 'drop') %>%
     ggplot(aes(x=factor(sample_num), y=per_ab, fill=Sub_type)) +
