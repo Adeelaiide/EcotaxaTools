@@ -136,46 +136,34 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
 # This function takes a vector of percentages (e.g., 33.3, 33.3, 33.4)
 # and returns whole numbers that sum exactly to 100 (e.g., 33, 33, 34).
 # ----------------------------------------------------------------------
-constrain_round <- function(values, decimal_places = 0) {
-  multiplier <- 10^decimal_places
-  # Scale values up to work with integers for rounding logic
-  scaled_values <- values * multiplier
-  # Round down the scaled values
-  rounded_scaled_values <- floor(scaled_values)
-  # Calculate the remainder that needs to be distributed
-  # The target sum is 100 * multiplier (e.g., 100 for 0 decimals, 1000 for 1 decimal)
-  target_sum_scaled <- 100 * multiplier
-  remainder <- target_sum_scaled - sum(rounded_scaled_values)
+constrain_round <- function(values) {
+  # Calculate initial integer parts by rounding down
+  rounded_values <- floor(values)
   
-  # If nothing is missing (or extra), return the scaled values divided back
- if (remainder == 0) {
-    return(rounded_scaled_values / multiplier)
+  # Calculate how much is 'missing' or 'extra' from 100 after flooring
+  remainder <- 100 - sum(rounded_values)
+  
+  # If the sum is already 100 (or if there's no remainder to distribute), return the floored values.
+  if (remainder == 0) {
+    return(rounded_values)
   }
   
-  # Calculate the fractional parts of the original values to determine which values should get the extra +1.
-  fractional_parts <- scaled_values - floor(scaled_values)
+  # Calculate the fractional parts of the original values used to determine which values should get the extra +1.
+  fractional_parts <- values - floor(values)
   
-  # Identify the values ('remainder') that were "cut short" the most when floored and should receive an additional +1 to make the sum 100.
+  # Identify the indices of the values ('remainder') that were "cut short" the most when floored and should receive an additional +1 to make the sum 100.
   indices_to_adjust <- order(fractional_parts, decreasing = TRUE)[1:abs(remainder)]
   
-  # Distribute the remainder
-  if (remainder > 0) { # If sum is < target, add 1 to selected values
-    rounded_scaled_values[indices_to_adjust] <- rounded_scaled_values[indices_to_adjust] + 1
-  } else { # If sum is > target, subtract 1 from selected values
-    rounded_scaled_values[indices_to_adjust] <- rounded_scaled_values[indices_to_adjust] - 1
+  # Distribute the remainder by adding/subtracting 1 to/from the identified values
+  if (remainder > 0) { # If sum is < 100, add 1 to the selected values
+    rounded_values[indices_to_adjust] <- rounded_values[indices_to_adjust] + 1
+  } else { # If sum is > 100 (less common here), subtract 1
+    rounded_values[indices_to_adjust] <- rounded_values[indices_to_adjust] - 1
   }
   
-  # Scale back down to the desired number of decimal places
-  final_rounded_values <- rounded_scaled_values / multiplier
-  
-  # Round to the specified decimal places to clean up any potential floating point artifacts from division
-  # This final round is mostly for display precision after the constrained adjustment
-  final_rounded_values <- round(final_rounded_values, decimal_places)
-  
-  return(final_rounded_values)
+  return(rounded_values)
 }
 
-  
   #Relative Biovolume
 rel_bv_constrained <- x %>% 
     #mutate(BV = replace_na(BV, 0)) %>%
