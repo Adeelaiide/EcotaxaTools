@@ -55,8 +55,6 @@ check_metadata <- function(path, output) {
   }
 
   metadata <- do.call("rbind", lapply(path, meta_file))
-  #Arrange by date and time *before* creating sample_num
-  metadata <- arrange(metadata, object_date, object_time)
   
   # Save original
   write_csv2(metadata, file.path(output,"metadata","original_metadata.csv"))
@@ -84,5 +82,15 @@ check_metadata <- function(path, output) {
 
 
   print("Edited metadata saved.")
-  return(metadata)
+
+   # Arrange by the *edited* date and time
+  edited_metadata <- arrange(edited_metadata, object_date, object_time)
+
+  # Each unique sample_id will get a unique sequential number ordered by the EDITED date and time
+  edited_metadata <- edited_metadata %>%
+    mutate(sample_num = as.numeric(factor(sample_id, levels = unique(sample_id))))
+
+  # Return the edited metadata with the newly created sample_num
+  return(edited_metadata)
+ 
 }
