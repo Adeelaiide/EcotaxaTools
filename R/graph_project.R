@@ -153,13 +153,13 @@ print(x %>% mutate(BV = replace_na(BV, 0)) %>%
  print(x %>% mutate(AB = replace_na(AB, 0)) %>%
     filter(n1 == "living" & Sub_type != "detritus") %>%
     group_by(sample_num) %>%
-    mutate(totab = sum(AB, na.rm = TRUE)) %>%
-    filter(totab > 0) %>%
-    group_by(sample_num, Sub_type) %>%
-    summarise(per_ab = ifelse(first(totab) == 0, 0, sum(AB, na.rm=T) / first(totab) * 100), .groups = 'drop') %>%
-    ggplot(aes(x=factor(sample_num), y=per_ab, fill=Sub_type)) +
-    geom_bar(stat="identity", position = "stack") +
-    #plankton_groups_colFill +
+    mutate(relative_AB = AB / sum(AB) * 100) %>%
+    #filter(totab > 0) %>%
+    #group_by(sample_num, Sub_type) %>%
+   # summarise(per_ab = ifelse(first(totab) == 0, 0, sum(AB, na.rm=T) / first(totab) * 100), .groups = 'drop') %>%
+    ggplot(aes(x=factor(sample_num), y=relative_AB, fill=Sub_type)) +
+    geom_bar(stat="identity") +
+    plankton_groups_colFill +
     scale_y_continuous(" Relative abundance (%)", limits = c(0, 100)) +
     xlab(NULL) +
     ggtitle("Relative abundance of the living") +
