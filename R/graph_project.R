@@ -140,7 +140,7 @@ print(x %>% mutate(BV = replace_na(BV, 0)) %>%
     #filter(totbv > 0) %>%
     #group_by(sample_num, Sub_type) %>%
     #summarise(per_bv = ifelse(first(totbv) == 0, 0, sum(BV, na.rm=T) / first(totbv) * 100), .groups = 'drop') %>%
-    ggplot(aes(x=factor(sample_num), y=relative_BV, fill=Sub_type)) +
+    ggplot(aes(x=factor(sample_num), y=round_rel_bv, fill=Sub_type)) +
     geom_bar(stat="identity") +
     plankton_groups_colFill +
     scale_y_continuous(" Relative biovolume (%)", limits = c(0, 100)) +
@@ -153,11 +153,11 @@ print(x %>% mutate(BV = replace_na(BV, 0)) %>%
  print(x %>% mutate(AB = replace_na(AB, 0)) %>%
     filter(n1 == "living" & Sub_type != "detritus") %>%
     group_by(sample_num) %>%
-    mutate(relative_AB = AB / sum(AB) * 100) %>%
+    mutate(round_rel_ab = round((relative_AB = AB / sum(AB) * 100),2) %>%
     #filter(totab > 0) %>%
     #group_by(sample_num, Sub_type) %>%
    # summarise(per_ab = ifelse(first(totab) == 0, 0, sum(AB, na.rm=T) / first(totab) * 100), .groups = 'drop') %>%
-    ggplot(aes(x=factor(sample_num), y=relative_AB, fill=Sub_type)) +
+    ggplot(aes(x=factor(sample_num), y=round_rel_ab, fill=Sub_type)) +
     geom_bar(stat="identity") +
     plankton_groups_colFill +
     scale_y_continuous(" Relative abundance (%)", limits = c(0, 100)) +
