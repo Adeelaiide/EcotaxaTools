@@ -135,13 +135,14 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
 print(x %>% mutate(BV = replace_na(BV, 0)) %>%
     filter(n1 == "living" & Sub_type != "detritus") %>%
     group_by(sample_num) %>%
-    mutate(totbv = sum(BV, na.rm = TRUE)) %>%
-    filter(totbv > 0) %>%
-    group_by(sample_num, Sub_type) %>%
-    summarise(per_bv = ifelse(first(totbv) == 0, 0, sum(BV, na.rm=T) / first(totbv) * 100), .groups = 'drop') %>%
-    ggplot(aes(x=factor(sample_num), y=per_bv, fill=Sub_type)) +
-    geom_bar(stat="identity", position = "stack") +
-    #plankton_groups_colFill +
+    mutate(relative_BV = BV / sum(BV) * 100) %>%
+    ungroup() %>%
+    #filter(totbv > 0) %>%
+    #group_by(sample_num, Sub_type) %>%
+    #summarise(per_bv = ifelse(first(totbv) == 0, 0, sum(BV, na.rm=T) / first(totbv) * 100), .groups = 'drop') %>%
+    ggplot(aes(x=factor(sample_num), y=relative_BV, fill=Sub_type)) +
+    geom_bar(stat="identity") +
+    plankton_groups_colFill +
     scale_y_continuous(" Relative biovolume (%)", limits = c(0, 100)) +
     xlab(NULL) +
     ggtitle("Relative biovolume of the living") +
