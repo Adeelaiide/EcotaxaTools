@@ -135,7 +135,7 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
 print(x %>% mutate(BV = replace_na(BV, 0)) %>%
     filter(n1 == "living" & Sub_type != "detritus") %>%
     group_by(sample_num) %>%
-    mutate(relative_BV = BV / sum(BV) * 100) %>%
+    mutate(round_rel_bv = round((relative_BV = BV / sum(BV) * 100), 2) %>%
     ungroup() %>%
     #filter(totbv > 0) %>%
     #group_by(sample_num, Sub_type) %>%
