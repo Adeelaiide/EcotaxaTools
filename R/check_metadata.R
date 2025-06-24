@@ -58,10 +58,6 @@ check_metadata <- function(path, output) {
   #Arrange by date and time *before* creating sample_num
   metadata <- arrange(metadata, object_date, object_time)
   
-  # Each unique sample_id will get a unique sequential number ordered by date and time
-  metadata <- metadata %>%
-  mutate(sample_num = as.numeric(factor(sample_id, levels = unique(sample_id))))
-
   # Save original
   write_csv2(metadata, file.path(output,"metadata","original_metadata.csv"))
   print("Original metadata saved.")
@@ -78,6 +74,8 @@ check_metadata <- function(path, output) {
 
   metadata$object_date <- as.character(metadata$object_date)
   metadata$object_time <- as.character(metadata$object_time)
+  metadata <- metadata %>%
+  mutate(sample_num = as.numeric(factor(sample_id, levels = unique(sample_id))))
   metadata <- data_edit(metadata, write_fun = "write_csv2",
                         save_as=file.path(output, "metadata",
                                           paste0("edited_metadata_",
