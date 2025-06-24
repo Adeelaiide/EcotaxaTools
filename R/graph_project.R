@@ -158,15 +158,23 @@ constrain_round <- function(values, decimal_places = 0) {
   # Identify the values ('remainder') that were "cut short" the most when floored and should receive an additional +1 to make the sum 100.
   indices_to_adjust <- order(fractional_parts, decreasing = TRUE)[1:abs(remainder)]
   
-  # Distribute the remainder by adding/subtracting 1 to/from the identified values
-  if (remainder > 0) { # If sum is < 100, add 1 to the selected values
-    rounded_values[indices_to_adjust] <- rounded_values[indices_to_adjust] + 1
-  } else { # If sum is > 100 (less common here), subtract 1
-    rounded_values[indices_to_adjust] <- rounded_values[indices_to_adjust] - 1
+  # Distribute the remainder
+  if (remainder > 0) { # If sum is < target, add 1 to selected values
+    rounded_scaled_values[indices_to_adjust] <- rounded_scaled_values[indices_to_adjust] + 1
+  } else { # If sum is > target, subtract 1 from selected values
+    rounded_scaled_values[indices_to_adjust] <- rounded_scaled_values[indices_to_adjust] - 1
   }
   
-  return(rounded_values)
+  # Scale back down to the desired number of decimal places
+  final_rounded_values <- rounded_scaled_values / multiplier
+  
+  # Round to the specified decimal places to clean up any potential floating point artifacts from division
+  # This final round is mostly for display precision after the constrained adjustment
+  final_rounded_values <- round(final_rounded_values, decimal_places)
+  
+  return(final_rounded_values)
 }
+
   
   #Relative Biovolume
 rel_bv_constrained <- x %>% 
