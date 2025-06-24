@@ -72,7 +72,7 @@ check_metadata <- function(path, output) {
 
   metadata$object_date <- as.character(metadata$object_date)
   metadata$object_time <- as.character(metadata$object_time)
-  metadata <- data_edit(metadata, write_fun = "write_csv2",
+  edited_metadata <- data_edit(metadata, write_fun = "write_csv2",
                         save_as=file.path(output, "metadata",
                                           paste0("edited_metadata_",
                                                  time,
