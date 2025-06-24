@@ -131,38 +131,83 @@ graph.project <- function(x, metadata, taxo, bv.type="elli", living.only=T) {
           theme_minimal() +
           theme(axis.text.x = element_text(angle = 45,vjust = 0.5, hjust = 1)))
 
-  # Relative biovolume
-print(x %>% mutate(BV = replace_na(BV, 0)) %>%
+# ----------------------------------------------------------------------
+# Constrained Rounding Function to have the relative biovolume and relative abundance
+# This function takes a vector of percentages (e.g., 33.3, 33.3, 33.4)
+# and returns whole numbers that sum exactly to 100 (e.g., 33, 33, 34).
+# ----------------------------------------------------------------------
+constrain_round <- function(values) {
+  rounded_values <- floor(values)
+  # Calculate how much is 'missing' or 'extra' from 100 after flooring
+  remainder <- 100 - sum(rounded_values)
+  # If the sum is already 100 (or if there's no remainder to distribute),
+  # return the floored values.
+  if (remainder == 0) {
+    return(rounded_values)
+  }
+  
+  # Calculate the fractional parts of the original values to determine which values should get the extra +1.
+  fractional_parts <- values - floor(values)
+  
+  # Identify the values ('remainder') that were "cut short" the most when floored and should receive an additional +1 to make the sum 100.
+  indices_to_adjust <- order(fractional_parts, decreasing = TRUE)[1:abs(remainder)]
+  
+  # Distribute the remainder by adding/subtracting 1 to/from the identified values
+  if (remainder > 0) { # If sum is < 100, add 1 to the selected values
+    rounded_values[indices_to_adjust] <- rounded_values[indices_to_adjust] + 1
+  } else { # If sum is > 100 (less common here), subtract 1
+    rounded_values[indices_to_adjust] <- rounded_values[indices_to_adjust] - 1
+  }
+  
+  return(rounded_values)
+}
+  
+  #Relative Biovolume
+rel_bv_constrained <- x %>% 
+    #mutate(BV = replace_na(BV, 0)) %>%
     filter(n1 == "living" & Sub_type != "detritus") %>%
     group_by(sample_num) %>%
-    mutate(round_rel_bv = round((relative_BV = BV / sum(BV) * 100), 0)) %>%
-    ungroup() %>%
-    #filter(totbv > 0) %>%
-    #group_by(sample_num, Sub_type) %>%
-    #summarise(per_bv = ifelse(first(totbv) == 0, 0, sum(BV, na.rm=T) / first(totbv) * 100), .groups = 'drop') %>%
-    ggplot(aes(x=factor(sample_num), y=round_rel_bv, fill=Sub_type)) +
+    mutate(relative_BV = BV / sum(BV) * 100, rel_BV_constrained_rounded = constrain_round(relative_BV)) %>%
+    ungroup()    
+
+  # Verify that sums are exactly 100% for each sample
+cat("\n--- Sums for Constrained Rounded Biovolume (should be 100%) ---\n")
+print(rel_bv_constrained %>%
+        group_by(sample_num) %>%
+        summarise(sum_constrained_BV = sum(rel_BV_constrained_rounded)))
+  
+print(rel_bv_constrained %>%
+    ggplot(aes(x=factor(sample_num), y=rel_BV_constrained_rounded, fill=Sub_type)) +
     geom_bar(stat="identity") +
     plankton_groups_colFill +
-    scale_y_continuous(" Relative biovolume (%)", limits = c(0, 100)) +
+    scale_y_continuous("Relative biovolume (%)", limits = c(0, 100)) +
     xlab(NULL) +
-    ggtitle("Relative biovolume of the living") +
+    ggtitle("Relative biovolume of the living per sample (Constrained Rounded)") +
     theme_minimal() +
     theme(axis.text.x = element_text(angle = 45,vjust = 0.5, hjust = 1)))
   
   # Relative abundance
- print(x %>% mutate(AB = replace_na(AB, 0)) %>%
+ rel_ab_constrained <- x %>% 
+    #mutate(AB = replace_na(AB, 0)) %>%
     filter(n1 == "living" & Sub_type != "detritus") %>%
     group_by(sample_num) %>%
-    mutate(round_rel_ab = round((relative_AB = AB / sum(AB) * 100),0)) %>%
-    #filter(totab > 0) %>%
-    #group_by(sample_num, Sub_type) %>%
-   # summarise(per_ab = ifelse(first(totab) == 0, 0, sum(AB, na.rm=T) / first(totab) * 100), .groups = 'drop') %>%
-    ggplot(aes(x=factor(sample_num), y=round_rel_ab, fill=Sub_type)) +
+    mutate(relative_AB = AB / sum(AB) * 100, rel_AB_constrained_rounded = constrain_round(relative_AB)) %>%
+    ungroup() 
+  
+  # Verify that sums are exactly 100% for each sample
+cat("\n--- Sums for Constrained Rounded Abundance (should be 100%) ---\n")
+print(rel_ab_constrained %>%
+        group_by(sample_num) %>%
+        summarise(sum_constrained_AB = sum(rel_AB_constrained_rounded)))
+
+       
+print(rel_ab_constrained %>%    
+    ggplot(aes(x=factor(sample_num), y=rel_AB_constrained_rounded, fill=Sub_type)) +
     geom_bar(stat="identity") +
     plankton_groups_colFill +
     scale_y_continuous(" Relative abundance (%)", limits = c(0, 100)) +
     xlab(NULL) +
-    ggtitle("Relative abundance of the living") +
+    ggtitle("Relative abundance of the living per sample (Constrained Rounded)") +
     theme_minimal() +
     theme(axis.text.x = element_text(angle = 45,vjust = 0.5, hjust = 1)))
 
