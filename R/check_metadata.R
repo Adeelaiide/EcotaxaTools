@@ -72,23 +72,26 @@ check_metadata <- function(path, output) {
 
   metadata$object_date <- as.character(metadata$object_date)
   metadata$object_time <- as.character(metadata$object_time)
-  edited_metadata <- data_edit(metadata, write_fun = "write_csv2",
-                        save_as=file.path(output, "metadata",
-                                          paste0("edited_metadata_",
-                                                 time,
-                                                 ".csv")), viewer="pane")
+  edited_metadata <- data_edit(metadata, viewer="pane")
 
+  print("Data editing completed.")
 
-  print("Edited metadata saved.")
-
-   # Arrange by the *edited* date and time
+  # Arrange by the *edited* date and time before creating sample_num
   edited_metadata <- arrange(edited_metadata, object_date, object_time)
 
-  # Each unique sample_id will get a unique sequential number ordered by the EDITED date and time
+  # Create sample_num based on the *edited and arranged* metadata: Each unique sample_id will get a unique sequential number ordered by the EDITED date and time
   edited_metadata <- edited_metadata %>%
     mutate(sample_num = as.numeric(factor(sample_id, levels = unique(sample_id))))
 
-  # Return the edited metadata with the newly created sample_num
+  # Save the *final* edited metadata
+  write_csv2(edited_metadata, file.path(output, "metadata",
+                                        paste0("edited_metadata_with_sample_num_",
+                                               time,
+                                               ".csv")))
+  
+  print("Edited metadata with sample_num saved.")
+
+ # Return the edited metadata with the newly created sample_num
   return(edited_metadata)
  
 }
