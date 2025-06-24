@@ -72,8 +72,6 @@ check_metadata <- function(path, output) {
 
   metadata$object_date <- as.character(metadata$object_date)
   metadata$object_time <- as.character(metadata$object_time)
-  metadata <- metadata %>%
-  mutate(sample_num = as.numeric(factor(sample_id, levels = unique(sample_id))))
   metadata <- data_edit(metadata, write_fun = "write_csv2",
                         save_as=file.path(output, "metadata",
                                           paste0("edited_metadata_",
