@@ -56,9 +56,9 @@ compute_bv <- function(path, output, metadata=NULL) {
   # Convert units
   data <- mutate(data,
                  sample_total_volume = sample_total_volume/1000,
-                 sample_concentrated_sample_volume = sample_concentrated_sample_volume/1000/1000,
-                 acq_celltype = acq_celltype/1000/1000,
-                 acq_imaged_volume = acq_imaged_volume/1000/1000,
+                 sample_concentrated_sample_volume = sample_concentrated_sample_volume/1000000,
+                 acq_celltype = acq_celltype/1000000,
+                 acq_imaged_volume = acq_imaged_volume/1000000,
                  pixelsize = process_pixel/1000,
                  percentValidated = sum(object_annotation_status=="validated", na.rm=T)/n()*100)
 
