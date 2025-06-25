@@ -85,13 +85,12 @@ check_metadata <- function(path, output) {
 
   # Save the *final* edited metadata
   write_csv2(metadata, file.path(output, "metadata",
-                                        paste0("edited_metadata_with_sample_num_",
+                                        paste0("edited_metadata_",
                                                time,
                                                ".csv")))
   
-  print("Edited metadata with sample_num saved.")
+  print("Edited metadata saved.")
 
- # Return the edited metadata with the newly created sample_num
   return(metadata)
  
 }
