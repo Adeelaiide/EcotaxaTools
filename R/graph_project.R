@@ -244,9 +244,9 @@ print(rel_ab_constrained %>%
           ggplot(aes(x=max, fill=BV, y=sample_num)) +
           geom_tile() +
           ylab(NULL) +
-          scale_x_log10("Size (um)", labels=trans_format('log10',math_format(10^.x))) +
+          scale_x_log10("Size (um)",labels = scales::trans_format('log10', scales::math_format(10^.x, format = function(x) scales::number(x, accuracy = 0.01))) +
           scale_fill_viridis("NBSS (mm3.mm-3.m-3)",
-                            labels = scales::trans_format('log10', scales::math_format(10^.x, format = function(x) scales::number(x, accuracy = 0.01))),
+                            labels=trans_format('log10',math_format(10^.x)),
                              trans="log10", option="turbo") +
           ggtitle("NBSS on the living") +
           theme_minimal())
