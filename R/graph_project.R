@@ -259,7 +259,7 @@ print(rel_ab_constrained %>%
           scale_y_log10("NBSS (mm3.mm-3.m-3)", labels=trans_format('log10',math_format(10^.x))) +
           ggtitle("NBSS on the living") +
           theme_minimal()+
-          theme(axis.text.x = element_text(angle = 45,vjust = 0.3, hjust = 0.3)))
+          theme(axis.text.x = element_text(size = 0.5, vjust = 0.5, hjust = 0.5)))
 
 
   # Relative BSS
@@ -275,7 +275,7 @@ print(rel_ab_constrained %>%
           facet_wrap(~sample_num, strip.position="top") +
           ggtitle("Relative BSS") +
           theme_minimal()+
-          theme(axis.text.x = element_text(angle = 45,vjust = 0.3, hjust = 0.3)))
+          theme(axis.text.x = element_text(size = 0.5, vjust = 0.5, hjust = 0.5)))
 
   # diversity
   print(x %>% group_by(object_annotation_category, sample_num) %>%
