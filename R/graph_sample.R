@@ -177,59 +177,33 @@ p7<-ggplot(plot_data) +
   theme(plot.title = element_text(hjust = 0.5, size = 10,face = "bold"), legend.text = element_text(size = 0.5))
 
   # Map
-   ex = 3
-  latmin_buffered <- min(metadata$object_lat, na.rm=T)-ex
-  lonmin_buffered <- min(metadata$object_lon, na.rm=T)-ex
-  latmax_buffered <- max(metadata$object_lat, na.rm=T)+ex
-  lonmax_buffered <- max(metadata$object_lon, na.rm=T)+ex
+   ex = 10
+  latmin <- min(metadata$object_lat, na.rm=T)-ex
+  lonmin <- min(metadata$object_lon, na.rm=T)-ex
+  latmax <- max(metadata$object_lat, na.rm=T)+ex
+  lonmax <- max(metadata$object_lon, na.rm=T)+ex
 
-  if(latmin_buffered<(-90)) latmin_buffered <- (-90)
-  if(lonmin_buffered<(-180)) lonmin_buffered <- -180
-  if(latmax_buffered>90) latmax_buffered <- 90
-  if(lonmax_buffered>180) lonmax_buffered <- 180
+  if(latmin<(-90)) latmin <- (-90)
+  if(lonmin<(-180)) lonmin <- -180
+  if(latmax>90) latmax <- 90
+  if(lonmax>180) lonmax <- 180
 
   metadata$time <- as.POSIXct(paste(metadata$object_date, metadata$object_time))
 
   sf_use_s2(FALSE)
 
- bbox_area <- st_bbox(c(xmin = lonmin_buffered, ymin = latmin_buffered,
-                       xmax = lonmax_buffered, ymax = latmax_buffered),
-                     crs = 4326)
+ bbox_area <- st_bbox(c(xmin = lonmin, ymin = latmin, xmax = lonmax, ymax = latmax), crs = 4326)
  
   worldmap <- ne_countries(scale = 'medium', type = 'map_units', returnclass = 'sf') %>%
               st_filter(st_as_sfc(bbox_area))
- if (nrow(worldmap) == 0) {
-    warning("No land found in the initial buffered area. Expanding search.")
-    # Fallback to getting the entire world or a very large chunk
-    worldmap <- ne_countries(scale = 'medium', type = 'map_units', returnclass = 'sf')
-}
-
  #st_crop(xmin=lonmin, xmax=lonmax, ymax=latmax, ymin=latmin)
   meta.x <- filter(metadata, sample_id==unique(x$sample_id))
   meta.point <- st_as_sf(meta.x, coords=c("object_lon","object_lat"), crs=st_crs(worldmap))
 
-bbox_points <- st_bbox(meta.point)
-coastline_buffer_deg <- 1.5 # Degrees of buffer to ensure coastline visibility
-
-# Expand the point limits by this buffer
-final_lonmin <- min(bbox_points$xmin, na.rm=T) - coastline_buffer_deg
-final_lonmax <- max(bbox_points$xmax, na.rm=T) + coastline_buffer_deg
-final_latmin <- min(bbox_points$ymin, na.rm=T) - coastline_buffer_deg
-final_latmax <- max(bbox_points$ymax, na.rm=T) + coastline_buffer_deg
-
-# Re-apply global limits
-if(final_latmin < -90) final_latmin <- -90
-if(final_lonmin < -180) final_lonmin <- -180
-if(final_latmax > 90) final_latmax <- 90
-if(final_lonmax > 180) final_lonmax <- 180
-
-  p8 <-ggplot() +
+p8 <-ggplot() +
           geom_sf(data = worldmap, color=NA, fill="gray54") +
           geom_sf(data = meta.point, size=1, color="red") +
-          coord_sf(xlim = c(final_lonmin, final_lonmax),
-           ylim = c(final_latmin, final_latmax),
-           crs = st_crs(worldmap), 
-           expand = FALSE) +
+          coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
           ggtitle("Sampling map") +
           theme_bw()
 
