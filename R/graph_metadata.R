@@ -42,7 +42,7 @@ graph.metadata <- function(metadata) {
   sf_use_s2(TRUE)
 
   # 2. DATE and TIME
-  print(ggplot(metadata, aes(x=time, y=reorder(sample_num, time, decreasing=T), color=as.factor(ghost_id))) +
+  print(ggplot(metadata, aes(x=time, y=reorder(sample_id, time, decreasing=T), color=as.factor(ghost_id))) +
           geom_point(position=position_dodge(width=0.3), size=3) +
           labs(color="Acq. number") +
           xlab(NULL) +
