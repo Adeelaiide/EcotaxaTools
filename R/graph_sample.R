@@ -196,7 +196,7 @@ p7<-ggplot(plot_data) +
                        xmax = lonmax_buffered, ymax = latmax_buffered),
                      crs = 4326)
  
-  worldmap <- ne_countries(scale = 'medium', type = 'map_units', returnclass = 'sf', geometries = "sf") %>%
+  worldmap <- ne_countries(scale = 'medium', type = 'map_units', returnclass = 'sf') %>%
               st_filter(st_as_sfc(bbox_area))
  if (nrow(worldmap) == 0) {
     warning("No land found in the initial buffered area. Expanding search.")
