@@ -248,7 +248,7 @@ print(rel_ab_constrained %>%
           scale_fill_viridis("NBSS (mm3.mm-3.m-3)", labels=trans_format('log10',math_format(10^.x)), trans="log10", option="turbo") +
           ggtitle("NBSS on the living") +
           theme_minimal() +
-          scale_y_discrete(breaks = unique(x$sample_num), expand = c(0, 0)))
+          scale_y_discrete(breaks = unique(x$sample_num)))
 
   print(x %>% group_by(sample_num, max, time) %>% summarise(BV=sum(BV/norm, na.rm=T)) %>%
           ggplot(aes(x=max, y=BV)) +
@@ -286,7 +286,7 @@ print(rel_ab_constrained %>%
           xlab(NULL) +
           ggtitle("Diversity") +
           theme_minimal() +
-          scale_y_discrete(breaks = unique(x$sample_num), expand = c(0, 0)))
+          scale_x_discrete(breaks = unique(x$sample_num)))
 
   # trophic levels
  # Create a colum with the trophic categories
