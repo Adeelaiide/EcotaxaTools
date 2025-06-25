@@ -55,7 +55,7 @@ graph.metadata <- function(metadata) {
 
   # 3. METADATA
   metadata.long <- pivot_longer(metadata, 10:18) %>% arrange(time)
-  id <- unique(metadata$sample_num)
+  id <- unique(metadata$sample_id)
   nb <- length(id)
   n <- ceiling(nb/10)
   a = 1
@@ -63,9 +63,9 @@ graph.metadata <- function(metadata) {
   for (i in 1:n) {
     b = a + 9
     if(b>nb) b = nb
-    temp <- metadata.long %>% filter(sample_num %in% id[a:b])
-    temp$sample_num <- gsub("_", " ", temp$sample_num )
-    print(ggplot(temp, aes(x=reorder(sample_num,time), fill=as.factor(ghost_id), y=value)) +
+    temp <- metadata.long %>% filter(sample_id %in% id[a:b])
+    temp$sample_id <- gsub("_", " ", temp$sample_id )
+    print(ggplot(temp, aes(x=reorder(sample_id,time), fill=as.factor(ghost_id), y=value)) +
             geom_bar(stat="identity", position=position_dodge()) +
             scale_fill_brewer(palette="Paired") +
             scale_x_discrete(labels = label_wrap(10)) +
