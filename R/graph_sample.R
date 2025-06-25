@@ -201,8 +201,7 @@ p7<-ggplot(plot_data) +
  if (nrow(worldmap) == 0) {
     warning("No land found in the initial buffered area. Expanding search.")
     # Fallback to getting the entire world or a very large chunk
-    worldmap <- ne_countries(scale = 'medium', type = 'map_units', returnclass = 'sf',
-                             geometries = "sf")
+    worldmap <- ne_countries(scale = 'medium', type = 'map_units', returnclass = 'sf')
 }
 
  #st_crop(xmin=lonmin, xmax=lonmax, ymax=latmax, ymin=latmin)
