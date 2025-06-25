@@ -280,7 +280,7 @@ print(rel_ab_constrained %>%
   print(x %>% group_by(object_annotation_category, sample_num) %>%
           summarise(AB=sum(AB, na.rm=T)) %>% group_by(sample_num) %>%
           summarise(Shannon=vegan::diversity(AB)) %>%
-          ggplot(aes(x=sample_num, y=Shannon)) +
+          ggplot(aes(x=factor(sample_num), y=Shannon)) +
           geom_col() +
           coord_flip() +
           xlab(NULL) +
