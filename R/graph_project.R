@@ -255,7 +255,7 @@ print(rel_ab_constrained %>%
           ggplot(aes(x=max, y=BV)) +
           geom_line() +
           facet_wrap(~sample_num, strip.position="top") +
-          scale_x_log10("Size (um)", labels=trans_format('log10',math_format(10^.x),number(x, accuracy = 0.01))) +
+          scale_x_log10("Size (um)", labels = scales::trans_format('log10', scales::math_format(10^.x, format = function(x) scales::number(x, accuracy = 0.01)))) +
           scale_y_log10("NBSS (mm3.mm-3.m-3)", labels=trans_format('log10',math_format(10^.x))) +
           ggtitle("NBSS on the living") +
           theme_minimal()+
@@ -271,7 +271,7 @@ print(rel_ab_constrained %>%
           geom_col() +
           plankton_groups_colFill +
           scale_y_continuous("BSS (%)") +
-          scale_x_log10("Size (um)", labels=trans_format('log10',math_format(10^.x),number(x, accuracy = 0.01))) +
+          scale_x_log10("Size (um)", labels = scales::trans_format('log10', scales::math_format(10^.x, format = function(x) scales::number(x, accuracy = 0.01)))) +
           facet_wrap(~sample_num, strip.position="top") +
           ggtitle("Relative BSS") +
           theme_minimal()+
