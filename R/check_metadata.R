@@ -27,12 +27,12 @@ check_metadata <- function(path, output, instru) {
     metadata <- do.call("rbind", lapply(path, function(p) {
       read_base_metadata_file(p) %>% transform_flowcam_data()
     }))
-  }  } else if (instru == "ZooScan") {
+  } else if (instru == "ZooScan") {
     print("You chose ZooScan. Applying ZooScan specific processing...")
     metadata <- do.call("rbind", lapply(path, function(p) {
       read_base_metadata_file(p) %>% transform_zooscan_data()
     }))
-  }  } else if (instru == "IFCB") {
+  } else if (instru == "IFCB") {
     print("You chose IFCB. Applying IFCB specific processing...")
     metadata <- do.call("rbind", lapply(path, function(p) {
       read_base_metadata_file(p) %>% transform_ifcb_data()
