@@ -16,45 +16,32 @@ check_metadata <- function(path, output, instru) {
     dir.create(file.path(output,"metadata"))
   }
 
-  meta_file <- function(x) {
-    metadata <- read_tsv(x, col_types = list(object_time=col_time(),
-                                            object_annotation_time=col_time())) %>%
-      group_by(object_label, acq_id) %>% mutate(ghost_id=1:n()) %>% ungroup %>%
-      mutate(unique_id = paste(acq_id,sample_operator,ghost_id,
-                               object_date,object_time,
-                               object_lat,object_lon,sep="_")) %>%
-      group_by(unique_id) %>%
-      mutate(number_object = n(),
-             percentValidated = sum(object_annotation_status=="validated", na.rm=T)/n()*100) %>%
-      ungroup() %>%
-      mutate(sample_total_volume = ifelse("sample_total_volume" %in% colnames(.), sample_total_volume, NA),
-             sample_concentrated_sample_volume = ifelse("sample_concentrated_sample_volume" %in% colnames(.), sample_concentrated_sample_volume, NA),
-             sample_dilution_factor = ifelse("sample_dilution_factor" %in% colnames(.), sample_dilution_factor, NA)) %>%
-      mutate(sample_dilution_factor = as.numeric(gsub(",", ".",sample_dilution_factor))) %>%
-      select(sample_id,
-             acq_id,
-             unique_id,
-             ghost_id,
-             object_date,
-             object_time,
-             object_lat,
-             object_lon,
-             sample_operator,
-             percentValidated,
-             number_object,
-             acq_nb_frame,
-             sample_total_volume,
-             sample_concentrated_sample_volume,
-             acq_celltype,
-             acq_imaged_volume,
-             process_pixel,
-             sample_dilution_factor) %>%
-      distinct() %>% group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup()
-
-    return(metadata)
+  # the helper function for reading base data is used here
+  if (instru == "PlanktoScope") {
+    print("You chose PlanktoScope. Applying PlanktoScope specific processing...")    
+    metadata <- do.call("rbind", lapply(path, function(p) {
+      read_base_metadata_file(p) %>% transform_planktoscope_data()
+    }))
+  } else if (instru == "FlowCam") {
+    print("You chose FlowCam. Applying FlowCam specific processing...")
+    metadata <- do.call("rbind", lapply(path, function(p) {
+      read_base_metadata_file(p) %>% transform_flowcam_data()
+    }))
+  }  } else if (instru == "ZooScan") {
+    print("You chose ZooScan. Applying ZooScan specific processing...")
+    metadata <- do.call("rbind", lapply(path, function(p) {
+      read_base_metadata_file(p) %>% transform_zooscan_data()
+    }))
+  }  } else if (instru == "IFCB") {
+    print("You chose IFCB. Applying IFCB specific processing...")
+    metadata <- do.call("rbind", lapply(path, function(p) {
+      read_base_metadata_file(p) %>% transform_ifcb_data()
+    }))
+  } else {
+    stop("Error: Invalid instrument specified. Choose 'PlanktoScope', 'FlowCam', 'ZooScan', or 'IFCB'.") 
   }
 
-  metadata <- do.call("rbind", lapply(path, meta_file))
+  # --- Rest of the function (common steps for all instruments) ---
   
   # Save original
   write_csv2(metadata, file.path(output,"metadata","original_metadata.csv"))
