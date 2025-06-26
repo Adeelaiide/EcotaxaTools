@@ -80,10 +80,12 @@ if (!is.null(mainpath) && mainpath != "") {
 
   if(yesno=="yes") {
     selected_metadata_for_bss <- processed_metadata
+    bss <- lapply(path, function(x) BSS_table(compute_bv(x, output, selected_metadata_for_bss))) %>% bind_rows()
   } else {
     selected_metadata_for_bss <- file.choose() %>% read_csv2()
+    bss <- lapply(path, function(x) BSS_table(compute_bv(x, output, selected_metadata_for_bss))) %>% bind_rows()
   }
-bss <- lapply(path, function(x) BSS_table(compute_bv(x, output, selected_metadata_for_bss))) %>% bind_rows()
+
 
   # SUMMARY DATA AND SAVING TABLES
   # ------------------------------------------------------------------------------
