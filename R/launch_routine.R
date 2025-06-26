@@ -76,7 +76,7 @@ if (!is.null(mainpath) && mainpath != "") {
 
 
   # Compute biovolumes and BSS summary (warning : not normalized by size class)
-  yesno <- dlg_message("IMPORTANT: Do you want to use the edited metadata ? If not you can select the original metadata or another metadata table", type="yesno"er met)$res
+  yesno <- dlg_message("IMPORTANT: Do you want to use the edited metadata ? If not you can select the original metadata or another metadata table", type="yesno")$res
 
   if(yesno=="yes") {
     selected_metadata_for_bss <- processed_metadata
