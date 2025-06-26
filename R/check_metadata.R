@@ -10,7 +10,7 @@
 #' @export
 #'
 #' @examples check_metadata(path=project.directory, output=where to save results)
-check_metadata <- function(path, output) {
+check_metadata <- function(path, output, instru) {
 
   if (!file.exists(file.path(output,"metadata"))) {
     dir.create(file.path(output,"metadata"))
