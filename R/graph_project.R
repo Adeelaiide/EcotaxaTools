@@ -311,7 +311,8 @@ print(rel_ab_constrained %>%
 
  # Calculus of the required variables for geom_rect: xmin, ymin, xmax, and ymax
  plot_data <- x %>%
-  mutate(trophic_level_num = Value,half_width = log(BV + 1), 
+  mutate(trophic_level_num = Value,
+    half_width = log(BV + 1), 
     xmin = -half_width,
     xmax = half_width,
     ymin = trophic_level_num - 0.25,
@@ -322,7 +323,7 @@ print(rel_ab_constrained %>%
 print(ggplot(plot_data) +
   geom_rect(aes(xmin = xmin, ymin = ymin, xmax = xmax, ymax = ymax, fill = trophic_group_name)) +
   scale_fill_manual(values = color_map_troph, name = "Trophic groups") +
-  scale_y_continuous(breaks = plot_data$trophic_level_num,
+  scale_y_continuous(breaks = factor(plot_data$trophic_level_num),
                      labels = unique(plot_data$trophic_group_name[order(plot_data$trophic_level_num)])) +
   labs(x = "Log Biovolume +1 (mm³⋅m⁻³)", y = NULL) +
   ggtitle("Trophic pyramid") + 
