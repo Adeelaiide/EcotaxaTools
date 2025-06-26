@@ -32,7 +32,13 @@ compute_bv <- function(path, output, metadata=NULL) {
   id <- unique(data$sample_id)
 
   # If a metadata table is provided, replace by the new metadata (specific by acq)
-  if(!is.null(metadata)) {
+    if(!is.null(metadata)) {
+      if ("object_time" %in% colnames(metadata) && !inherits(metadata$object_time, "hms")) {
+        metadata$object_time <- hms::as_hms(metadata$object_time)
+    }
+    if ("object_date" %in% colnames(metadata) && !inherits(metadata$object_date, "Date")) {
+        metadata$object_date <- lubridate::as_date(metadata$object_date)
+    }
     for(i in unique(data$unique_id)) {
       meta <- metadata[metadata$unique_id==i,]
       data[data$unique_id==i,] <- mutate(data[data$unique_id==i,],
