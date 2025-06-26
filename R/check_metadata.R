@@ -42,8 +42,7 @@ check_metadata <- function(path, output, instru) {
   }
 
   # --- Rest of the function (common steps for all instruments) ---
-  metadata$object_date <- as.character(metadata$object_date)
-  metadata$object_time <- as.character(metadata$object_time)
+  
   # Save original
   write_csv2(metadata, file.path(output,"metadata","original_metadata.csv"))
   print("Original metadata saved.")
