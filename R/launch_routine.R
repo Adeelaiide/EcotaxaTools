@@ -45,7 +45,7 @@ if (!is.null(mainpath) && mainpath != "") {
   # COMPUTE DATA
   # ------------------------------------------------------------------------------
   # Check metadata
-  check_metadata(path, output)
+  processed_metadata <- check_metadata(path, output, instru)
 
   # Set common color palette
   plankton_groups_colors <- c("#709699", #cyanobacteria
@@ -76,15 +76,14 @@ if (!is.null(mainpath) && mainpath != "") {
 
 
   # Compute biovolumes and BSS summary (warning : not normalized by size class)
-  yesno <- dlg_message("IMPORTANT: Do you want to select the edited metadata or another metadata table ? If not the original metadata will be used.", type="yesno")$res
+  yesno <- dlg_message("IMPORTANT: Do you want to use the edited metadata ? If not you can select the original metadata or another metadata table", type="yesno"er met)$res
 
   if(yesno=="yes") {
-    metadata <- file.choose() %>% read_csv2()
-    bss <- lapply(path, function(x) BSS_table(compute_bv(x, output, metadata))) %>% bind_rows()
+    selected_metadata_for_bss <- processed_metadata
   } else {
-    bss <- lapply(path, function(x) BSS_table(compute_bv(x, output))) %>% bind_rows()
+    selected_metadata_for_bss <- file.choose() %>% read_csv2()
   }
-
+bss <- lapply(path, function(x) BSS_table(compute_bv(x, output, selected_metadata_for_bss))) %>% bind_rows()
 
   # SUMMARY DATA AND SAVING TABLES
   # ------------------------------------------------------------------------------
@@ -124,14 +123,12 @@ if (!is.null(mainpath) && mainpath != "") {
   # For the taxonomy
   taxo <- add.taxo(unique(bss$object_annotation_hierarchy)) %>% add.trophiclvl(., output)
 
-  # Search for metadata if not loaded already
-  if(!exists("metadata")){
-    metadata <- read_csv2(file.path(output, "metadata", "original_metadata.csv"))
-  }
-  metadata[is.na(metadata)] <- 1
+  # Replacing all the NA in case the original metadata was selected
+  final_metadata_for_saving <- processed_metadata
+  final_metadata_for_saving[is.na(final_metadata_for_saving)] <- 1
 
   # Saving tables
-  write_csv2(metadata, file.path(path.summary, "metadata_used.csv"))
+  write_csv2(final_metadata_for_saving, file.path(path.summary, "metadata_used.csv"))
   write_csv2(bss, file.path(path.summary, "BSS.csv"))
   write_csv2(res, file.path(path.summary, "summary_all.csv"))
   write_csv2(taxo, file.path(path.summary, "taxo.csv"))
@@ -145,25 +142,24 @@ if (!is.null(mainpath) && mainpath != "") {
   }
   path.graph <- file.path(output,"graph")
 
-  # for the original metadata
+  # for the original metadata (saved by check_metadata)
   pdf(file.path(path.graph, "original_metadata.pdf"), paper="a4r")
   graph.metadata(read_csv2(file.path(output, "metadata", "original_metadata.csv")))
   dev.off()
 
-  # for the edited metadata
+  # for the edited metadata (using the returned 'processed_metadata')
   pdf(file.path(path.graph, "metadata.pdf"), paper="a4r")
-  graph.metadata(metadata)
+  graph.metadata(final_metadata_for_saving)
   dev.off()
-  # system(paste0('open "', file.path(path.graph, "metadata.pdf"), '"'))
-
+ 
   # for the project
   pdf(file.path(path.graph, "graph_project.pdf"), paper="a4r")
-  graph.project(bss, metadata, taxo)
+  graph.project(bss, final_metadata_for_saving, taxo)
   dev.off()
 
   # for each sample
   for (i in unique(bss$sample_id)) {
-    bss %>% filter(sample_id==i) %>% graph.sample(metadata, taxo) %>%
+    bss %>% filter(sample_id==i) %>% graph.sample(final_metadata_for_saving, taxo) %>%
       ggsave(filename=file.path(path.graph, paste0(i,".jpg")),
              width=297, height=210, units = "mm")
   }
