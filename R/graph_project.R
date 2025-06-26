@@ -300,14 +300,14 @@ print(rel_ab_constrained %>%
       Value == -1 ~ "None"))
 
 #Create color map for each trophic category
- color_map_troph <- c(
-  "None" = "#555555", 
-  "Phototrophs" = "#66B064",  
-  "Mixotrophs" = "#A0C487",
-  "Grazers" = "#4D8ABA", 
-  "Omnivorous" = "#FFEBA8", 
+ color_map_troph <- c( 
+  "Unknown" = "#E6E6E6",
   "Predators" = "#C75426", 
-  "Unknown" = "#E6E6E6")
+  "Omnivorous" = "#FFEBA8", 
+  "Grazers" = "#4D8ABA", 
+  "Mixotrophs" = "#A0C487",
+  "Phototrophs" = "#66B064",
+  "None" = "#555555")
 
  # Calculus of the required variables for geom_rect: xmin, ymin, xmax, and ymax
  plot_data <- x %>%
