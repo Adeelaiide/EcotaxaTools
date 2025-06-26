@@ -79,11 +79,11 @@ if (!is.null(mainpath) && mainpath != "") {
   yesno <- dlg_message("IMPORTANT: Do you want to use the edited metadata ? If not you can select the original metadata or another metadata table", type="yesno")$res
 
   if(yesno=="yes") {
-    selected_metadata_for_bss <- processed_metadata
-    bss <- lapply(path, function(x) BSS_table(compute_bv(x, output, selected_metadata_for_bss))) %>% bind_rows()
+    metadata <- processed_metadata
+    bss <- lapply(path, function(x) BSS_table(compute_bv(x, output, metadata))) %>% bind_rows()
   } else {
-    selected_metadata_for_bss <- file.choose() %>% read_csv2()
-    bss <- lapply(path, function(x) BSS_table(compute_bv(x, output, selected_metadata_for_bss))) %>% bind_rows()
+    metadata <- file.choose() %>% read_csv2()
+    bss <- lapply(path, function(x) BSS_table(compute_bv(x, output, metadata))) %>% bind_rows()
   }
 
 
@@ -126,11 +126,11 @@ if (!is.null(mainpath) && mainpath != "") {
   taxo <- add.taxo(unique(bss$object_annotation_hierarchy)) %>% add.trophiclvl(., output)
 
   # Replacing all the NA in case the original metadata was selected
-  final_metadata_for_saving <- processed_metadata
-  final_metadata_for_saving[is.na(final_metadata_for_saving)] <- 1
+  final_metadata <- metadata
+  final_metadata[is.na(final_metadata_for_saving)] <- 1
 
   # Saving tables
-  write_csv2(final_metadata_for_saving, file.path(path.summary, "metadata_used.csv"))
+  write_csv2(final_metadata, file.path(path.summary, "metadata_used.csv"))
   write_csv2(bss, file.path(path.summary, "BSS.csv"))
   write_csv2(res, file.path(path.summary, "summary_all.csv"))
   write_csv2(taxo, file.path(path.summary, "taxo.csv"))
@@ -151,17 +151,17 @@ if (!is.null(mainpath) && mainpath != "") {
 
   # for the edited metadata (using the returned 'processed_metadata')
   pdf(file.path(path.graph, "metadata.pdf"), paper="a4r")
-  graph.metadata(final_metadata_for_saving)
+  graph.metadata(final_metadata)
   dev.off()
  
   # for the project
   pdf(file.path(path.graph, "graph_project.pdf"), paper="a4r")
-  graph.project(bss, final_metadata_for_saving, taxo)
+  graph.project(bss, final_metadata, taxo)
   dev.off()
 
   # for each sample
   for (i in unique(bss$sample_id)) {
-    bss %>% filter(sample_id==i) %>% graph.sample(final_metadata_for_saving, taxo) %>%
+    bss %>% filter(sample_id==i) %>% graph.sample(final_metadata, taxo) %>%
       ggsave(filename=file.path(path.graph, paste0(i,".jpg")),
              width=297, height=210, units = "mm")
   }
