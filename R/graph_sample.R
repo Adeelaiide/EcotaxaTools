@@ -148,14 +148,14 @@ graph.sample <- function(x, final_metadata, taxo, bv.type="elli", living.only=T)
       Value == -1 ~ "None"))
 
 #Create color map for each trophic category
- color_map_troph <- c(
-  "None" = "#555555", 
-  "Phototrophs" = "#66B064",  
-  "Mixotrophs" = "#A0C487",
-  "Grazers" = "#4D8ABA", 
-  "Omnivorous" = "#FFEBA8", 
+  color_map_troph <- c( 
+  "Unknown" = "#E6E6E6",
   "Predators" = "#C75426", 
-  "Unknown" = "#E6E6E6")
+  "Omnivorous" = "#FFEBA8", 
+  "Grazers" = "#4D8ABA", 
+  "Mixotrophs" = "#A0C487",
+  "Phototrophs" = "#66B064",
+  "None" = "#555555")
 
  # Calculus of the required variables for geom_rect: xmin, ymin, xmax, and ymax
  plot_data <- x %>%
@@ -169,7 +169,7 @@ graph.sample <- function(x, final_metadata, taxo, bv.type="elli", living.only=T)
 
 p7<-ggplot(plot_data) +
   geom_rect(aes(xmin = xmin, ymin = ymin, xmax = xmax, ymax = ymax, fill = trophic_group_name)) +
-  scale_fill_manual(values = factor(color_map_troph), name = "Trophic groups") +
+  scale_fill_manual(values = color_map_troph, name = "Trophic groups") +
   scale_y_continuous(breaks = plot_data$trophic_level_num, labels = as.character(plot_data$trophic_group_name)) +
   labs(x = "Log Biovolume +1 (mm³⋅m⁻³)", y = NULL) +
   ggtitle("Trophic pyramid") + 
