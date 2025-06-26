@@ -322,7 +322,7 @@ print(rel_ab_constrained %>%
 
 print(ggplot(plot_data) +
   geom_rect(aes(xmin = xmin, ymin = ymin, xmax = xmax, ymax = ymax, fill = trophic_group_name)) +
-  scale_fill_manual(values = factor(color_map_troph), name = "Trophic groups") +
+  scale_fill_manual(values = color_map_troph, name = "Trophic groups") +
   scale_y_continuous(breaks = plot_data$trophic_level_num)+
   labs(x = "Log Biovolume +1 (mm³⋅m⁻³)", y = NULL) +
   ggtitle("Trophic pyramid") + 
