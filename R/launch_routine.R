@@ -127,7 +127,7 @@ if (!is.null(mainpath) && mainpath != "") {
 
   # Replacing all the NA in case the original metadata was selected
   final_metadata <- metadata
-  final_metadata[is.na(final_metadata_for_saving)] <- 1
+  final_metadata[is.na(final_metadata)] <- 1
 
   # Saving tables
   write_csv2(final_metadata, file.path(path.summary, "metadata_used.csv"))
