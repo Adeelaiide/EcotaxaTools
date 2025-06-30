@@ -111,8 +111,8 @@ compute_bv <- function(path, output, metadata=NULL) {
                  BV_riddled = (4/3)*pi*R3_riddled,
                  BV_plain = (4/3)*pi*R3_plain,
                  AB = 1,
-                conver.uniqueID = (sample_concentrated_sample_volume*sample_dilution_factor)/
-                   (acq_imaged_volume*sample_total_volume))
+                conver.uniqueID = (sample_concentrated_sample_volume)/
+                   (acq_imaged_volume*sample_total_volume*sample_dilution_factor))
 
   # Compute "conver.sample"
   vimgsample <- data %>% select(sample_id, unique_id, acq_imaged_volume) %>% distinct() %>%
