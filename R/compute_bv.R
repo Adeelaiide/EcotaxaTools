@@ -90,7 +90,7 @@ compute_bv <- function(path, output, metadata=NULL) {
     if(sum(is.na(metadata[metadata$unique_id==i,]))>0) {
       pb <- colnames(metadata[metadata$unique_id==i,])[is.na(metadata[metadata$unique_id==i,])]
       print(paste0("Warning ! [sample : ",unique(data$sample_id),"] These metadata do not have value. Default is 1 : ",pb))
-      metadata[is.na(metadata) & smetadata$unique_id==i] <- 1
+      metadata[is.na(metadata) & metadata$unique_id==i] <- 1
       data[pb] <- 1
     }
   }
