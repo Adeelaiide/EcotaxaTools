@@ -14,156 +14,89 @@
 #' @examples compute_bv(path=path of the file, output=path where to save results, metadata=NULL)
 #'
 # Function to compute biovolumes for one file
-compute_bv <- function(path, output, metadata=NULL) {
+compute_bv <- function(path, output, metadata = NULL, instru) {
   options(dplyr.summarise.inform = FALSE)
 
-  # Load
-  data <- read_tsv(path, col_types = list(object_time=col_time(),
-                                          object_annotation_time=col_time())) %>%
-    group_by(object_label, acq_id) %>% mutate(ghost_id=1:n()) %>% ungroup %>%
-    mutate(unique_id = paste(acq_id,sample_operator,ghost_id,
-                             object_date,object_time,
-                             object_lat,object_lon,sep="_")) %>%
-    mutate(sample_total_volume = ifelse("sample_total_volume" %in% colnames(.), sample_total_volume, NA),
-           sample_concentrated_sample_volume = ifelse("sample_concentrated_sample_volume" %in% colnames(.), sample_concentrated_sample_volume, NA),
-           sample_dilution_factor = ifelse("sample_dilution_factor" %in% colnames(.), sample_dilution_factor, NA)) %>%
-    mutate(sample_dilution_factor = as.numeric(gsub(",", ".",sample_dilution_factor)))
+  # Load data (common for all instruments)
+  data <- read_tsv(path, col_types = list(object_time = col_time(),
+                                          object_annotation_time = col_time()))
 
-  id <- unique(data$sample_id)
-
-  # If a metadata table is provided, replace by the new metadata (specific by acq)
-    if(!is.null(metadata)) {
-      if ("object_time" %in% colnames(metadata) && !inherits(metadata$object_time, "hms")) {
-        metadata$object_time <- hms::as_hms(metadata$object_time)
-    }
-    if ("object_date" %in% colnames(metadata) && !inherits(metadata$object_date, "Date")) {
-        metadata$object_date <- lubridate::as_date(metadata$object_date)
-    }
-    for(i in unique(data$unique_id)) {
-      meta <- metadata[metadata$unique_id==i,]
-      data[data$unique_id==i,] <- mutate(data[data$unique_id==i,],
-                                         acq_id = meta$acq_id,
-                                         ghost_id = meta$ghost_id,
-                                         object_date = meta$object_date,
-                                         object_time = meta$object_time,
-                                         object_lat = meta$object_lat,
-                                         object_lon = meta$object_lon,
-                                         sample_id = meta$sample_id,
-                                         sample_operator = meta$sample_operator,
-                                         sample_total_volume = meta$sample_total_volume,
-                                         sample_concentrated_sample_volume = meta$sample_concentrated_sample_volume,
-                                         acq_celltype = meta$acq_celltype,
-                                         acq_imaged_volume = meta$acq_imaged_volume,
-                                         process_pixel = meta$process_pixel,
-                                         sample_dilution_factor = meta$sample_dilution_factor)
-    }
+  # Dispatch to instrument-specific processing function
+  if (instru == "Planktoscope") {
+    data <- process_planktoscope_data(data, metadata)
+  } else if (instru == "FlowCam") {
+    data <- process_flowcam_data(data, metadata)
+  } else if (instru == "ZooScan") {
+    data <- process_zooscan_data(data, metadata)
+  } else if (instru == "IFCB") {
+    data <- process_ifcb_data(data, metadata)
+  } else {
+    stop(paste0("Unknown instrument: ", instru))
   }
 
-  # Convert units
+  id <- unique(data$sample_id) 
+
+  # --- Common Biovolume Computations (apply to all instruments after specific processing) ---
   data <- mutate(data,
-                 sample_total_volume = sample_total_volume/1000,
-                 sample_concentrated_sample_volume = sample_concentrated_sample_volume/1000000,
-                 acq_celltype = acq_celltype/1000000,
-                 acq_imaged_volume = acq_imaged_volume/1000000,
-                 pixelsize = process_pixel/1000,
-                 percentValidated = sum(object_annotation_status=="validated", na.rm=T)/n()*100)
-
-  # Check metadata
-  metadata <- select(data,
-                     unique_id,
-                     object_date,
-                     object_time,
-                     object_lat,
-                     object_lon,
-                     acq_id,
-                     sample_id,
-                     sample_operator,
-                     sample_total_volume,
-                     sample_concentrated_sample_volume,
-                     acq_celltype,
-                     acq_imaged_volume,
-                     pixelsize,
-                     sample_dilution_factor) %>% distinct()
-
-  # Replace by 1 by default
-  for (i in unique(metadata$unique_id)){
-    if(sum(is.na(metadata[metadata$unique_id==i,]))>0) {
-      pb <- colnames(metadata[metadata$unique_id==i,])[is.na(metadata[metadata$unique_id==i,])]
-      print(paste0("Warning ! [sample : ",unique(data$sample_id),"] These metadata do not have value. Default is 1 : ",pb))
-      metadata[is.na(metadata) & metadata$unique_id==i] <- 1
-      data[pb] <- 1
-    }
-  }
-
-  # Compute biovolumes and "conver.uniqueID"
-  data <- mutate(data,
-                 major = object_major*pixelsize,
-                 minor = object_minor*pixelsize,
-                 area_exc = object_area_exc*(pixelsize^2),
-                 area = object_area*(pixelsize^2),
+                 major = object_major * pixelsize,
+                 minor = object_minor * pixelsize,
+                 area_exc = object_area_exc * (pixelsize^2),
+                 area = object_area * (pixelsize^2),
                  area_origin = object_area,
-                 ar_elli = pi*(major/2)*(minor/2),
-                 BV_elli = (4/3)*(minor/2)*ar_elli,
-                 ESD_plain = 2*(sqrt(area/pi)),
-                 ESD_riddled = 2*(sqrt(area_exc/pi)),
-                 R3_riddled = (ESD_riddled/2)^3,
-                 R3_plain = (ESD_plain/2)^3,
-                 BV_riddled = (4/3)*pi*R3_riddled,
-                 BV_plain = (4/3)*pi*R3_plain,
+                 ar_elli = pi * (major / 2) * (minor / 2),
+                 BV_elli = (4 / 3) * (minor / 2) * ar_elli,
+                 ESD_plain = 2 * (sqrt(area / pi)),
+                 ESD_riddled = 2 * (sqrt(area_exc / pi)),
+                 R3_riddled = (ESD_riddled / 2)^3,
+                 R3_plain = (ESD_plain / 2)^3,
+                 BV_riddled = (4 / 3) * pi * R3_riddled,
+                 BV_plain = (4 / 3) * pi * R3_plain,
                  AB = 1,
-                conver.uniqueID = (sample_concentrated_sample_volume)/
-                   (acq_imaged_volume*sample_total_volume*sample_dilution_factor))
+                 percentValidated = sum(object_annotation_status == "validated", na.rm = TRUE) / n() * 100 
+  )
 
-  # Compute "conver.sample"
-  vimgsample <- data %>% select(sample_id, unique_id, acq_imaged_volume) %>% distinct() %>%
-    group_by(sample_id) %>% summarize(sample_imaged_volume=sum(acq_imaged_volume, na.rm=T))
 
-  data <- merge(data, vimgsample, "sample_id", all.x=T)
-
-  data <- mutate(data,
-                 conver.sample = (sample_concentrated_sample_volume)/
-                   (sample_imaged_volume*sample_total_volume*sample_dilution_factor))
-
-  # Biovolume class parameters (mm3)
+  # Biovolume class parameters (common)
   smin = 1e-12 # minimum size
   smax = 1e4 # maximum size
   k = 2^(1/4) # bin
 
-  nb <- ceiling(log(smax/smin, base=k))
-  x <- smin*k^(1:nb)
-  x1 <- c(0,diff(x))
+  nb <- ceiling(log(smax / smin, base = k))
+  x <- smin * k^(1:nb)
+  x1 <- c(0, diff(x))
 
-  class.f <- function(y){
+  class.f <- function(y) {
     a <- x[x <= y][which.min(abs(x[x <= y] - y))]
     b <- x[x > y][which.min(abs(x[x > y] - y))]
     id <- match(b, x)
     norm <- x1[id]
-    tot <- data.frame(size_class.min=a,
-                      size_class.max=b,
-                      size_class.id=id,
-                      size_class.norm=norm)
+    tot <- data.frame(
+      size_class.min = a,
+      size_class.max = b,
+      size_class.id = id,
+      size_class.norm = norm
+    )
     return(tot)
   }
 
   classes <- sapply(data$BV_plain, class.f) %>% t %>% as.data.frame %>% sapply(as.numeric)
-  colnames(classes) <- paste0(colnames(classes),"_plain")
+  colnames(classes) <- paste0(colnames(classes), "_plain")
   data <- cbind(data, classes)
 
   classes <- sapply(data$BV_riddled, class.f) %>% t %>% as.data.frame %>% sapply(as.numeric)
-  colnames(classes) <- paste0(colnames(classes),"_riddled")
+  colnames(classes) <- paste0(colnames(classes), "_riddled")
   data <- cbind(data, classes)
 
   classes <- sapply(data$BV_elli, class.f) %>% t %>% as.data.frame %>% sapply(as.numeric)
-  colnames(classes) <- paste0(colnames(classes),"_elli")
+  colnames(classes) <- paste0(colnames(classes), "_elli")
   data <- cbind(data, classes)
 
   # Save file with the new columns
-  write_csv2(data, paste0(file.path(output,id),".csv"))
+  write_csv2(data, paste0(file.path(output, id), ".csv"))
 
-  print(paste0("done : ",unique(data$sample_id)))
-
-  return(data)
+  print(paste0("done : ", unique(data$sample_id)))
 
   options(dplyr.summarise.inform = TRUE)
-}
 
+  return(data)
+}
