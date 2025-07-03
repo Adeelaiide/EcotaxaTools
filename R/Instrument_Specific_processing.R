@@ -15,7 +15,7 @@ process_planktoscope_data <- function(data, metadata) {
            sample_dilution_factor = ifelse("sample_dilution_factor" %in% colnames(.), sample_dilution_factor, NA)) %>%
     mutate(sample_dilution_factor = as.numeric(gsub(",", ".", sample_dilution_factor)))
   
-  # Planktoscope-specific metadata update (if metadata is provided)
+  # To make sure that dates are dates and times are times
   if (!is.null(metadata)) {
     if ("object_time" %in% colnames(metadata) && !inherits(metadata$object_time, "hms")) {
       metadata$object_time <- hms::as_hms(metadata$object_time)
@@ -93,7 +93,14 @@ process_flowcam_data <- function(data, metadata) {
            sample_volconc = ifelse("sample_volconc" %in% colnames(.), sample_volconc, NA)) %>%
     mutate(sample_volconc = as.numeric(gsub(",", ".", sample_volconc))) 
   
- if (!is.null(metadata)) {
+# To make sure that dates are dates and times are times
+  if (!is.null(metadata)) {
+    if ("object_time" %in% colnames(metadata) && !inherits(metadata$object_time, "hms")) {
+      metadata$object_time <- hms::as_hms(metadata$object_time)
+    }
+    if ("object_date" %in% colnames(metadata) && !inherits(metadata$object_date, "Date")) {
+      metadata$object_date <- lubridate::as_date(metadata$object_date)
+    }
     for (i in unique(data$unique_id)) {
       meta_row <- metadata[metadata$unique_id == i, ]
       if (nrow(meta_row) > 0) {
