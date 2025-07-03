@@ -1,3 +1,5 @@
+# --- HELPER FUNCTIONS FOR compute_bv ---
+
 # Helper function for Planktoscope-specific processing
 process_planktoscope_data <- function(data, metadata) {
   # Planktoscope-specific initial mutate cols and unique_id creation
