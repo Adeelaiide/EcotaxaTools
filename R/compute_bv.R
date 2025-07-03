@@ -22,7 +22,7 @@ compute_bv <- function(path, output, metadata = NULL, instru) {
                                           object_annotation_time = col_time()))
 
   # Dispatch to instrument-specific processing function
-  if (instru == "Planktoscope") {
+  if (instru == "PlanktoScope") {
     data <- process_planktoscope_data(data, metadata)
   } else if (instru == "FlowCam") {
     data <- process_flowcam_data(data, metadata)
