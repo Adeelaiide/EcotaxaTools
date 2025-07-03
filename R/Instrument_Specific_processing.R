@@ -36,7 +36,6 @@ process_planktoscope_data <- function(data, metadata) {
   data <- mutate(data,
                  sample_total_volume = sample_total_volume / 1000,
                  sample_concentrated_sample_volume = sample_concentrated_sample_volume / 1000000,
-                 acq_celltype = acq_celltype / 1000000,
                  acq_imaged_volume = acq_imaged_volume / 1000000,
                  pixelsize = process_pixel / 1000)
   
@@ -113,7 +112,6 @@ process_flowcam_data <- function(data, metadata) {
   # FlowCam-specific unit conversions
   data <- mutate(data,
                  sample_conc_vol_ml = sample_conc_vol_ml / 1000000,
-                 acq_celltype = acq_celltype / 1000000,
                  acq_fluid_volume_imaged = acq_fluid_volume_imaged / 1000000,
                  pixelsize = process_pixel / 1000) 
   
