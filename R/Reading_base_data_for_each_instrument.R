@@ -62,9 +62,11 @@ transform_flowcam_data <- function(df) {
            percentValidated = sum(object_annotation_status == "validated", na.rm = TRUE) / n() * 100) %>%
     ungroup() %>%
     mutate(sample_initial_col_vol_m3 = ifelse("sample_initial_col_vol_m3" %in% colnames(.), sample_initial_col_vol_m3, NA),
-           sample_conc_vol_ml = ifelse("sample_conc_vol_ml" %in% colnames(.), sample_conc_vol_ml, NA),
-           sample_volconc = ifelse("sample_volconc" %in% colnames(.), sample_volconc, NA)) %>%
-    mutate(sample_volconc = as.numeric(gsub(",", ".", sample_volconc))) %>%
+    sample_conc_vol_ml = ifelse("sample_conc_vol_ml" %in% colnames(.), sample_conc_vol_ml, NA),
+    sample_volconc_temp = ifelse("sample_volconc" %in% colnames(.), sample_volconc, NA), 
+    sample_volconc = as.numeric(gsub(",", ".", sample_volconc_temp)), 
+    acq_celltype_numeric = parse_number(acq_celltype)) %>%
+    select(-sample_volconc_temp) %>%
     select(sample_id,
            acq_id,
            unique_id,
