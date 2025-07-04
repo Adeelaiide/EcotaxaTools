@@ -63,7 +63,7 @@ transform_flowcam_data <- function(df) {
     ungroup() %>%
     mutate(sample_initial_col_vol_m3 = ifelse("sample_initial_col_vol_m3" %in% colnames(.), sample_initial_col_vol_m3, NA),
     sample_conc_vol_ml = ifelse("sample_conc_vol_ml" %in% colnames(.), sample_conc_vol_ml, NA),
-    sample_volconc_temp = ifelse("sample_volconc" %in% colnames(.), sample_volconc, NA), 
+    sample_volconc_temp = ifelse("sample_volconc" %in% colnames(.), sample_volconc, NA_real_), 
     sample_volconc = as.numeric(gsub(",", ".", sample_volconc_temp)), 
     acq_celltype = parse_number(acq_celltype)) %>%
     select(-sample_volconc_temp) %>%
