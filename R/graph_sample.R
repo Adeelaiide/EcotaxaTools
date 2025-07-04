@@ -205,7 +205,8 @@ p8 <-ggplot() +
           geom_sf(data = meta.point, size=1, color="red") +
           coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
           ggtitle("Sampling map") +
-          theme_bw()
+          theme_bw() +
+          theme(plot.title = element_text(hjust = 0.5, size = 10,face = "bold"))
 
   sf_use_s2(TRUE)
  
