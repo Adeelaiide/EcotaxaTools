@@ -37,6 +37,7 @@ process_planktoscope_data <- function(data, metadata) {
                  sample_total_volume = sample_total_volume / 1000,
                  sample_concentrated_sample_volume = sample_concentrated_sample_volume / 1000000,
                  acq_imaged_volume = acq_imaged_volume / 1000000,
+                 acq_celltype = acq_celltype/1000/1000,
                  pixelsize = process_pixel / 1000)
   
   # Planktoscope-specific metadata check columns
@@ -84,13 +85,13 @@ process_flowcam_data <- function(data, metadata) {
     group_by(object_id, acq_id) %>% 
     mutate(ghost_id = 1:n()) %>%
     ungroup() %>%
-    mutate(unique_id = paste(acq_id, ghost_id,
-                             object_date, object_time,
-                             object_lat, object_lon, sep = "_")) %>%
-    mutate(sample_initial_col_vol_m3 = ifelse("sample_initial_col_vol_m3" %in% colnames(.), sample_initial_col_vol_m3, NA),
-           sample_conc_vol_ml = ifelse("sample_conc_vol_ml" %in% colnames(.), sample_conc_vol_ml, NA),
-           sample_volconc = ifelse("sample_volconc" %in% colnames(.), sample_volconc, NA)) %>%
-    mutate(sample_volconc = as.numeric(gsub(",", ".", sample_volconc))) 
+     mutate(unique_id = paste(acq_id, ghost_id, object_date, object_time, object_lat, object_lon, sep = "_"),
+    sample_initial_col_vol_m3 = ifelse("sample_initial_col_vol_m3" %in% colnames(.), sample_initial_col_vol_m3, NA),
+    sample_conc_vol_ml = ifelse("sample_conc_vol_ml" %in% colnames(.), sample_conc_vol_ml, NA),
+    sample_volconc_temp = ifelse("sample_volconc" %in% colnames(.), sample_volconc, NA), 
+    sample_volconc = as.numeric(gsub(",", ".", sample_volconc_temp)),
+    acq_celltype = parse_number(acq_celltype)) %>%
+  select(-sample_volconc_temp)
   
 # To make sure that dates are dates and times are times
   if (!is.null(metadata)) {
@@ -113,6 +114,7 @@ process_flowcam_data <- function(data, metadata) {
   data <- mutate(data,
                  sample_conc_vol_ml = sample_conc_vol_ml / 1000000,
                  acq_fluid_volume_imaged = acq_fluid_volume_imaged / 1000000,
+                 acq_celltype = acq_celltype/1000/1000,
                  pixelsize = process_pixel / 1000) 
   
   # FlowCam-specific metadata check columns
