@@ -4,6 +4,7 @@
 ## usethis namespace: start
 #' @import dplyr
 #' @import ggplot2
+#' @import lubridate
 #' @import DataEditR
 #' @import readr
 #' @import ggpubr
