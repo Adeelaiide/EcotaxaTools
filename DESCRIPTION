@@ -24,7 +24,6 @@ Depends:
         vegan,
         tidyr,
         viridis,
-        easycsv,
         htmltools,
         shiny,
         FactoMineR,
