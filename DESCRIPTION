@@ -11,9 +11,9 @@ LazyData: true
 Depends: 
         dplyr,
         ggplot2,
+        lubridate,
         DataEditR,
         readr,
-        ggplot2,
         ggpubr,
         RColorBrewer,
         rnaturalearth,
@@ -28,8 +28,7 @@ Depends:
         shiny,
         FactoMineR,
         ggrepel,
-        factoextra,
-        paletteer
+        factoextra
 RoxygenNote: 7.2.3
 URL: https://github.com/pkostyrka/pkscoperoutine
 BugReports: https://github.com/pkostyrka/pkscoperoutine/issues
