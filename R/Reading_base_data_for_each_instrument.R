@@ -12,7 +12,7 @@ read_base_metadata_file <- function(file_path) {
 # Function for PlanktoScope specific data transformation
 transform_planktoscope_data <- function(df) {
   df %>%
-    group_by(object_label, acq_id) %>% 
+    group_by(object_id, acq_id) %>% 
     mutate(ghost_id = 1:n()) %>%
     ungroup() %>%
     mutate(unique_id = paste(acq_id, sample_operator, ghost_id, 
@@ -87,3 +87,4 @@ transform_flowcam_data <- function(df) {
     distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
+
