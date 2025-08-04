@@ -95,23 +95,20 @@ transform_flowcam_data <- function(df) {
 # Function for Zooscan specific data transformation
 transform_zooscan_data <- function(df) {
   df %>%
-    group_by(object_id, acq_id) %>% 
-    mutate(ghost_id = 1:n()) %>%
-    ungroup() %>%
-    mutate(unique_id = paste(acq_id, sample_scan_operator, ghost_id, 
-                             object_date, object_time,
-                             object_lat, object_lon, sep = "_")) %>%
-   group_by(unique_id) %>%
-    mutate(number_object = n(),
-           percentValidated = sum(object_annotation_status == "validated", na.rm = TRUE) / n() * 100) %>%
-    ungroup() %>%
-   mutate(major = object_major * pixelsize,
+    group_by(acq_id) %>% 
+  mutate(pixelsize = unique(process_particle_pixel_size_mm),
+      percentValidated = sum(object_annotation_status == "validated", na.rm = TRUE) / n() * 100,
+      major = object_major * pixelsize,
       minor = object_minor * pixelsize,
       area_exc = object_area_exc * (pixelsize^2),
       area = object_area * (pixelsize^2),
       perimferet = object_feret * pixelsize,
       ESD = 2 * (((object_area * (pixelsize^2)) / pi)^0.5),
       conver = unique(acq_sub_part) / unique(sample_tot_vol)) %>%
+  ungroup() %>%
+  mutate(unique_id = paste(acq_id, object_id, sample_scan_operator, 
+                             object_date, object_time,
+                             object_lat, object_lon, sep = "_")) %>%
   select(sample_id,
       sample_scan_operator,
       sample_barcode,
@@ -136,3 +133,5 @@ transform_zooscan_data <- function(df) {
    distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
+
+# Function for IFCB specific data transformation
