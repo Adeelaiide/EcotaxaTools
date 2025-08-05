@@ -20,12 +20,14 @@ transform_planktoscope_data <- function(df) {
     mutate(number_object = n(),
            percentValidated = sum(object_annotation_status == "validated", na.rm = TRUE) / n() * 100) %>%
     ungroup() %>%
+  # Ensure all columns exist, creating NA columns if they are missing
     mutate(sample_total_volume = ifelse("sample_total_volume" %in% colnames(.), sample_total_volume, NA),
            sample_concentrated_sample_volume = ifelse("sample_concentrated_sample_volume" %in% colnames(.), sample_concentrated_sample_volume, NA),
            sample_dilution_factor = ifelse("sample_dilution_factor" %in% colnames(.), sample_dilution_factor, NA),
            acq_imaged_volume = ifelse("acq_imaged_volume" %in% colnames(.), acq_imaged_volume, NA),
            acq_celltype = ifelse("acq_celltype" %in% colnames(.), acq_celltype, NA),
            process_pixel = ifelse("process_pixel" %in% colnames(.), process_pixel, NA)) %>%
+  
     mutate(sample_dilution_factor = as.numeric(gsub(",", ".", sample_dilution_factor))) %>%
     select(sample_id,
            acq_id,
@@ -45,7 +47,7 @@ transform_planktoscope_data <- function(df) {
            sample_concentrated_sample_volume,
            acq_celltype,
            acq_imaged_volume,
-           process_pixel,
+           pixelsize,
            sample_dilution_factor) %>%
     distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
@@ -61,6 +63,7 @@ transform_flowcam_data <- function(df) {
     mutate(number_object = n(),
            percentValidated = sum(object_annotation_status == "validated", na.rm = TRUE) / n() * 100) %>%
     ungroup() %>%
+  # Ensure all columns exist, creating NA columns if they are missing
     mutate(sample_initial_col_vol_m3 = ifelse("sample_initial_col_vol_m3" %in% colnames(.), sample_initial_col_vol_m3, NA),
            sample_conc_vol_ml = ifelse("sample_conc_vol_ml" %in% colnames(.), sample_conc_vol_ml, NA),
            sample_volconc_temp = ifelse("sample_volconc" %in% colnames(.), sample_volconc, NA_real_),
@@ -104,6 +107,7 @@ transform_zooscan_data <- function(df) {
     mutate(number_object = n(),
             percentValidated = sum(object_annotation_status == "validated", na.rm = TRUE) / n() * 100) %>%
   ungroup() %>%
+  # Ensure all columns exist, creating NA columns if they are missing
    mutate(sample_tot_vol = ifelse("sample_tot_vol" %in% colnames(.), sample_tot_vol, NA),
            acq_sub_part = ifelse("acq_sub_part" %in% colnames(.), acq_sub_part, NA),
           object_feret = ifelse("object_feret" %in% colnames(.), object_feret, NA),
@@ -145,6 +149,7 @@ transform_ifcb_data <- function(df) {
     mutate(number_object = n(), 
            percentValidated = sum(object_annotation_status == "validated") / n() * 100) %>%
   ungroup() %>%
+  # Ensure all columns exist, creating NA columns if they are missing
   mutate(object_lat_end = ifelse("object_lat_end" %in% colnames(.), object_lat_end, NA_real_),
          object_lon_end = ifelse("object_lon_end" %in% colnames(.), object_lon_end, NA_real_),
          acq_volume_sampled = ifelse("acq_volume_sampled" %in% colnames(.), acq_volume_sampled, NA),
@@ -174,6 +179,7 @@ transform_ifcb_data <- function(df) {
    distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
+
 
 
 
