@@ -58,13 +58,13 @@ process_zooscan_data <- function(data, metadata) {
   data <- mutate(data, conver.uniqueID = unique(acq_sub_part) / unique(sample_tot_vol))
   
   # ZooScan-specific conver.sample calculation
-  #vimgsample <- data %>% select(sample_id, unique_id, acq_fluid_volume_imaged) %>% distinct() %>%
-    #group_by(sample_id) %>% summarize(sample_imaged_volume = sum(acq_fluid_volume_imaged, na.rm = TRUE))
+  #vimgsample <- data %>% select(sample_id, unique_id, acq_sub_part) %>% distinct() %>%
+    #group_by(sample_id) %>% summarize(sample_imaged_volume = sum(acq_sub_part, na.rm = TRUE))
  # data <- merge(data, vimgsample, "sample_id", all.x = TRUE)
-  #data <- mutate(data, conver.sample = (sample_conc_vol_ml * sample_volconc) /
-                   #(sample_imaged_volume * sample_initial_col_vol_m3))
+  #data <- mutate(data, conver.sample = unique(acq_sub_part) / unique(sample_tot_vol))
   
   return(data)
 }
+
 
 
