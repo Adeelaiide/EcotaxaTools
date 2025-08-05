@@ -4,6 +4,7 @@
 #This function handles the initial reading and common column type conversions
 read_base_metadata_file <- function(file_path) {
   read_tsv(file_path, col_types = list(object_time = col_time(),
+                                       object_date = col_date(),
                                        object_annotation_time = col_time()))
 }
 
@@ -173,6 +174,7 @@ transform_ifcb_data <- function(df) {
    distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
+
 
 
 
