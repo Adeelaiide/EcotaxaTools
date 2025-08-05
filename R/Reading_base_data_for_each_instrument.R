@@ -143,6 +143,9 @@ transform_ifcb_data <- function(df) {
       summedbiovolume = object_summed_biovolume * (pixelsize^3),
       summedarea = object_summed_surface_area * (pixelsize^2),
       conver = 1 / vol) %>%
+  group_by(acq_id) %>% 
+    mutate(unique_id = paste(acq_id, object_date, object_time,
+                             object_lat, object_lon, sep = "_")) %>%
    select(sample_id,
       acq_id,
       object_date,
@@ -163,5 +166,6 @@ transform_ifcb_data <- function(df) {
    distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
+
 
 
