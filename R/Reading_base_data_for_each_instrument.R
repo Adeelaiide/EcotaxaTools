@@ -89,20 +89,20 @@ transform_flowcam_data <- function(df) {
 # Function for Zooscan specific data transformation
 transform_zooscan_data <- function(df) {
   df %>%
-    group_by(acq_id) %>% 
-  mutate(pixelsize = unique(process_particle_pixel_size_mm),
-      percentValidated = sum(object_annotation_status == "validated", na.rm = TRUE) / n() * 100,
-      major = object_major * pixelsize,
-      minor = object_minor * pixelsize,
-      area_exc = object_area_exc * (pixelsize^2),
-      area = object_area * (pixelsize^2),
-      perimferet = object_feret * pixelsize,
-      ESD = 2 * (((object_area * (pixelsize^2)) / pi)^0.5),
-      conver = unique(acq_sub_part) / unique(sample_tot_vol)) %>%
-  ungroup() %>%
-  mutate(unique_id = paste(acq_id, object_id, sample_scan_operator, 
+    group_by(object_id, acq_id) %>% 
+    mutate(unique_id = paste(acq_id, object_id, sample_scan_operator, 
                              object_date, object_time,
                              object_lat, object_lon, sep = "_")) %>%
+   group_by(unique_id) %>%
+    mutate(number_object = n(),
+            percentValidated = sum(object_annotation_status == "validated", na.rm = TRUE) / n() * 100) %>%
+  ungroup() %>%
+   mutate(sample_tot_vol = ifelse("sample_tot_vol" %in% colnames(.), sample_tot_vol, NA),
+           acq_sub_part = ifelse("acq_sub_part" %in% colnames(.), acq_sub_part, NA),
+          object_feret = ifelse("object_feret" %in% colnames(.), object_feret, NA),
+           object_area = ifelse("object_area" %in% colnames(.), object_area, NA),
+           object_major = ifelse("object_major" %in% colnames(.), object_major, NA),
+           object_minor = ifelse("object_minor" %in% colnames(.), object_minor, NA)) %>%
   select(sample_id,
       sample_scan_operator,
       sample_barcode,
@@ -130,23 +130,24 @@ transform_zooscan_data <- function(df) {
 
 # Function for IFCB specific data transformation
 transform_ifcb_data <- function(df) {
-  df %>%
-  mutate(vol = unique(acq_volume_sampled) / 1000000, 
-      pixelsize = (1 / unique(acq_resolution_pixel_per_micron)) / 1000, 
-      percentValidated = 100 * sum(object_annotation_status == "validated") / n() ) %>%
-  mutate(object_lat_end = ifelse("object_lat_end" %in% colnames(.), object_lat_end, NA_real_),
-      object_lon_end = ifelse("object_lon_end" %in% colnames(.), object_lon_end, NA_real_)) %>%
-   mutate(major = object_major_axis_length * pixelsize,
-      minor = object_minor_axis_length * pixelsize,
-      area = object_surface_area * (pixelsize^2),
-      ESD = 2 * (((object_surface_area * (pixelsize^2)) / pi)^0.5),
-      summedbiovolume = object_summed_biovolume * (pixelsize^3),
-      summedarea = object_summed_surface_area * (pixelsize^2),
-      conver = 1 / vol) %>%
-  group_by(acq_id) %>% 
+  df %>% 
+  group_by(object_id, acq_id) %>% 
     mutate(unique_id = paste(acq_id, object_date, object_time,
                              object_lat, object_lon, sep = "_")) %>%
-   select(sample_id,
+  group_by(unique_id) %>%
+    mutate(number_object = n(), 
+           percentValidated = sum(object_annotation_status == "validated") / n() * 100) %>%
+  ungroup() %>%
+  mutate(object_lat_end = ifelse("object_lat_end" %in% colnames(.), object_lat_end, NA_real_),
+         object_lon_end = ifelse("object_lon_end" %in% colnames(.), object_lon_end, NA_real_),
+         acq_volume_sampled = ifelse("acq_volume_sampled" %in% colnames(.), acq_volume_sampled, NA),
+         acq_resolution_pixel_per_micron = ifelse("acq_resolution_pixel_per_micron" %in% colnames(.), acq_resolution_pixel_per_micron, NA),
+         object_major_axis_length = ifelse("object_major_axis_length" %in% colnames(.), object_major_axis_length, NA),
+         object_minor_axis_length = ifelse("object_minor_axis_length" %in% colnames(.), object_minor_axis_length, NA),
+         object_surface_area = ifelse("object_surface_area" %in% colnames(.), object_surface_area, NA),
+         object_summed_biovolume = ifelse("object_summed_biovolume" %in% colnames(.), object_summed_biovolume, NA),
+         object_summed_surface_area = ifelse("object_summed_surface_area" %in% colnames(.), object_summed_surface_area, NA)) %>%
+  select(sample_id,
       acq_id,
       object_date,
       object_time,
@@ -166,6 +167,7 @@ transform_ifcb_data <- function(df) {
    distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
+
 
 
 
