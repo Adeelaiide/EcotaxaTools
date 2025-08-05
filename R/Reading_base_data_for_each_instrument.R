@@ -21,7 +21,10 @@ transform_planktoscope_data <- function(df) {
     ungroup() %>%
     mutate(sample_total_volume = ifelse("sample_total_volume" %in% colnames(.), sample_total_volume, NA),
            sample_concentrated_sample_volume = ifelse("sample_concentrated_sample_volume" %in% colnames(.), sample_concentrated_sample_volume, NA),
-           sample_dilution_factor = ifelse("sample_dilution_factor" %in% colnames(.), sample_dilution_factor, NA)) %>%
+           sample_dilution_factor = ifelse("sample_dilution_factor" %in% colnames(.), sample_dilution_factor, NA),
+           acq_imaged_volume = ifelse("acq_imaged_volume" %in% colnames(.), acq_imaged_volume, NA),
+           acq_celltype = ifelse("acq_celltype" %in% colnames(.), acq_celltype, NA),
+           process_pixel = ifelse("process_pixel" %in% colnames(.), process_pixel, NA)) %>%
     mutate(sample_dilution_factor = as.numeric(gsub(",", ".", sample_dilution_factor))) %>%
     select(sample_id,
            acq_id,
@@ -58,10 +61,13 @@ transform_flowcam_data <- function(df) {
            percentValidated = sum(object_annotation_status == "validated", na.rm = TRUE) / n() * 100) %>%
     ungroup() %>%
     mutate(sample_initial_col_vol_m3 = ifelse("sample_initial_col_vol_m3" %in% colnames(.), sample_initial_col_vol_m3, NA),
-    sample_conc_vol_ml = ifelse("sample_conc_vol_ml" %in% colnames(.), sample_conc_vol_ml, NA),
-    sample_volconc_temp = ifelse("sample_volconc" %in% colnames(.), sample_volconc, NA_real_), 
-    sample_volconc = as.numeric(gsub(",", ".", sample_volconc_temp)), 
-    acq_celltype = parse_number(acq_celltype)) %>%
+           sample_conc_vol_ml = ifelse("sample_conc_vol_ml" %in% colnames(.), sample_conc_vol_ml, NA),
+           sample_volconc_temp = ifelse("sample_volconc" %in% colnames(.), sample_volconc, NA_real_),
+           acq_fluid_volume_imaged = ifelse("acq_fluid_volume_imaged" %in% colnames(.), acq_fluid_volume_imaged, NA),
+           acq_celltype = ifelse("acq_celltype" %in% colnames(.), acq_celltype, NA),
+           process_pixel = ifelse("process_pixel" %in% colnames(.), process_pixel, NA),
+           sample_volconc = as.numeric(gsub(",", ".", sample_volconc_temp)), 
+           acq_celltype = parse_number(acq_celltype)) %>%
     select(-sample_volconc_temp) %>%
     select(sample_id,
            acq_id,
@@ -167,6 +173,7 @@ transform_ifcb_data <- function(df) {
    distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
+
 
 
 
