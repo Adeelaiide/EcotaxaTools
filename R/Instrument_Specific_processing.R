@@ -47,3 +47,23 @@ process_flowcam_data <- function(data, metadata) {
   return(data)
 }
 
+# Helper function for ZooScan-specific processing
+process_zooscan_data <- function(data, metadata) {
+ # ZooScan-specific unit conversions
+  data <- mutate(metadata,
+                pixelsize = unique(process_particle_pixel_size_mm),
+                perimferet = object_feret * pixelsize) 
+  
+ # ZooScan-specific conver.uniqueID formula
+  data <- mutate(data, conver.uniqueID = unique(acq_sub_part) / unique(sample_tot_vol))
+  
+  # ZooScan-specific conver.sample calculation
+  #vimgsample <- data %>% select(sample_id, unique_id, sample_tot_vol) %>% distinct() %>%
+    #group_by(sample_id) %>% summarize(sample_imaged_volume = sum(acq_fluid_volume_imaged, na.rm = TRUE))
+ # data <- merge(data, vimgsample, "sample_id", all.x = TRUE)
+  #data <- mutate(data, conver.sample = (sample_conc_vol_ml * sample_volconc) /
+                   #(sample_imaged_volume * sample_initial_col_vol_m3))
+  
+  return(data)
+}
+
