@@ -17,9 +17,19 @@
 compute_bv <- function(path, output, metadata = NULL, instru) {
   options(dplyr.summarise.inform = FALSE)
 
-  # Load data (common for all instruments)
-  data <- read_tsv(path, col_types = list(object_time = col_time(),
-                                          object_annotation_time = col_time()))
+ # Replace NA by 1 
+  for (i in unique(metadata$unique_id)) {
+    if (sum(is.na(metadata[metadata$unique_id == i, ])) > 0) {
+      pb <- colnames(metadata[metadata$unique_id == i, ])[is.na(metadata[metadata$unique_id == i, ])]
+      print(paste0("Warning! [sample: ", unique(metadata$sample_id), "] These metadata do not have value. Default is 1: ", paste(pb, collapse = ", ")))
+      for (col_name_to_set_one in pb) {
+        if (col_name_to_set_one %in% colnames(metadata)) {
+          metadata[[col_name_to_set_one]][is.na(metadata[[col_name_to_set_one]]) & metadata$unique_id == i] <- 1
+        }
+      }
+      metadata[is.na(metadata) & metadata$unique_id == i] <- 1
+    }
+  }
 
   # Dispatch to instrument-specific processing function
   if (instru == "PlanktoScope") {
@@ -100,3 +110,4 @@ compute_bv <- function(path, output, metadata = NULL, instru) {
 
   return(data)
 }
+
