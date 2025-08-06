@@ -52,7 +52,7 @@ check_metadata <- function(path, output, instru) {
    # Extract and save the hidden columns, along with the key identifier
   edited_metadata_for_viewer <- metadata %>%
     select(-all_of(cols_to_hide)) %>%
-    group_by(unique_id) %>%
+    group_by(sample_id) %>%
     summarise(across(everything(), ~first(.x)), .groups = "drop")
 
   # DATA EDIT
@@ -97,6 +97,7 @@ check_metadata <- function(path, output, instru) {
   return(metadata)
  
 }
+
 
 
 
