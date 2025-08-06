@@ -47,7 +47,7 @@ transform_planktoscope_data <- function(df) {
            sample_concentrated_sample_volume,
            acq_celltype,
            acq_imaged_volume,
-           pixelsize,
+           process_pixel,
            sample_dilution_factor) %>%
     distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
@@ -127,14 +127,10 @@ transform_zooscan_data <- function(df) {
       acq_max_mesh,
       acq_sub_part,
       process_img_resolution,
-      percentValidated,
-      major,
-      minor,
-      area_exc,
-      area,
-      perimferet,
-      ESD,
-      conver) %>%
+      object_feret,
+      object_area,
+      object_major,
+      object_minor ) %>%
    distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
@@ -167,18 +163,17 @@ transform_ifcb_data <- function(df) {
       object_lon,
       object_lat_end,
       object_lon_end,
-      vol,
-      percentValidated,
-      major,
-      minor,
-      area,
-      ESD,
-      summedbiovolume,
-      summedarea,
-      conver) %>%
+      acq_volume_sampled,
+      acq_resolution_pixel_per_micron,
+      object_major_axis_length,
+      object_minor_axis_length,
+      object_surface_area,
+      object_summed_biovolume,
+      object_summed_surface_area) %>%
    distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
+
 
 
 
