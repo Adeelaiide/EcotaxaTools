@@ -48,9 +48,10 @@ transform_planktoscope_data <- function(df) {
            acq_imaged_volume,
            process_pixel,
            sample_dilution_factor,
-          object_area,
-         object_major,
-         object_minor) %>%
+           object_area,
+           object_major,
+           object_minor,
+           object_area_exc) %>%
     distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
@@ -93,9 +94,10 @@ transform_flowcam_data <- function(df) {
            acq_fluid_volume_imaged,
            process_pixel,
            sample_volconc,
-          object_area,
-         object_major,
-         object_minor) %>%
+           object_area,
+           object_major,
+           object_minor,
+           object_area_exc) %>%
     distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
@@ -137,6 +139,7 @@ transform_zooscan_data <- function(df) {
          object_area,
          object_major,
          object_minor,
+         object_area_exc,
          percentValidated) %>%
    distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
@@ -183,6 +186,7 @@ transform_ifcb_data <- function(df) {
    distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
+
 
 
 
