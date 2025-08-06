@@ -153,6 +153,7 @@ transform_zooscan_data <- function(df) {
     df <- df %>%
       dplyr::select(-object_area_exc)
   }
+  return(df)
 }
 
 # Function for IFCB specific data transformation
@@ -196,6 +197,7 @@ transform_ifcb_data <- function(df) {
    distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
+
 
 
 
