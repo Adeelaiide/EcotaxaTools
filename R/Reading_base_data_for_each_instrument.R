@@ -126,11 +126,12 @@ transform_zooscan_data <- function(df) {
       acq_min_mesh,
       acq_max_mesh,
       acq_sub_part,
-      process_img_resolution,
+      process_particle_pixel_size_mm,
       object_feret,
       object_area,
       object_major,
-      object_minor ) %>%
+      object_minor,
+      percentValidated) %>%
    distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
@@ -169,10 +170,12 @@ transform_ifcb_data <- function(df) {
       object_minor_axis_length,
       object_surface_area,
       object_summed_biovolume,
-      object_summed_surface_area) %>%
+      object_summed_surface_area,
+      percentValidated) %>%
    distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
+
 
 
 
