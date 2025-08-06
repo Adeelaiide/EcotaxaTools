@@ -5,7 +5,8 @@
 read_base_metadata_file <- function(file_path) {
   read_tsv(file_path, col_types = list(object_time = col_time(),
                                        object_date = col_date(),
-                                       object_annotation_time = col_time()))
+                                       object_annotation_time = col_time()))%>%
+      group_by(object_id, acq_id) %>% mutate(ghost_id=1:n()) %>% ungroup
 }
 
 #Instrument-Specific Transformation Functions
@@ -32,6 +33,7 @@ transform_planktoscope_data <- function(df) {
     select(sample_id,
            acq_id,
            unique_id,
+           ghost_id,
            object_date,
            object_time,
            object_lat,
@@ -79,6 +81,7 @@ transform_flowcam_data <- function(df) {
     select(sample_id,
            acq_id,
            unique_id,
+           ghost_id,
            object_date,
            object_time,
            object_lat,
@@ -121,26 +124,27 @@ transform_zooscan_data <- function(df) {
            object_major = ifelse("object_major" %in% colnames(.), object_major, NA),
            object_minor = ifelse("object_minor" %in% colnames(.), object_minor, NA)) %>%
   select(sample_id,
+         acq_id,
          unique_id,
-         number_object,
-         sample_scan_operator,
-         sample_barcode,
-         sample_tot_vol,
+         ghost_id, 
          object_date,
          object_time,
          object_lat,
          object_lon,
-         acq_id,
+         sample_scan_operator, 
+         percentValidated,
+         number_object,
          acq_min_mesh,
          acq_max_mesh,
          acq_sub_part,
+         sample_barcode,
+         sample_tot_vol,
          process_particle_pixel_size_mm,
          object_feret,
          object_area,
          object_major,
          object_minor,
-         object_area_exc,
-         percentValidated) %>%
+         object_area_exc) %>%
    distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 
@@ -167,26 +171,28 @@ transform_ifcb_data <- function(df) {
          object_summed_biovolume = ifelse("object_summed_biovolume" %in% colnames(.), object_summed_biovolume, NA),
          object_summed_surface_area = ifelse("object_summed_surface_area" %in% colnames(.), object_summed_surface_area, NA)) %>%
   select(sample_id,
-      acq_id,
-      number_object,
-      unique_id,
-      object_date,
-      object_time,
-      object_lat,
-      object_lon,
-      object_lat_end,
-      object_lon_end,
-      acq_volume_sampled,
-      acq_resolution_pixel_per_micron,
-      object_major_axis_length,
-      object_minor_axis_length,
-      object_surface_area,
-      object_summed_biovolume,
-      object_summed_surface_area,
-      percentValidated) %>%
+         acq_id, 
+         unique_id,
+         ghost_id,
+         object_date,
+         object_time,
+         object_lat,
+         object_lon,
+         object_lat_end,
+         object_lon_end,
+         percentValidated,
+         number_object,
+         acq_volume_sampled,
+         acq_resolution_pixel_per_micron,
+         object_major_axis_length,
+         object_minor_axis_length,
+         object_surface_area,
+         object_summed_biovolume,
+         object_summed_surface_area) %>%
    distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
+
 
 
 
