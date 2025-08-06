@@ -49,6 +49,14 @@ process_flowcam_data <- function(data, metadata) {
 
 # Helper function for ZooScan-specific processing
 process_zooscan_data <- function(data, metadata) {
+ # Get the 'hidden' object_area_exc column from the attributes
+  object_area_exc <- attr(metadata, "object_area_exc")
+  
+  # Check if the attribute exists; if not, throw an error
+  if (is.null(object_area_exc)) {
+    stop("The 'object_area_exc' column is missing. Please ensure your data was processed with transform_data().")
+  }
+ 
  # ZooScan-specific unit conversions
   data <- mutate(metadata,
                 pixelsize = unique(process_particle_pixel_size_mm),
@@ -89,6 +97,7 @@ process_zooscan_data <- function(data, metadata) {
   
   #return(data)
 #}
+
 
 
 
