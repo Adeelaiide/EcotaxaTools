@@ -86,7 +86,7 @@ transform_flowcam_data <- function(df) {
            acq_raw_image_total,
            acq_celltype,
            acq_min_esd,
-           acq_max_esd
+           acq_max_esd,
            sample_initial_col_vol_m3,
            sample_conc_vol_ml,
            acq_fluid_volume_imaged,
@@ -179,6 +179,7 @@ transform_ifcb_data <- function(df) {
    distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
+
 
 
 
