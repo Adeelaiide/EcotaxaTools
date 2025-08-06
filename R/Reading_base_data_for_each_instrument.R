@@ -144,16 +144,6 @@ transform_zooscan_data <- function(df) {
    distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 
-  
-  if ("object_area_exc" %in% colnames(df)) {
-    # 1. Store 'object_area_exc' as an attribute
-    attr(df, "object_area_exc") <- df$object_area_exc
-    
-    # Remove the column from the main data frame 
-    df <- df %>%
-      dplyr::select(-object_area_exc)
-  }
-  return(df)
 }
 
 # Function for IFCB specific data transformation
@@ -197,6 +187,7 @@ transform_ifcb_data <- function(df) {
    distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
+
 
 
 
