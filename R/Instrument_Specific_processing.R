@@ -55,7 +55,7 @@ process_zooscan_data <- function(data, metadata) {
                 perimferet = object_feret * pixelsize) 
   
  # ZooScan-specific conver.uniqueID formula
-  data <- mutate(data, conver.uniqueID = unique(acq_sub_part) / unique(sample_tot_vol))
+  data <- mutate(data, conver.uniqueID = (acq_sub_part) / (sample_tot_vol))
   
   # ZooScan-specific conver.sample calculation
   vimgsample <- data %>% select(sample_id, unique_id, acq_sub_part) %>% distinct() %>%
@@ -89,6 +89,7 @@ process_zooscan_data <- function(data, metadata) {
   
   #return(data)
 #}
+
 
 
 
