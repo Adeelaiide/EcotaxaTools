@@ -61,7 +61,7 @@ process_zooscan_data <- function(data, metadata) {
   vimgsample <- data %>% select(sample_id, unique_id, acq_sub_part) %>% distinct() %>%
     group_by(sample_id) %>% summarize(sample_imaged_volume = sum(acq_sub_part, na.rm = TRUE))
   data <- merge(data, vimgsample, "sample_id", all.x = TRUE)
-  data <- mutate(data, conver.sample = unique(acq_sub_part) / unique(sample_tot_vol))
+  data <- mutate(data, conver.sample = (acq_sub_part) / (sample_tot_vol))
   
   return(data)
 }
@@ -89,6 +89,7 @@ process_zooscan_data <- function(data, metadata) {
   
   #return(data)
 #}
+
 
 
 
