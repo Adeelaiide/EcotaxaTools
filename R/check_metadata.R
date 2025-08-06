@@ -53,6 +53,9 @@ check_metadata <- function(path, output, instru) {
   edited_metadata_for_viewer <- metadata %>%
     select(-all_of(cols_to_hide)) %>%
     distinct()
+ #CHECK: This is a diagnostic to see if your data structure is correct
+  stopifnot("Summary data has more rows than unique IDs" = 
+              nrow(edited_metadata_for_viewer) == length(unique(edited_metadata_for_viewer$unique_id)))
 
   # DATA EDIT
   check <- metadata %>% group_by(sample_id) %>% summarize(nb=n())
@@ -96,6 +99,7 @@ check_metadata <- function(path, output, instru) {
   return(metadata)
  
 }
+
 
 
 
