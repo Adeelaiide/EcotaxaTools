@@ -104,9 +104,9 @@ transform_flowcam_data <- function(df) {
 transform_zooscan_data <- function(df) {
   df %>%
     group_by(object_id, acq_id) %>% 
-    mutate(unique_id = paste(acq_id, object_id, sample_scan_operator, 
+    mutate(unique_id = paste(acq_id, sample_scan_operator, 
                              object_date, object_time,
-                             object_lat, object_lon, sep = "_")) %>%
+                             object_lat, object_lon, acq_sub_part, sep = "_")) %>%
    group_by(unique_id) %>%
     mutate(number_object = n(),
             percentValidated = sum(object_annotation_status == "validated", na.rm = TRUE) / n() * 100) %>%
@@ -183,6 +183,7 @@ transform_ifcb_data <- function(df) {
    distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
+
 
 
 
