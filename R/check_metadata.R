@@ -54,7 +54,8 @@ check_metadata <- function(path, output, instru) {
     select(unique_id, all_of(cols_to_hide))
   # Create a temporary data frame for the data edit, without the hidden columns
   edited_metadata_for_viewer <- metadata %>%
-    select(-all_of(cols_to_hide))
+    select(-all_of(cols_to_hide)) %>%
+    distinct()
 
   # DATA EDIT
   check <- metadata %>% group_by(sample_id) %>% summarize(nb=n())
@@ -91,4 +92,5 @@ check_metadata <- function(path, output, instru) {
   return(metadata)
  
 }
+
 
