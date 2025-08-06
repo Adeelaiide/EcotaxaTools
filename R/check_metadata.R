@@ -50,9 +50,6 @@ check_metadata <- function(path, output, instru) {
   print("Original metadata saved.")
 
    # Extract and save the hidden columns, along with the key identifier
- hidden_data <- metadata %>%
-    select(unique_id, all_of(cols_to_hide))
-  # Create a temporary data frame for the data edit, without the hidden columns
   edited_metadata_for_viewer <- metadata %>%
     select(-all_of(cols_to_hide)) %>%
     distinct()
@@ -92,5 +89,6 @@ check_metadata <- function(path, output, instru) {
   return(metadata)
  
 }
+
 
 
