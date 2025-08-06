@@ -67,27 +67,28 @@ process_zooscan_data <- function(data, metadata) {
 }
 
 # Helper function for IFCB-specific processing
-process_ifcb_data <- function(data, metadata) {
+#process_ifcb_data <- function(data, metadata) {
  # IFCB-specific unit conversions and variable's names conversions
-  data <- mutate(metadata,
-                 vol = unique(acq_volume_sampled) / 1000000, 
-                 pixelsize = (1 / unique(acq_resolution_pixel_per_micron)) / 1000,
-                 summedbiovolume = object_summed_biovolume * (pixelsize^3),
-                 summedarea = object_summed_surface_area * (pixelsize^2),
-                 object_major = object_major_axis_length,
-                 object_minor = object_minor_axis_length,
-                 object_area = object_surface_area) 
+ # data <- mutate(metadata,
+                 # vol = unique(acq_volume_sampled) / 1000000, 
+                #  pixelsize = (1 / unique(acq_resolution_pixel_per_micron)) / 1000,
+               #   summedbiovolume = object_summed_biovolume * (pixelsize^3),
+                #  summedarea = object_summed_surface_area * (pixelsize^2),
+                #  object_major = object_major_axis_length,
+                #  object_minor = object_minor_axis_length,
+                #  object_area = object_surface_area) 
   
  # IFCB-specific conver.uniqueID formula
-  data <- mutate(data, conver.uniqueID = 1 / vol)
+  #data <- mutate(data, conver.uniqueID = 1 / vol)
   
   # IFCB-specific conver.sample calculation
-  vimgsample <- data %>% select(sample_id, unique_id, vol) %>% distinct() %>%
-    group_by(sample_id) %>% summarize(sample_imaged_volume = sum(vol, na.rm = TRUE))
-  data <- merge(data, vimgsample, "sample_id", all.x = TRUE)
-  data <- mutate(data, conver.sample =  1 / vol)
+ # vimgsample <- data %>% select(sample_id, unique_id, vol) %>% distinct() %>%
+   # group_by(sample_id) %>% summarize(sample_imaged_volume = sum(vol, na.rm = TRUE))
+  #data <- merge(data, vimgsample, "sample_id", all.x = TRUE)
+ # data <- mutate(data, conver.sample =  1 / vol)
   
   return(data)
 }
+
 
 
