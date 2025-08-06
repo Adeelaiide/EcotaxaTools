@@ -32,7 +32,6 @@ transform_planktoscope_data <- function(df) {
     select(sample_id,
            acq_id,
            unique_id,
-           ghost_id,
            object_date,
            object_time,
            object_lat,
@@ -79,7 +78,6 @@ transform_flowcam_data <- function(df) {
     select(sample_id,
            acq_id,
            unique_id,
-           ghost_id,
            object_date,
            object_time,
            object_lat,
@@ -122,7 +120,6 @@ transform_zooscan_data <- function(df) {
            object_minor = ifelse("object_minor" %in% colnames(.), object_minor, NA)) %>%
   select(sample_id,
          unique_id,
-         ghost_id,
          number_object,
          sample_scan_operator,
          sample_barcode,
@@ -167,6 +164,8 @@ transform_ifcb_data <- function(df) {
          object_summed_surface_area = ifelse("object_summed_surface_area" %in% colnames(.), object_summed_surface_area, NA)) %>%
   select(sample_id,
       acq_id,
+      number_object,
+      unique_id,
       object_date,
       object_time,
       object_lat,
@@ -184,6 +183,7 @@ transform_ifcb_data <- function(df) {
    distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
+
 
 
 
