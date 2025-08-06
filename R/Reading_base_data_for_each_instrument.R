@@ -48,7 +48,10 @@ transform_planktoscope_data <- function(df) {
            acq_celltype,
            acq_imaged_volume,
            process_pixel,
-           sample_dilution_factor) %>%
+           sample_dilution_factor,
+          object_area,
+         object_major,
+         object_minor) %>%
     distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
@@ -91,7 +94,10 @@ transform_flowcam_data <- function(df) {
            sample_conc_vol_ml,
            acq_fluid_volume_imaged,
            process_pixel,
-           sample_volconc) %>%
+           sample_volconc,
+          object_area,
+         object_major,
+         object_minor) %>%
     distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
@@ -115,23 +121,26 @@ transform_zooscan_data <- function(df) {
            object_major = ifelse("object_major" %in% colnames(.), object_major, NA),
            object_minor = ifelse("object_minor" %in% colnames(.), object_minor, NA)) %>%
   select(sample_id,
-      sample_scan_operator,
-      sample_barcode,
-      sample_tot_vol,
-      object_date,
-      object_time,
-      object_lat,
-      object_lon,
-      acq_id,
-      acq_min_mesh,
-      acq_max_mesh,
-      acq_sub_part,
-      process_particle_pixel_size_mm,
-      object_feret,
-      object_area,
-      object_major,
-      object_minor,
-      percentValidated) %>%
+         unique_id,
+         ghost_id,
+         number_object,
+         sample_scan_operator,
+         sample_barcode,
+         sample_tot_vol,
+         object_date,
+         object_time,
+         object_lat,
+         object_lon,
+         acq_id,
+         acq_min_mesh,
+         acq_max_mesh,
+         acq_sub_part,
+         process_particle_pixel_size_mm,
+         object_feret,
+         object_area,
+         object_major,
+         object_minor,
+         percentValidated) %>%
    distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
@@ -175,6 +184,7 @@ transform_ifcb_data <- function(df) {
    distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
+
 
 
 
