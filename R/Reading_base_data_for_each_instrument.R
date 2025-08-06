@@ -6,7 +6,7 @@ read_base_metadata_file <- function(file_path) {
   read_tsv(file_path, col_types = list(object_time = col_time(),
                                        object_date = col_date(),
                                        object_annotation_time = col_time()))%>%
-      group_by(object_id, acq_id) %>% mutate(ghost_id=1:n()) %>% ungroup
+      group_by(sample_id, acq_id) %>% mutate(ghost_id=1:n()) %>% ungroup
 }
 
 #Instrument-Specific Transformation Functions
@@ -192,6 +192,7 @@ transform_ifcb_data <- function(df) {
    distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
+
 
 
 
