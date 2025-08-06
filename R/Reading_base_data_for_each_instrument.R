@@ -14,7 +14,7 @@ read_base_metadata_file <- function(file_path) {
 # Function for PlanktoScope specific data transformation
 transform_planktoscope_data <- function(df) {
   df %>%
-    group_by(object_id, acq_id) %>% 
+    group_by(sample_id, acq_id) %>% 
     mutate(unique_id = paste(acq_id, sample_operator, object_date, object_time,
                              object_lat, object_lon, sep = "_")) %>%
     group_by(unique_id) %>%
@@ -53,9 +53,7 @@ transform_planktoscope_data <- function(df) {
            object_area,
            object_major,
            object_minor,
-           object_area_exc) %>%
-    distinct() %>%
-    group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
+           object_area_exc) 
 }
 
 # Function for FlowCam specific data transformation
@@ -192,6 +190,7 @@ transform_ifcb_data <- function(df) {
    distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
+
 
 
 
