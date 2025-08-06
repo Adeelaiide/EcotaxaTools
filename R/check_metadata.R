@@ -74,9 +74,9 @@ check_metadata <- function(path, output, instru) {
   # Propagate the edits back to the full metadata dataset
   edited_metadata <- metadata %>%
     select(-one_of(names(edited_metadata))) %>%
-    left_join(edited_metadata, by = "unique_id") %>%
+    left_join(edited_metadata, by = "sample_id") %>%
   
-    relocate(unique_id)
+    relocate(sample_id)
 
   # Arrange by the *edited* date and time before creating sample_num
   edited_metadata <- arrange(edited_metadata, object_date, object_time) %>%
@@ -97,6 +97,7 @@ check_metadata <- function(path, output, instru) {
   return(metadata)
  
 }
+
 
 
 
