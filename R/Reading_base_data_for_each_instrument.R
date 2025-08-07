@@ -105,7 +105,7 @@ transform_flowcam_data <- function(df) {
 
 # Function for Zooscan specific data transformation
 transform_zooscan_data <- function(df) {
-  df %>%
+  df_transformed <- df %>%
     group_by(object_id, acq_id) %>% 
     mutate(unique_id = paste(acq_id, sample_scan_operator, 
                              object_date, object_time,
@@ -120,31 +120,41 @@ transform_zooscan_data <- function(df) {
           object_feret = ifelse("object_feret" %in% colnames(.), object_feret, NA),
            object_area = ifelse("object_area" %in% colnames(.), object_area, NA),
            object_major = ifelse("object_major" %in% colnames(.), object_major, NA),
-           object_minor = ifelse("object_minor" %in% colnames(.), object_minor, NA)) %>%
-  select(sample_id,
-         acq_id,
-         unique_id,
-         ghost_id, 
-         object_date,
-         object_time,
-         object_lat,
-         object_lon,
-         sample_scan_operator, 
-         percentValidated,
-         number_object,
-         acq_min_mesh,
-         acq_max_mesh,
-         acq_sub_part,
-         sample_barcode,
-         sample_tot_vol,
-         process_particle_pixel_size_mm,
-         object_feret,
-         object_area,
-         object_major,
-         object_minor,
-         object_area_exc) %>%
-   distinct() %>%
+           object_minor = ifelse("object_minor" %in% colnames(.), object_minor, NA)) 
+  
+   # Table 1: Metadata
+  metadata_table <- df_transformed %>%
+    select(sample_id,
+           acq_id,
+           unique_id,
+           ghost_id, 
+           object_date,
+           object_time,
+           object_lat,
+           object_lon,
+           sample_scan_operator, 
+           percentValidated,
+           number_object,
+           acq_min_mesh,
+           acq_max_mesh,
+           acq_sub_part,
+           sample_barcode,
+           sample_tot_vol,
+           process_particle_pixel_size_mm) %>%
+    distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
+
+  # Table 2: Object-specific data for instrument specific processing
+  object_table <- df_transformed %>%
+    select(unique_id,
+           object_feret,
+           object_area,
+           object_major,
+           object_minor,
+           object_area_exc) %>%
+    distinct()
+
+  return(list(metadata = metadata_table, objects = object_table))
 
 }
 
@@ -190,6 +200,7 @@ transform_ifcb_data <- function(df) {
    distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
+
 
 
 
