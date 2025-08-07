@@ -124,6 +124,7 @@ transform_zooscan_data <- function(df) {
   
    # Table 1: Metadata
   metadata_table <- df_transformed %>%
+  group_by(unique_id) %>%
     select(sample_id,
            acq_id,
            unique_id,
@@ -200,6 +201,7 @@ transform_ifcb_data <- function(df) {
    distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
+
 
 
 
