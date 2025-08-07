@@ -141,7 +141,7 @@ transform_zooscan_data <- function(df) {
            sample_barcode,
            sample_tot_vol,
            process_particle_pixel_size_mm) %>%
-  group_by(unique_id) %>%
+  group_by(sample_id) %>%
     summarise(across(everything(), ~first(.x)), .groups = "drop")
     #distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
@@ -202,6 +202,7 @@ transform_ifcb_data <- function(df) {
    distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
+
 
 
 
