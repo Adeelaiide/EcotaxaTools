@@ -61,8 +61,7 @@ compute_bv <- function(path, output, metadata = NULL, instru) {
                  R3_plain = (ESD_plain / 2)^3,
                  BV_riddled = (4 / 3) * pi * R3_riddled,
                  BV_plain = (4 / 3) * pi * R3_plain,
-                 AB = 1,
-                 percentValidated = sum(object_annotation_status == "validated", na.rm = TRUE) / n() * 100)
+                 AB = 1)
 
 
   # Biovolume class parameters (common)
@@ -109,5 +108,6 @@ compute_bv <- function(path, output, metadata = NULL, instru) {
 
   return(data)
 }
+
 
 
