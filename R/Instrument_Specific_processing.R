@@ -59,8 +59,9 @@ process_zooscan_data <- function(data, metadata) {
  
  # ZooScan-specific unit conversions
   data <- mutate(metadata,
-                pixelsize = unique(process_particle_pixel_size_mm),
-                perimferet = object_feret * pixelsize) 
+                pixelsize = unique(process_particle_pixel_size_mm) #,
+                #perimferet = object_feret * pixelsize
+                )
   
  # ZooScan-specific conver.uniqueID formula
   data <- mutate(data, conver.uniqueID = (acq_sub_part) / (sample_tot_vol))
@@ -97,6 +98,7 @@ process_zooscan_data <- function(data, metadata) {
   
   #return(data)
 #}
+
 
 
 
