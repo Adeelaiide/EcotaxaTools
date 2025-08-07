@@ -202,27 +202,3 @@ transform_ifcb_data <- function(df) {
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
