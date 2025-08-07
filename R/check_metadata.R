@@ -29,7 +29,7 @@ check_metadata <- function(path, output, instru) {
     }))
   } else if (instru == "ZooScan") {
     print("You chose ZooScan. Applying ZooScan specific processing...")
-    metadata <- do.call("rbind", lapply(path, function(p) {
+     metadata_list <- do.call("rbind", lapply(path, function(p) {
       read_base_metadata_file(p) %>% transform_zooscan_data()
     }))
   } else if (instru == "IFCB") {
@@ -84,6 +84,7 @@ check_metadata <- function(path, output, instru) {
   return(metadata)
  
 }
+
 
 
 
