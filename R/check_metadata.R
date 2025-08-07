@@ -29,7 +29,7 @@ check_metadata <- function(path, output, instru) {
     }))
   } else if (instru == "ZooScan") {
     print("You chose ZooScan. Applying ZooScan specific processing...")
-     metadata_list <- do.call("rbind", lapply(path, function(p) {
+     metadata <- do.call("rbind", lapply(path, function(p) {
       read_base_metadata_file(p) %>% transform_zooscan_data()
     }))
   } else if (instru == "IFCB") {
@@ -44,7 +44,7 @@ check_metadata <- function(path, output, instru) {
   # --- Rest of the function (common steps for all instruments) ---
 
    # Extract the metadata table for editing and checks
-  metadata <- metadata_list$metadata
+  metadata <- bind_rows(lapply(metadata, function(x) x$metadata))
   
   # Save original
   write_csv2(metadata, file.path(output,"metadata","original_metadata.csv"))
@@ -84,6 +84,7 @@ check_metadata <- function(path, output, instru) {
   return(metadata)
  
 }
+
 
 
 
