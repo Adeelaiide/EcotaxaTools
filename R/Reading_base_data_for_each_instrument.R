@@ -152,7 +152,10 @@ transform_zooscan_data <- function(df) {
            object_area,
            object_major,
            object_minor,
-           object_area_exc) %>%
+           object_area_exc,
+           object_annotation_status,
+           object_annotation_category, 
+           object_annotation_hierarchy) %>%
     distinct()
 
   return(list(metadata = metadata_table, objects = object_table))
@@ -201,4 +204,5 @@ transform_ifcb_data <- function(df) {
    distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
+
 
