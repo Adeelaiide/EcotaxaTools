@@ -29,9 +29,9 @@ check_metadata <- function(path, output, instru) {
     }))
   } else if (instru == "ZooScan") {
     print("You chose ZooScan. Applying ZooScan specific processing...")
-     metadata <- do.call("rbind", lapply(path, function(p) {
+     datalist <- lapply(path, function(p) {
       read_base_metadata_file(p) %>% transform_zooscan_data()
-    }))
+    })
   } else if (instru == "IFCB") {
     print("You chose IFCB. Applying IFCB specific processing...")
     metadata <- do.call("rbind", lapply(path, function(p) {
@@ -44,8 +44,8 @@ check_metadata <- function(path, output, instru) {
   # --- Rest of the function (common steps for all instruments) ---
 
    # Extract the tables for editing and checks
-   objectsdata <- bind_rows(lapply(metadata, function(x) x$objects))
-   metadata <- bind_rows(lapply(metadata, function(x) x$metadata))
+   metadata <- bind_rows(lapply(datalist, function(x) x$metadata))
+   objectsdata <- bind_rows(lapply(datalist, function(x) x$objects))
  
   
   # Save original
@@ -86,6 +86,7 @@ check_metadata <- function(path, output, instru) {
   return(metadata)
  
 }
+
 
 
 
