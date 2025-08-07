@@ -124,7 +124,6 @@ transform_zooscan_data <- function(df) {
   
    # Table 1: Metadata
   metadata_table <- df_transformed %>%
-  group_by(unique_id) %>%
     select(sample_id,
            acq_id,
            unique_id,
@@ -142,7 +141,9 @@ transform_zooscan_data <- function(df) {
            sample_barcode,
            sample_tot_vol,
            process_particle_pixel_size_mm) %>%
-    distinct() %>%
+  group_by(unique_id) %>%
+    summarise(across(everything(), ~first(.x)), .groups = "drop")
+    #distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 
   # Table 2: Object-specific data for instrument specific processing
@@ -201,6 +202,7 @@ transform_ifcb_data <- function(df) {
    distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
+
 
 
 
