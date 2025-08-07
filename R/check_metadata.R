@@ -43,8 +43,10 @@ check_metadata <- function(path, output, instru) {
 
   # --- Rest of the function (common steps for all instruments) ---
 
-   # Extract the metadata table for editing and checks
-  metadata <- bind_rows(lapply(metadata, function(x) x$metadata))
+   # Extract the tables for editing and checks
+   objectsdata <- bind_rows(lapply(metadata, function(x) x$objects))
+   metadata <- bind_rows(lapply(metadata, function(x) x$metadata))
+ 
   
   # Save original
   write_csv2(metadata, file.path(output,"metadata","original_metadata.csv"))
@@ -84,6 +86,7 @@ check_metadata <- function(path, output, instru) {
   return(metadata)
  
 }
+
 
 
 
