@@ -120,7 +120,8 @@ transform_zooscan_data <- function(df) {
           object_feret = ifelse("object_feret" %in% colnames(.), object_feret, NA),
            object_area = ifelse("object_area" %in% colnames(.), object_area, NA),
            object_major = ifelse("object_major" %in% colnames(.), object_major, NA),
-           object_minor = ifelse("object_minor" %in% colnames(.), object_minor, NA)) 
+           object_minor = ifelse("object_minor" %in% colnames(.), object_minor, NA),
+           process_pixel = ifelse("process_particle_pixel_size_mm" %in% colnames(.), process_particle_pixel_size_mm, NA)) 
   
    # Table 1: Metadata
   metadata_table <- df_transformed %>%
@@ -140,7 +141,7 @@ transform_zooscan_data <- function(df) {
            acq_sub_part,
            sample_barcode,
            sample_tot_vol,
-           process_particle_pixel_size_mm) %>%
+           process_pixel) %>%
   group_by(sample_id) %>%
     summarise(across(everything(), ~first(.x)), .groups = "drop")
     #distinct() %>%
@@ -160,49 +161,6 @@ transform_zooscan_data <- function(df) {
 
   return(list(metadata = metadata_table, objects = object_table))
 
-}
-
-# Function for IFCB specific data transformation
-transform_ifcb_data <- function(df) {
-  df %>% 
-  group_by(object_id, acq_id) %>% 
-    mutate(unique_id = paste(acq_id, object_date, object_time,
-                             object_lat, object_lon, sep = "_")) %>%
-  group_by(unique_id) %>%
-    mutate(number_object = n(), 
-           percentValidated = sum(object_annotation_status == "validated") / n() * 100) %>%
-  ungroup() %>%
-  # Ensure all columns exist, creating NA columns if they are missing
-  mutate(object_lat_end = ifelse("object_lat_end" %in% colnames(.), object_lat_end, NA_real_),
-         object_lon_end = ifelse("object_lon_end" %in% colnames(.), object_lon_end, NA_real_),
-         acq_volume_sampled = ifelse("acq_volume_sampled" %in% colnames(.), acq_volume_sampled, NA),
-         acq_resolution_pixel_per_micron = ifelse("acq_resolution_pixel_per_micron" %in% colnames(.), acq_resolution_pixel_per_micron, NA),
-         object_major_axis_length = ifelse("object_major_axis_length" %in% colnames(.), object_major_axis_length, NA),
-         object_minor_axis_length = ifelse("object_minor_axis_length" %in% colnames(.), object_minor_axis_length, NA),
-         object_surface_area = ifelse("object_surface_area" %in% colnames(.), object_surface_area, NA),
-         object_summed_biovolume = ifelse("object_summed_biovolume" %in% colnames(.), object_summed_biovolume, NA),
-         object_summed_surface_area = ifelse("object_summed_surface_area" %in% colnames(.), object_summed_surface_area, NA)) %>%
-  select(sample_id,
-         acq_id, 
-         unique_id,
-         ghost_id,
-         object_date,
-         object_time,
-         object_lat,
-         object_lon,
-         object_lat_end,
-         object_lon_end,
-         percentValidated,
-         number_object,
-         acq_volume_sampled,
-         acq_resolution_pixel_per_micron,
-         object_major_axis_length,
-         object_minor_axis_length,
-         object_surface_area,
-         object_summed_biovolume,
-         object_summed_surface_area) %>%
-   distinct() %>%
-    group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
 
 
