@@ -64,7 +64,7 @@ check_metadata <- function(path, output, instru) {
 
   metadata$object_date <- as.character(metadata$object_date)
   metadata$object_time <- as.character(metadata$object_time)
-  metadata <- data_edit(metadata, viewer="pane")
+  edited_metadata <- data_edit(metadata, viewer="pane")
 
   print("Data editing completed.")
 
@@ -86,6 +86,7 @@ check_metadata <- function(path, output, instru) {
   return(metadata)
  
 }
+
 
 
 
