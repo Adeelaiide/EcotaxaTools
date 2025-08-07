@@ -42,6 +42,9 @@ check_metadata <- function(path, output, instru) {
   }
 
   # --- Rest of the function (common steps for all instruments) ---
+
+   # Extract the metadata table for editing and checks
+  metadata <- metadata_list$metadata
   
   # Save original
   write_csv2(metadata, file.path(output,"metadata","original_metadata.csv"))
@@ -64,20 +67,24 @@ check_metadata <- function(path, output, instru) {
   print("Data editing completed.")
 
   # Create sample_num based on the *edited and arranged* metadata: Each unique sample_id will get a unique sequential number ordered by the EDITED date and time
-  metadata <- edited_metadata %>%
+  edited_metadata <- edited_metadata %>%
     mutate(sample_num = as.numeric(factor(sample_id, levels = unique(sample_id))))
 
   # Save the *final* edited metadata
-  write_csv2(metadata, file.path(output, "metadata",
+  write_csv2(edited_metadata, file.path(output, "metadata",
                                         paste0("edited_metadata_",
                                                time,
                                                ".csv")))
+  
+  # Merge with the object table from the original list
+  metadata <- merge(edited_metadata, metadata_list$objects, by = "unique_id")
   
   print("Edited metadata saved.")
 
   return(metadata)
  
 }
+
 
 
 
