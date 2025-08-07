@@ -142,7 +142,7 @@ transform_zooscan_data <- function(df) {
            sample_barcode,
            sample_tot_vol,
            process_pixel) %>%
-           distinct(unique_id, .keep_all = TRUE)
+           distinct()
 
   # Table 2: Object-specific data for instrument specific processing
   object_table <- df_transformed %>%
@@ -160,6 +160,7 @@ transform_zooscan_data <- function(df) {
   return(list(metadata = metadata_table, objects = object_table))
 
 }
+
 
 
 
