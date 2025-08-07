@@ -53,20 +53,32 @@ check_metadata <- function(path, output, instru) {
   print("Original metadata saved.")
 
   # DATA EDIT
+  
   check <- metadata %>% group_by(sample_id) %>% summarize(nb=n())
   check <- max(check$nb, na.rm=T)
   if (check>1){
     dlg_message("Warning ! Some of your samples have more than one acquisition. Be sure that they belong to the same sample. If not, please create a different tsv file for the supplementary acquisition and restart the process.", type="ok")
   }
-
+                                   
+# Create a summary data frame for editing with one row per sample
+summary_metadata <- metadata %>%
+    group_by(sample_id) %>%
+    summarise(across(everything(), ~first(.x)), .groups = "drop")
+                                   
   time <- format(Sys.time(), "%d-%m-%Y_%H%M")
   dlg_message("You can now edit metadata (click on SYNCHRONIZE and DONE button to update edition). The original .tsv files will not be edited. NA will be replaced by 1. Do not change the unique_id.", type="ok")
 
-  metadata$object_date <- as.character(metadata$object_date)
-  metadata$object_time <- as.character(metadata$object_time)
-  edited_metadata <- data_edit(metadata, viewer="pane")
+  summary_metadata$object_date <- as.character(summary_metadata$object_date)
+  summary_metadata$object_time <- as.character(summary_metadata$object_time)
+  # Pass the summary data frame to the editor
+  edited_summary_metadata  <- data_edit(summary_metadata, viewer="pane")
 
   print("Data editing completed.")
+
+  # Propagate the edits back to the full metadata table
+  edited_metadata <- metadata %>%
+    select(-one_of(names(edited_summary_metadata)[-1])) %>%
+    left_join(edited_summary_metadata, by = "sample_id") 
 
   # Create sample_num based on the *edited and arranged* metadata: Each unique sample_id will get a unique sequential number ordered by the EDITED date and time
   edited_metadata <- edited_metadata %>%
@@ -86,21 +98,3 @@ check_metadata <- function(path, output, instru) {
   return(metadata)
  
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
