@@ -144,7 +144,6 @@ transform_zooscan_data <- function(df) {
   group_by(sample_id) %>%
     summarise(across(everything(), ~first(.x)), .groups = "drop")
     #distinct() %>%
-    group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 
   # Table 2: Object-specific data for instrument specific processing
   object_table <- df_transformed %>%
@@ -202,6 +201,7 @@ transform_ifcb_data <- function(df) {
    distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
+
 
 
 
