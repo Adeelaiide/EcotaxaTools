@@ -57,9 +57,9 @@ check_metadata <- function(path, output, instru) {
   time <- format(Sys.time(), "%d-%m-%Y_%H%M")
   dlg_message("You can now edit metadata (click on SYNCHRONIZE and DONE button to update edition). The original .tsv files will not be edited. NA will be replaced by 1. Do not change the unique_id.", type="ok")
 
-  edited_metadata_for_viewer$object_date <- as.character(edited_metadata_for_viewer$object_date)
-  edited_metadata_for_viewer$object_time <- as.character(edited_metadata_for_viewer$object_time)
-  edited_metadata <- data_edit(edited_metadata_for_viewer, viewer="pane")
+  metadata$object_date <- as.character(metadata$object_date)
+  metadata$object_time <- as.character(metadata$object_time)
+  metadata <- data_edit(metadata, viewer="pane")
 
   print("Data editing completed.")
 
@@ -78,6 +78,7 @@ check_metadata <- function(path, output, instru) {
   return(metadata)
  
 }
+
 
 
 
