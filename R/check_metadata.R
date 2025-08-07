@@ -11,8 +11,6 @@
 #'
 #' @examples check_metadata(path=project.directory, output=where to save results)
 check_metadata <- function(path, output, instru) {
-  # Columns to hide for the data edit but needed for compute_bv and Instrument_Specific_processing
-  cols_to_hide <- c("object_area_exc", "object_feret", "object_area", "object_major", "object_minor")
 
   if (!file.exists(file.path(output,"metadata"))) {
     dir.create(file.path(output,"metadata"))
@@ -49,12 +47,6 @@ check_metadata <- function(path, output, instru) {
   write_csv2(metadata, file.path(output,"metadata","original_metadata.csv"))
   print("Original metadata saved.")
 
-   # Extract and save the hidden columns, along with the key identifier
-  edited_metadata_for_viewer <- metadata %>%
-    select(-all_of(cols_to_hide)) %>%
-    group_by(sample_id) %>%
-    summarise(across(everything(), ~first(.x)), .groups = "drop")
-
   # DATA EDIT
   check <- metadata %>% group_by(sample_id) %>% summarize(nb=n())
   check <- max(check$nb, na.rm=T)
@@ -71,17 +63,6 @@ check_metadata <- function(path, output, instru) {
 
   print("Data editing completed.")
 
-  # Propagate the edits back to the full metadata dataset
-  edited_metadata <- metadata %>%
-    select(-one_of(names(edited_metadata))) %>%
-    left_join(edited_metadata, by = "sample_id") %>%
-  
-    relocate(sample_id)
-
-  # Arrange by the *edited* date and time before creating sample_num
-  edited_metadata <- arrange(edited_metadata, object_date, object_time) %>%
-    left_join(hidden_data, by = "unique_id")
-
   # Create sample_num based on the *edited and arranged* metadata: Each unique sample_id will get a unique sequential number ordered by the EDITED date and time
   metadata <- edited_metadata %>%
     mutate(sample_num = as.numeric(factor(sample_id, levels = unique(sample_id))))
@@ -97,6 +78,7 @@ check_metadata <- function(path, output, instru) {
   return(metadata)
  
 }
+
 
 
 
