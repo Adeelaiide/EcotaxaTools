@@ -19,9 +19,9 @@ check_metadata <- function(path, output, instru) {
   # the helper function for reading base data is used here
   if (instru == "PlanktoScope") {
     print("You chose PlanktoScope. Applying PlanktoScope specific processing...")    
-    datalist <- lapply(path, function(p) {
+      metadata <- do.call("rbind", lapply(path, function(p) {
       read_base_metadata_file(p) %>% transform_planktoscope_data()
-    })
+    }))
   } else if (instru == "FlowCam") {
     print("You chose FlowCam. Applying FlowCam specific processing...")
     metadata <- do.call("rbind", lapply(path, function(p) {
@@ -29,9 +29,9 @@ check_metadata <- function(path, output, instru) {
     }))
   } else if (instru == "ZooScan") {
     print("You chose ZooScan. Applying ZooScan specific processing...")
-     datalist <- lapply(path, function(p) {
+       metadata <- do.call("rbind", lapply(path, function(p) {
       read_base_metadata_file(p) %>% transform_zooscan_data()
-    })
+    }))
   } else if (instru == "IFCB") {
     print("You chose IFCB. Applying IFCB specific processing...")
     metadata <- do.call("rbind", lapply(path, function(p) {
@@ -42,12 +42,7 @@ check_metadata <- function(path, output, instru) {
   }
 
   # --- Rest of the function (common steps for all instruments) ---
-
-   # Extract the tables for editing and checks
-   metadata <- bind_rows(lapply(datalist, function(x) x$metadata))
-   objectsdata <- bind_rows(lapply(datalist, function(x) x$objects))
  
-  
   # Save original
   write_csv2(metadata, file.path(output,"metadata","original_metadata.csv"))
   print("Original metadata saved.")
@@ -60,25 +55,15 @@ check_metadata <- function(path, output, instru) {
     dlg_message("Warning ! Some of your samples have more than one acquisition. Be sure that they belong to the same sample. If not, please create a different tsv file for the supplementary acquisition and restart the process.", type="ok")
   }
                                    
-# Create a summary data frame for editing with one row per sample
-summary_metadata <- metadata %>%
-    group_by(sample_id) %>%
-    summarise(across(everything(), ~first(.x)), .groups = "drop")
-                                   
   time <- format(Sys.time(), "%d-%m-%Y_%H%M")
   dlg_message("You can now edit metadata (click on SYNCHRONIZE and DONE button to update edition). The original .tsv files will not be edited. NA will be replaced by 1. Do not change the unique_id.", type="ok")
 
-  summary_metadata$object_date <- as.character(summary_metadata$object_date)
-  summary_metadata$object_time <- as.character(summary_metadata$object_time)
+  metadata$object_date <- as.character(metadata$object_date)
+  metadata$object_time <- as.character(metadata$object_time)
   # Pass the summary data frame to the editor
-  edited_summary_metadata  <- data_edit(summary_metadata, viewer="pane")
+  edited_metadata  <- data_edit(metadata, viewer="pane")
 
   print("Data editing completed.")
-
-  # Propagate the edits back to the full metadata table
-  edited_metadata <- metadata %>%
-    select(-one_of(names(edited_summary_metadata)[-1])) %>%
-    left_join(edited_summary_metadata, by = "sample_id") 
 
   # Create sample_num based on the *edited and arranged* metadata: Each unique sample_id will get a unique sequential number ordered by the EDITED date and time
   edited_metadata <- edited_metadata %>%
@@ -98,5 +83,6 @@ summary_metadata <- metadata %>%
   return(metadata)
  
 }
+
 
 
