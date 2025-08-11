@@ -4,7 +4,7 @@
 process_planktoscope_data <- function(data, metadata) {
   # Planktoscope-specific initial mutate cols and unique_id creation
   data <- data %>%
-    group_by(object_label, acq_id) %>%
+    group_by(sample_id, acq_id) %>%
     mutate(unique_id = paste(acq_id, sample_operator, object_date, object_time,
                              object_lat, object_lon, sep = "_"))
   
@@ -229,6 +229,7 @@ process_zooscan_data <- function(data, metadata) {
   
   #return(data)
 #}
+
 
 
 
