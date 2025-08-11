@@ -7,10 +7,13 @@ process_planktoscope_data <- function(data, metadata) {
     group_by(sample_id, acq_id) %>%
     mutate(unique_id = paste(acq_id, sample_operator, object_date, object_time,
                              object_lat, object_lon, sep = "_"))%>%
-    mutate(sample_total_volume = ifelse("sample_total_volume" %in% colnames(.), sample_total_volume, NA),
+ mutate(sample_total_volume = ifelse("sample_total_volume" %in% colnames(.), sample_total_volume, NA),
            sample_concentrated_sample_volume = ifelse("sample_concentrated_sample_volume" %in% colnames(.), sample_concentrated_sample_volume, NA),
-           sample_dilution_factor = ifelse("sample_dilution_factor" %in% colnames(.), sample_dilution_factor, NA)) %>%
-    mutate(sample_dilution_factor = as.numeric(gsub(",", ".",sample_dilution_factor)))
+           sample_dilution_factor = ifelse("sample_dilution_factor" %in% colnames(.), sample_dilution_factor, NA),
+           acq_imaged_volume = ifelse("acq_imaged_volume" %in% colnames(.), acq_imaged_volume, NA),
+           acq_celltype = ifelse("acq_celltype" %in% colnames(.), acq_celltype, NA),
+           process_pixel = ifelse("process_pixel" %in% colnames(.), process_pixel, NA)) %>%
+  mutate(sample_dilution_factor = as.numeric(gsub(",", ".", sample_dilution_factor)))
 
   
   # Metadata update (if metadata is provided)
@@ -234,6 +237,7 @@ process_zooscan_data <- function(data, metadata) {
   
   #return(data)
 #}
+
 
 
 
