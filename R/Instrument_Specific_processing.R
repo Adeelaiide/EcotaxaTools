@@ -16,31 +16,27 @@ process_planktoscope_data <- function(data, metadata) {
   mutate(sample_dilution_factor = as.numeric(gsub(",", ".", sample_dilution_factor)))
 
   
-  # Metadata update (if metadata is provided)
-   if(!is.null(metadata)) {     
-     metadata_cols <- metadata %>%
-     select(sample_id,
-           acq_id,
-           unique_id, 
-           object_date,
-           object_time,
-           object_lat,
-           object_lon,
-           sample_operator, 
-           percentValidated,
-           number_object,
-           acq_minimum_mesh,
-           acq_maximum_mesh,
-           sample_total_volume,
-           sample_concentrated_sample_volume,
-           acq_celltype,
-           acq_imaged_volume,
-           process_pixel,
-           sample_dilution_factor)
-     
-  data <- data %>%
-    left_join(metadata_cols, by = "unique_id")
-}  
+   # Metadata update (if metadata is provided)
+  if(!is.null(metadata)) {
+    # Rename metadata columns to avoid a column name collision during the join
+    metadata_cols <- metadata %>%
+      dplyr::rename_with(~ paste0("meta_", .x), .cols = -unique_id)
+    
+    data <- data %>%
+      left_join(metadata_cols, by = "unique_id") %>%
+      # Update the data frame columns with the metadata values, if available
+      mutate(
+        sample_total_volume = coalesce(meta_sample_total_volume, sample_total_volume),
+        sample_concentrated_sample_volume = coalesce(meta_sample_concentrated_sample_volume, sample_concentrated_sample_volume),
+        acq_celltype = coalesce(meta_acq_celltype, acq_celltype),
+        acq_imaged_volume = coalesce(meta_acq_imaged_volume, acq_imaged_volume),
+        process_pixel = coalesce(meta_process_pixel, process_pixel),
+        sample_dilution_factor = coalesce(meta_sample_dilution_factor, sample_dilution_factor)
+      ) %>%
+      # Remove the temporary metadata columns
+      dplyr::select(-starts_with("meta_"))
+  }
+  
   # Planktoscope-specific unit conversions
   data <- mutate(data,
                  sample_total_volume = sample_total_volume / 1000,
@@ -257,6 +253,7 @@ process_zooscan_data <- function(data, metadata) {
   
   #return(data)
 #}
+
 
 
 
