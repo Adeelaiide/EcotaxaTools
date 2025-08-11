@@ -44,7 +44,7 @@ transform_planktoscope_data <- function(df) {
            object_time,
            object_lat,
            object_lon,
-           sample_scan_operator, 
+           sample_operator, 
            percentValidated,
            number_object,
            acq_nb_frame,
@@ -177,6 +177,7 @@ transform_zooscan_data <- function(df) {
   return(list(metadata = metadata_table, objects = object_table))
 
 }
+
 
 
 
