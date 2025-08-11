@@ -6,32 +6,17 @@ process_planktoscope_data <- function(data, metadata) {
   data <- data %>%
     group_by(sample_id, acq_id) %>%
     mutate(unique_id = paste(acq_id, sample_operator, object_date, object_time,
-                             object_lat, object_lon, sep = "_"))
+                             object_lat, object_lon, sep = "_"))%>%
+    mutate(sample_total_volume = ifelse("sample_total_volume" %in% colnames(.), sample_total_volume, NA),
+           sample_concentrated_sample_volume = ifelse("sample_concentrated_sample_volume" %in% colnames(.), sample_concentrated_sample_volume, NA),
+           sample_dilution_factor = ifelse("sample_dilution_factor" %in% colnames(.), sample_dilution_factor, NA)) %>%
+    mutate(sample_dilution_factor = as.numeric(gsub(",", ".",sample_dilution_factor)))
+
   
   # Metadata update (if metadata is provided)
-   if(!is.null(metadata)) {
-     metadata_cols <- metadata %>%
-     select(sample_id,
-           acq_id,
-           unique_id, 
-           object_date,
-           object_time,
-           object_lat,
-           object_lon,
-           sample_operator, 
-           percentValidated,
-           number_object,
-           acq_minimum_mesh,
-           acq_maximum_mesh,
-           sample_total_volume,
-           sample_concentrated_sample_volume,
-           acq_celltype,
-           acq_imaged_volume,
-           process_pixel,
-           sample_dilution_factor)
-     
+   if(!is.null(metadata)) {     
   data <- data %>%
-    left_join(metadata_cols, by = "unique_id")
+    left_join(metadata, by = "unique_id")
 }  
   # Planktoscope-specific unit conversions
   data <- mutate(data,
@@ -249,6 +234,7 @@ process_zooscan_data <- function(data, metadata) {
   
   #return(data)
 #}
+
 
 
 
