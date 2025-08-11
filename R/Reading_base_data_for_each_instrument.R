@@ -13,7 +13,7 @@ read_base_metadata_file <- function(file_path) {
 
 # Function for PlanktoScope specific data transformation
 transform_planktoscope_data <- function(df) {
-  df_transformed <- df %>%
+ df %>%
     group_by(sample_id, acq_id) %>% 
    mutate(unique_id = paste(acq_id, sample_operator, object_date, object_time,
                              object_lat, object_lon, sep = "_")) %>%
@@ -27,15 +27,8 @@ transform_planktoscope_data <- function(df) {
            sample_dilution_factor = ifelse("sample_dilution_factor" %in% colnames(.), sample_dilution_factor, NA),
            acq_imaged_volume = ifelse("acq_imaged_volume" %in% colnames(.), acq_imaged_volume, NA),
            acq_celltype = ifelse("acq_celltype" %in% colnames(.), acq_celltype, NA),
-           object_area = ifelse("object_area" %in% colnames(.), object_area, NA),
-           object_major = ifelse("object_major" %in% colnames(.), object_major, NA),
-           object_minor = ifelse("object_minor" %in% colnames(.), object_minor, NA),
-           object_area_exc = ifelse("object_area_exc" %in% colnames(.), object_area_exc, NA),
            process_pixel = ifelse("process_pixel" %in% colnames(.), process_pixel, NA)) %>%
-    mutate(sample_dilution_factor = as.numeric(gsub(",", ".", sample_dilution_factor)))
-  
-     # Table 1: Metadata
-  metadata_table <- df_transformed %>%
+    mutate(sample_dilution_factor = as.numeric(gsub(",", ".", sample_dilution_factor)))  %>%
     select(sample_id,
            acq_id,
            unique_id,
@@ -47,7 +40,6 @@ transform_planktoscope_data <- function(df) {
            sample_operator, 
            percentValidated,
            number_object,
-           acq_nb_frame,
            acq_minimum_mesh,
            acq_maximum_mesh,
            sample_total_volume,
@@ -56,21 +48,8 @@ transform_planktoscope_data <- function(df) {
            acq_imaged_volume,
            process_pixel,
            sample_dilution_factor) %>%
-           distinct()
-
-  # Table 2: Object-specific data for instrument specific processing
-  object_table <- df_transformed %>%
-    select(unique_id,
-           object_area,
-           object_major,
-           object_minor,
-           object_area_exc,
-           object_annotation_status,
-           object_annotation_category, 
-           object_annotation_hierarchy) %>%
-    distinct()
-
-  return(list(metadata = metadata_table, objects = object_table))
+    distinct() %>%
+    group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup()
 }
 
 # Function for FlowCam specific data transformation
@@ -110,12 +89,7 @@ transform_flowcam_data <- function(df) {
            sample_initial_col_vol_m3,
            sample_conc_vol_ml,
            acq_fluid_volume_imaged,
-           process_pixel,
-           sample_volconc,
-           object_area,
-           object_major,
-           object_minor,
-           object_area_exc) %>%
+           process_pixel) %>%
     distinct() %>%
     group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
@@ -133,15 +107,8 @@ transform_zooscan_data <- function(df) {
   ungroup() %>%
   # Ensure all columns exist, creating NA columns if they are missing
    mutate(sample_tot_vol = ifelse("sample_tot_vol" %in% colnames(.), sample_tot_vol, NA),
-           acq_sub_part = ifelse("acq_sub_part" %in% colnames(.), acq_sub_part, NA),
-          object_feret = ifelse("object_feret" %in% colnames(.), object_feret, NA),
-           object_area = ifelse("object_area" %in% colnames(.), object_area, NA),
-           object_major = ifelse("object_major" %in% colnames(.), object_major, NA),
-           object_minor = ifelse("object_minor" %in% colnames(.), object_minor, NA),
-           process_pixel = ifelse("process_particle_pixel_size_mm" %in% colnames(.), process_particle_pixel_size_mm, NA)) 
-  
-   # Table 1: Metadata
-  metadata_table <- df_transformed %>%
+          acq_sub_part = ifelse("acq_sub_part" %in% colnames(.), acq_sub_part, NA),
+          process_pixel = ifelse("process_particle_pixel_size_mm" %in% colnames(.), process_particle_pixel_size_mm, NA)) %>%
     select(sample_id,
            acq_id,
            unique_id,
@@ -159,24 +126,10 @@ transform_zooscan_data <- function(df) {
            sample_barcode,
            sample_tot_vol,
            process_pixel) %>%
-           distinct()
-
-  # Table 2: Object-specific data for instrument specific processing
-  object_table <- df_transformed %>%
-    select(unique_id,
-           object_feret,
-           object_area,
-           object_major,
-           object_minor,
-           object_area_exc,
-           object_annotation_status,
-           object_annotation_category, 
-           object_annotation_hierarchy) %>%
-    distinct()
-
-  return(list(metadata = metadata_table, objects = object_table))
-
+           distinct() %>%
+ group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
+
 
 
 
