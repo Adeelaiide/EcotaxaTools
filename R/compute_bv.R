@@ -17,6 +17,10 @@
 compute_bv <- function(path, output, metadata = NULL, instru) {
   options(dplyr.summarise.inform = FALSE)
 
+  # Load the dataframe
+  data <- read_tsv(path, col_types = list(object_time=col_time(),
+                                          object_annotation_time=col_time()))
+
   # Dispatch to instrument-specific processing function
   if (instru == "PlanktoScope") {
     data <- process_planktoscope_data(data, metadata)
@@ -91,4 +95,5 @@ compute_bv <- function(path, output, metadata = NULL, instru) {
 
   return(data)
 }
+
 
