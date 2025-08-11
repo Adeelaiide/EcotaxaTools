@@ -21,7 +21,7 @@ check_metadata <- function(path, output, instru) {
     print("You chose PlanktoScope. Applying PlanktoScope specific processing...")    
     datalist <- lapply(path, function(p) {
       read_base_metadata_file(p) %>% transform_planktoscope_data()
-    }))
+    })
   } else if (instru == "FlowCam") {
     print("You chose FlowCam. Applying FlowCam specific processing...")
     metadata <- do.call("rbind", lapply(path, function(p) {
@@ -98,4 +98,5 @@ summary_metadata <- metadata %>%
   return(metadata)
  
 }
+
 
