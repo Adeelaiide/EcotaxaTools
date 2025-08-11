@@ -1,9 +1,5 @@
 # --- HELPER FUNCTIONS FOR compute_bv ---
 
-# Load the dataframe
-  data <- read_tsv(path, col_types = list(object_time=col_time(),
-                                          object_annotation_time=col_time()))
-
 # Helper function for Planktoscope-specific processing
 process_planktoscope_data <- function(data, metadata) {
   # Planktoscope-specific initial mutate cols and unique_id creation
@@ -253,5 +249,6 @@ process_zooscan_data <- function(data, metadata) {
   
   #return(data)
 #}
+
 
 
