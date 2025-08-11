@@ -9,12 +9,7 @@ process_planktoscope_data <- function(data, metadata) {
     ungroup() %>%
     mutate(unique_id = paste(acq_id, sample_operator, ghost_id,
                              object_date, object_time,
-                             object_lat, object_lon, sep = "_")) %>%
-    # Ensure all columns exist, creating NA columns if they are missing
-    mutate(sample_total_volume = ifelse("sample_total_volume" %in% colnames(.), sample_total_volume, NA),
-           sample_concentrated_sample_volume = ifelse("sample_concentrated_sample_volume" %in% colnames(.), sample_concentrated_sample_volume, NA),
-           sample_dilution_factor = ifelse("sample_dilution_factor" %in% colnames(.), sample_dilution_factor, NA)) %>%
-    mutate(sample_dilution_factor = as.numeric(gsub(",", ".", sample_dilution_factor)))
+                             object_lat, object_lon, sep = "_"))
   
   # Metadata update (if metadata is provided)
    if(!is.null(metadata)) {
@@ -237,6 +232,7 @@ process_zooscan_data <- function(data, metadata) {
   
   #return(data)
 #}
+
 
 
 
