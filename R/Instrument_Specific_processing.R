@@ -7,6 +7,7 @@ process_planktoscope_data <- function(data, metadata) {
     group_by(sample_id, acq_id) %>%
     mutate(unique_id = paste(acq_id, sample_operator, object_date, object_time,
                              object_lat, object_lon, sep = "_"))%>%
+ # Ensure all columns exist, creating NA columns if they are missing
  mutate(sample_total_volume = ifelse("sample_total_volume" %in% colnames(.), sample_total_volume, NA),
            sample_concentrated_sample_volume = ifelse("sample_concentrated_sample_volume" %in% colnames(.), sample_concentrated_sample_volume, NA),
            sample_dilution_factor = ifelse("sample_dilution_factor" %in% colnames(.), sample_dilution_factor, NA),
@@ -88,32 +89,37 @@ process_flowcam_data <- function(data, metadata) {
   # FlowCam-specific initial mutate cols and unique_id creation
   data <- data %>%
     group_by(object_id, acq_id) %>% 
-    mutate(ghost_id = 1:n()) %>%
-    ungroup() %>%
-    mutate(unique_id = paste(acq_id, ghost_id,
-                             object_date, object_time,
+    mutate(unique_id = paste(acq_id, object_date, object_time,
                              object_lat, object_lon, sep = "_")) %>%
     # Ensure all columns exist, creating NA columns if they are missing
-    mutate(sample_initial_col_vol_m3 = ifelse("sample_initial_col_vol_m3" %in% colnames(.), sample_initial_col_vol_m3, NA),
+     mutate(sample_initial_col_vol_m3 = ifelse("sample_initial_col_vol_m3" %in% colnames(.), sample_initial_col_vol_m3, NA),
            sample_conc_vol_ml = ifelse("sample_conc_vol_ml" %in% colnames(.), sample_conc_vol_ml, NA),
-           sample_volconc = ifelse("sample_volconc" %in% colnames(.), sample_volconc, NA)) %>%
-    mutate(sample_volconc = as.numeric(gsub(",", ".", sample_volconc))) 
+           sample_volconc_temp = ifelse("sample_volconc" %in% colnames(.), sample_volconc, NA_real_),
+           acq_fluid_volume_imaged = ifelse("acq_fluid_volume_imaged" %in% colnames(.), acq_fluid_volume_imaged, NA),
+           acq_celltype = ifelse("acq_celltype" %in% colnames(.), acq_celltype, NA),
+           process_pixel = ifelse("process_pixel" %in% colnames(.), process_pixel, NA),
+           sample_volconc = as.numeric(gsub(",", ".", sample_volconc_temp)), 
+           acq_celltype = parse_number(acq_celltype)) %>%
+    select(-sample_volconc_temp)
   
- # Metadata update (if metadata is provided)
-  if (!is.null(metadata)) {
-    if ("object_time" %in% colnames(metadata) && !inherits(metadata$object_time, "hms")) {
-      metadata$object_time <- hms::as_hms(metadata$object_time)
-    }
-    if ("object_date" %in% colnames(metadata) && !inherits(metadata$object_date, "Date")) {
-      metadata$object_date <- lubridate::as_date(metadata$object_date)
-    }
-    for (i in unique(data$unique_id)) {
-      meta_row <- metadata[metadata$unique_id == i, ]
-      if (nrow(meta_row) > 0) {
-        update_cols <- intersect(names(meta_row), names(data))
-        data[data$unique_id == i, update_cols] <- meta_row[1, update_cols]
-      }
-    }
+ 
+   # Metadata update (if metadata is provided)
+  if(!is.null(metadata)) {
+    # Rename metadata columns to avoid a column name collision during the join
+    metadata_cols <- metadata %>%
+      dplyr::rename_with(~ paste0("meta_", .x), .cols = -unique_id)
+    
+    data <- data %>%
+      left_join(metadata_cols, by = "unique_id") %>%
+      # Update the data frame columns with the metadata values, if available
+      mutate(sample_initial_col_vol_m3 = coalesce(meta_sample_initial_col_vol_m3, sample_initial_col_vol_m3),
+             sample_conc_vol_ml = coalesce(meta_sample_conc_vol_ml, sample_conc_vol_ml),
+             acq_celltype = coalesce(meta_acq_celltype, acq_celltype),
+             acq_fluid_volume_imaged = coalesce(meta_acq_fluid_volume_imaged, acq_fluid_volume_imaged),
+             process_pixel = coalesce(meta_process_pixel, process_pixel),
+             sample_volconc = coalesce(meta_sample_volconc, sample_volconc)) %>%
+      # Remove the temporary metadata columns
+      dplyr::select(-starts_with("meta_"))
   }
   
   # FlowCam-specific unit conversions
@@ -164,31 +170,27 @@ process_zooscan_data <- function(data, metadata) {
     # ZooScan-specific initial mutate cols and unique_id creation
   data <- data %>%
     group_by(object_id, acq_id) %>% 
-  mutate(ghost_id = 1:n()) %>%
-    ungroup() %>%
-    mutate(unique_id = paste(acq_id, sample_scan_operator, ghost_id,
-                             object_date, object_time,
+    mutate(unique_id = paste(acq_id, sample_scan_operator, object_date, object_time,
                              object_lat, object_lon, acq_sub_part, sep = "_")) %>%
   # Ensure all columns exist, creating NA columns if they are missing
    mutate(sample_tot_vol = ifelse("sample_tot_vol" %in% colnames(.), sample_tot_vol, NA),
           acq_sub_part = ifelse("acq_sub_part" %in% colnames(.), acq_sub_part, NA),
           process_particle_pixel_size_mm = ifelse("process_particle_pixel_size_mm" %in% colnames(.), process_particle_pixel_size_mm, NA)) %>%
   
-  # Metadata update (if metadata is provided)
-  if (!is.null(metadata)) {
-    if ("object_time" %in% colnames(metadata) && !inherits(metadata$object_time, "hms")) {
-      metadata$object_time <- hms::as_hms(metadata$object_time)
-    }
-    if ("object_date" %in% colnames(metadata) && !inherits(metadata$object_date, "Date")) {
-      metadata$object_date <- lubridate::as_date(metadata$object_date)
-    }
-    for (i in unique(data$unique_id)) {
-      meta_row <- metadata[metadata$unique_id == i, ]
-      if (nrow(meta_row) > 0) {
-        update_cols <- intersect(names(meta_row), names(data))
-        data[data$unique_id == i, update_cols] <- meta_row[1, update_cols]
-      }
-    }
+   # Metadata update (if metadata is provided)
+  if(!is.null(metadata)) {
+    # Rename metadata columns to avoid a column name collision during the join
+    metadata_cols <- metadata %>%
+      dplyr::rename_with(~ paste0("meta_", .x), .cols = -unique_id)
+    
+    data <- data %>%
+      left_join(metadata_cols, by = "unique_id") %>%
+      # Update the data frame columns with the metadata values, if available
+      mutate(sample_tot_vol = coalesce(meta_sample_tot_vol, sample_tot_vol),
+        acq_sub_part = coalesce(meta_acq_sub_part, acq_sub_part),
+        process_particle_pixel_size_mm = coalesce(meta_process_particle_pixel_size_mm, process_particle_pixel_size_mm)) %>%
+      # Remove the temporary metadata columns
+      dplyr::select(-starts_with("meta_"))
   }
   
   # ZooScan-specific unit conversions
@@ -253,6 +255,7 @@ process_zooscan_data <- function(data, metadata) {
   
   #return(data)
 #}
+
 
 
 
