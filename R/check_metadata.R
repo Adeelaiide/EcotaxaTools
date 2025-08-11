@@ -75,14 +75,8 @@ check_metadata <- function(path, output, instru) {
                                                time,
                                                ".csv")))
   
-  # Merge with the object table from the original list
-  metadata <- merge(edited_metadata, objectsdata, by = "unique_id")
-  
   print("Edited metadata saved.")
 
   return(metadata)
  
 }
-
-
-
