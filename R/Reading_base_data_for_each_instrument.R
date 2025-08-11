@@ -13,32 +13,38 @@ read_base_metadata_file <- function(file_path) {
 
 # Function for PlanktoScope specific data transformation
 transform_planktoscope_data <- function(df) {
-  df %>%
+  df_transformed <- df %>%
     group_by(sample_id, acq_id) %>% 
-    mutate(unique_id = paste(acq_id, sample_operator, object_date, object_time,
+   mutate(unique_id = paste(acq_id, sample_operator, object_date, object_time,
                              object_lat, object_lon, sep = "_")) %>%
-    group_by(unique_id) %>%
+   group_by(unique_id) %>%
     mutate(number_object = n(),
-           percentValidated = sum(object_annotation_status == "validated", na.rm = TRUE) / n() * 100) %>%
-    ungroup() %>%
+            percentValidated = sum(object_annotation_status == "validated", na.rm = TRUE) / n() * 100) %>%
+  ungroup() %>%
   # Ensure all columns exist, creating NA columns if they are missing
     mutate(sample_total_volume = ifelse("sample_total_volume" %in% colnames(.), sample_total_volume, NA),
            sample_concentrated_sample_volume = ifelse("sample_concentrated_sample_volume" %in% colnames(.), sample_concentrated_sample_volume, NA),
            sample_dilution_factor = ifelse("sample_dilution_factor" %in% colnames(.), sample_dilution_factor, NA),
            acq_imaged_volume = ifelse("acq_imaged_volume" %in% colnames(.), acq_imaged_volume, NA),
            acq_celltype = ifelse("acq_celltype" %in% colnames(.), acq_celltype, NA),
-           process_pixel = ifelse("process_pixel" %in% colnames(.), process_pixel, NA)) %>%
+           object_area = ifelse("object_area" %in% colnames(.), object_area, NA),
+           object_major = ifelse("object_major" %in% colnames(.), object_major, NA),
+           object_minor = ifelse("object_minor" %in% colnames(.), object_minor, NA),
+           object_area_exc = ifelse("object_area_exc" %in% colnames(.), object_area_exc, NA),
+           pixelsize = ifelse("process_pixel" %in% colnames(.), process_pixel, NA)) %>%
+    mutate(sample_dilution_factor = as.numeric(gsub(",", ".", sample_dilution_factor)))
   
-    mutate(sample_dilution_factor = as.numeric(gsub(",", ".", sample_dilution_factor))) %>%
+     # Table 1: Metadata
+  metadata_table <- df_transformed %>%
     select(sample_id,
            acq_id,
            unique_id,
-           ghost_id,
+           ghost_id, 
            object_date,
            object_time,
            object_lat,
            object_lon,
-           sample_operator,
+           sample_scan_operator, 
            percentValidated,
            number_object,
            acq_nb_frame,
@@ -48,12 +54,23 @@ transform_planktoscope_data <- function(df) {
            sample_concentrated_sample_volume,
            acq_celltype,
            acq_imaged_volume,
-           process_pixel,
-           sample_dilution_factor,
+           pixelsize,
+           sample_dilution_factor) %>%
+           distinct()
+
+  # Table 2: Object-specific data for instrument specific processing
+  object_table <- df_transformed %>%
+    select(unique_id,
            object_area,
            object_major,
            object_minor,
-           object_area_exc) 
+           object_area_exc,
+           object_annotation_status,
+           object_annotation_category, 
+           object_annotation_hierarchy) %>%
+    distinct()
+
+  return(list(metadata = metadata_table, objects = object_table))
 }
 
 # Function for FlowCam specific data transformation
@@ -160,6 +177,7 @@ transform_zooscan_data <- function(df) {
   return(list(metadata = metadata_table, objects = object_table))
 
 }
+
 
 
 
