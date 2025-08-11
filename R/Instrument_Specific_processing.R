@@ -169,13 +169,13 @@ process_flowcam_data <- function(data, metadata) {
 process_zooscan_data <- function(data, metadata) {
     # ZooScan-specific initial mutate cols and unique_id creation
   data <- data %>%
-    group_by(object_id, acq_id) %>% 
+    group_by(sample_id, acq_id) %>% 
     mutate(unique_id = paste(acq_id, sample_scan_operator, object_date, object_time,
                              object_lat, object_lon, acq_sub_part, sep = "_")) %>%
   # Ensure all columns exist, creating NA columns if they are missing
    mutate(sample_tot_vol = ifelse("sample_tot_vol" %in% colnames(.), sample_tot_vol, NA),
           acq_sub_part = ifelse("acq_sub_part" %in% colnames(.), acq_sub_part, NA),
-          process_particle_pixel_size_mm = ifelse("process_particle_pixel_size_mm" %in% colnames(.), process_particle_pixel_size_mm, NA)) %>%
+          process_particle_pixel_size_mm = ifelse("process_particle_pixel_size_mm" %in% colnames(.), process_particle_pixel_size_mm, NA)) 
   
    # Metadata update (if metadata is provided)
   if(!is.null(metadata)) {
@@ -255,6 +255,7 @@ process_zooscan_data <- function(data, metadata) {
   
   #return(data)
 #}
+
 
 
 
