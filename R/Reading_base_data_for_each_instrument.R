@@ -108,7 +108,7 @@ transform_zooscan_data <- function(df) {
   # Ensure all columns exist, creating NA columns if they are missing
    mutate(sample_tot_vol = ifelse("sample_tot_vol" %in% colnames(.), sample_tot_vol, NA),
           acq_sub_part = ifelse("acq_sub_part" %in% colnames(.), acq_sub_part, NA),
-          process_pixel = ifelse("process_particle_pixel_size_mm" %in% colnames(.), process_particle_pixel_size_mm, NA)) %>%
+          process_particle_pixel_size_mm = ifelse("process_particle_pixel_size_mm" %in% colnames(.), process_particle_pixel_size_mm, NA)) %>%
     select(sample_id,
            acq_id,
            unique_id,
@@ -125,10 +125,11 @@ transform_zooscan_data <- function(df) {
            acq_sub_part,
            sample_barcode,
            sample_tot_vol,
-           process_pixel) %>%
+           process_particle_pixel_size_mm) %>%
            distinct() %>%
  group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
+
 
 
 
