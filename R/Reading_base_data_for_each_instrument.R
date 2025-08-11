@@ -13,22 +13,23 @@ read_base_metadata_file <- function(file_path) {
 # Function for PlanktoScope specific data transformation
 transform_planktoscope_data <- function(df) {
  df %>%
-    group_by(sample_id, acq_id) %>% 
-   mutate(unique_id = paste(acq_id, sample_operator, object_date, object_time,
+  group_by(sample_id, acq_id) %>% 
+  mutate(ghost_id=1:n()) %>% ungroup %>%
+  mutate(unique_id = paste(acq_id, sample_operator, object_date, object_time,
                              object_lat, object_lon, sep = "_")) %>%
-   group_by(unique_id) %>%
-    mutate(number_object = n(),
+  group_by(unique_id) %>%
+  mutate(number_object = n(),
             percentValidated = sum(object_annotation_status == "validated", na.rm = TRUE) / n() * 100) %>%
   ungroup() %>%
   # Ensure all columns exist, creating NA columns if they are missing
-    mutate(sample_total_volume = ifelse("sample_total_volume" %in% colnames(.), sample_total_volume, NA),
+  mutate(sample_total_volume = ifelse("sample_total_volume" %in% colnames(.), sample_total_volume, NA),
            sample_concentrated_sample_volume = ifelse("sample_concentrated_sample_volume" %in% colnames(.), sample_concentrated_sample_volume, NA),
            sample_dilution_factor = ifelse("sample_dilution_factor" %in% colnames(.), sample_dilution_factor, NA),
            acq_imaged_volume = ifelse("acq_imaged_volume" %in% colnames(.), acq_imaged_volume, NA),
            acq_celltype = ifelse("acq_celltype" %in% colnames(.), acq_celltype, NA),
            process_pixel = ifelse("process_pixel" %in% colnames(.), process_pixel, NA)) %>%
-    mutate(sample_dilution_factor = as.numeric(gsub(",", ".", sample_dilution_factor)))  %>%
-    select(sample_id,
+  mutate(sample_dilution_factor = as.numeric(gsub(",", ".", sample_dilution_factor)))  %>%
+  select(sample_id,
            acq_id,
            unique_id,
            ghost_id, 
@@ -47,14 +48,15 @@ transform_planktoscope_data <- function(df) {
            acq_imaged_volume,
            process_pixel,
            sample_dilution_factor) %>%
-    distinct() %>%
-    group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup()
+  distinct() %>%
+  group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup()
 }
 
 # Function for FlowCam specific data transformation
 transform_flowcam_data <- function(df) {
   df %>%
     group_by(object_id, acq_id) %>% 
+    mutate(ghost_id=1:n()) %>% ungroup %>%
     mutate(unique_id = paste(acq_id, object_date, object_time,
                              object_lat, object_lon, sep = "_")) %>%
     group_by(unique_id) %>%
@@ -97,6 +99,7 @@ transform_flowcam_data <- function(df) {
 transform_zooscan_data <- function(df) {
   df_transformed <- df %>%
     group_by(object_id, acq_id) %>% 
+    mutate(ghost_id=1:n()) %>% ungroup %>%
     mutate(unique_id = paste(acq_id, sample_scan_operator, 
                              object_date, object_time,
                              object_lat, object_lon, acq_sub_part, sep = "_")) %>%
@@ -128,6 +131,7 @@ transform_zooscan_data <- function(df) {
            distinct() %>%
  group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
+
 
 
 
