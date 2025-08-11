@@ -18,8 +18,28 @@ process_planktoscope_data <- function(data, metadata) {
   
   # Metadata update (if metadata is provided)
    if(!is.null(metadata)) {     
+     metadata_cols <- metadata %>%
+     select(sample_id,
+           acq_id,
+           unique_id, 
+           object_date,
+           object_time,
+           object_lat,
+           object_lon,
+           sample_operator, 
+           percentValidated,
+           number_object,
+           acq_minimum_mesh,
+           acq_maximum_mesh,
+           sample_total_volume,
+           sample_concentrated_sample_volume,
+           acq_celltype,
+           acq_imaged_volume,
+           process_pixel,
+           sample_dilution_factor)
+     
   data <- data %>%
-    left_join(metadata, by = "unique_id")
+    left_join(metadata_cols, by = "unique_id")
 }  
   # Planktoscope-specific unit conversions
   data <- mutate(data,
@@ -237,6 +257,7 @@ process_zooscan_data <- function(data, metadata) {
   
   #return(data)
 #}
+
 
 
 
