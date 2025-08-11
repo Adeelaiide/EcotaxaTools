@@ -93,7 +93,7 @@ transform_flowcam_data <- function(df) {
 
 # Function for Zooscan specific data transformation
 transform_zooscan_data <- function(df) {
-  df_transformed <- df %>%
+  df %>%
     group_by(object_id, acq_id) %>%
     mutate(unique_id = paste(acq_id, sample_scan_operator, 
                              object_date, object_time,
@@ -125,6 +125,7 @@ transform_zooscan_data <- function(df) {
            distinct() %>%
  group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
+
 
 
 
