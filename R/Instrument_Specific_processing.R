@@ -17,19 +17,24 @@ process_planktoscope_data <- function(data, metadata) {
     mutate(sample_dilution_factor = as.numeric(gsub(",", ".", sample_dilution_factor)))
   
   # Metadata update (if metadata is provided)
-  if (!is.null(metadata)) {
-    if ("object_time" %in% colnames(metadata) && !inherits(metadata$object_time, "hms")) {
-      metadata$object_time <- hms::as_hms(metadata$object_time)
-    }
-    if ("object_date" %in% colnames(metadata) && !inherits(metadata$object_date, "Date")) {
-      metadata$object_date <- lubridate::as_date(metadata$object_date)
-    }
-    for (i in unique(data$unique_id)) {
-      meta_row <- metadata[metadata$unique_id == i, ]
-      if (nrow(meta_row) > 0) {
-        update_cols <- intersect(names(meta_row), names(data))
-        data[data$unique_id == i, update_cols] <- meta_row[1, update_cols]
-      }
+   if(!is.null(metadata)) {
+    for(i in unique(data$unique_id)) {
+      meta <- metadata[metadata$unique_id==i,]
+      data[data$unique_id==i,] <- mutate(data[data$unique_id==i,],
+                                         acq_id = meta$acq_id,
+                                         ghost_id = meta$ghost_id,
+                                         object_date = meta$object_date,
+                                         object_time = meta$object_time,
+                                         object_lat = meta$object_lat,
+                                         object_lon = meta$object_lon,
+                                         sample_id = meta$sample_id,
+                                         sample_operator = meta$sample_operator,
+                                         sample_total_volume = meta$sample_total_volume,
+                                         sample_concentrated_sample_volume = meta$sample_concentrated_sample_volume,
+                                         acq_celltype = meta$acq_celltype,
+                                         acq_imaged_volume = meta$acq_imaged_volume,
+                                         process_pixel = meta$process_pixel,
+                                         sample_dilution_factor = meta$sample_dilution_factor)
     }
   }
   
@@ -249,6 +254,7 @@ process_zooscan_data <- function(data, metadata) {
   
   #return(data)
 #}
+
 
 
 
