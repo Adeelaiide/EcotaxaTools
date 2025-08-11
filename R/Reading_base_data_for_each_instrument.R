@@ -31,7 +31,7 @@ transform_planktoscope_data <- function(df) {
            object_major = ifelse("object_major" %in% colnames(.), object_major, NA),
            object_minor = ifelse("object_minor" %in% colnames(.), object_minor, NA),
            object_area_exc = ifelse("object_area_exc" %in% colnames(.), object_area_exc, NA),
-           pixelsize = ifelse("process_pixel" %in% colnames(.), process_pixel, NA)) %>%
+           process_pixel = ifelse("process_pixel" %in% colnames(.), process_pixel, NA)) %>%
     mutate(sample_dilution_factor = as.numeric(gsub(",", ".", sample_dilution_factor)))
   
      # Table 1: Metadata
@@ -177,6 +177,7 @@ transform_zooscan_data <- function(df) {
   return(list(metadata = metadata_table, objects = object_table))
 
 }
+
 
 
 
