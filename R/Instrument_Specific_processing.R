@@ -1,5 +1,6 @@
 # --- HELPER FUNCTIONS FOR compute_bv ---
-# Load
+
+# Load the dataframe
   data <- read_tsv(path, col_types = list(object_time=col_time(),
                                           object_annotation_time=col_time()))
 
@@ -252,4 +253,5 @@ process_zooscan_data <- function(data, metadata) {
   
   #return(data)
 #}
+
 
