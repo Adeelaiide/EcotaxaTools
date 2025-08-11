@@ -54,7 +54,7 @@ transform_planktoscope_data <- function(df) {
            sample_concentrated_sample_volume,
            acq_celltype,
            acq_imaged_volume,
-           pixelsize,
+           process_pixel,
            sample_dilution_factor) %>%
            distinct()
 
@@ -177,6 +177,7 @@ transform_zooscan_data <- function(df) {
   return(list(metadata = metadata_table, objects = object_table))
 
 }
+
 
 
 
