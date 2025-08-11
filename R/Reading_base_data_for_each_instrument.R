@@ -14,7 +14,6 @@ read_base_metadata_file <- function(file_path) {
 transform_planktoscope_data <- function(df) {
  df %>%
   group_by(sample_id, acq_id) %>% 
-  mutate(ghost_id=1:n()) %>% ungroup %>%
   mutate(unique_id = paste(acq_id, sample_operator, object_date, object_time,
                              object_lat, object_lon, sep = "_")) %>%
   group_by(unique_id) %>%
@@ -31,8 +30,7 @@ transform_planktoscope_data <- function(df) {
   mutate(sample_dilution_factor = as.numeric(gsub(",", ".", sample_dilution_factor)))  %>%
   select(sample_id,
            acq_id,
-           unique_id,
-           ghost_id, 
+           unique_id, 
            object_date,
            object_time,
            object_lat,
@@ -131,6 +129,7 @@ transform_zooscan_data <- function(df) {
            distinct() %>%
  group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
+
 
 
 
