@@ -54,7 +54,7 @@ graph.metadata <- function(final_metadata) {
                 legend.position = "right"))
 
   # 3. METADATA
-  metadata.long <- final_metadata %>% pivot_longer(c(where(is.numeric), -ghost_id, -object_lat, -object_lon, -pixelsize, -percentValidated)) %>% arrange(time)
+  metadata.long <- final_metadata %>% pivot_longer(c(where(is.numeric), -ghost_id, -object_lat, -object_lon, -percentValidated)) %>% arrange(time)
   id <- unique(final_metadata$sample_id)
   nb <- length(id)
   n <- ceiling(nb/10)
@@ -81,4 +81,5 @@ graph.metadata <- function(final_metadata) {
     if(a>nb) a = nb
   }
 }
+
 
