@@ -1,34 +1,33 @@
 Package: EcotaxaTools
 Type: Package
 Title: EcoTaxa tools for quantitative imagery instruments
-Version: 0.1.0
-Author: P. Kostyrka
-Maintainer: <pierre.kostyrka@imev-mer.fr>
-Description: This package can compute biovolumes from an ecotaxa tsv file and gives an overview of the data.
+Version: 0.2.0
+Author: A. Perruchon
+Maintainer: <adelaide.perruchon@imev-mer.fr>
+Description: This package can compute biovolumes, abundance, size spectra and trophic level from an tsv file exported from Ecotaxa and gives an overview of the data of plankton imaging instruments.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
-Depends: 
-        dplyr,
-        ggplot2,
-        lubridate,
-        DataEditR,
-        readr,
-        ggpubr,
-        RColorBrewer,
-        rnaturalearth,
-        rnaturalearthdata,
-        scales,
-        svDialogs,
-        sf,
-        vegan,
-        tidyr,
-        viridis,
-        htmltools,
-        shiny,
-        FactoMineR,
-        ggrepel,
-        factoextra
+Depends: dplyr,
+         ggplot2,
+         lubridate,
+         DataEditR,
+         readr,
+         ggpubr,
+         RColorBrewer,
+         rnaturalearth,
+         rnaturalearthdata,
+         scales,
+         svDialogs,
+         sf,
+         vegan,
+         tidyr,
+         viridis,
+         htmltools,
+         shiny,
+         FactoMineR,
+         ggrepel,
+         factoextra
 RoxygenNote: 7.2.3
-URL: https://github.com/pkostyrka/pkscoperoutine
-BugReports: https://github.com/pkostyrka/pkscoperoutine/issues
+URL: https://github.com/Adeelaiide/EcoaTaxaTools
+BugReports: https://github.com/Adeelaiide/EcoaTaxaTools/issues
