@@ -85,6 +85,7 @@ transform_flowcam_data <- function(df) {
            acq_max_esd,
            sample_initial_col_vol_m3,
            sample_conc_vol_ml,
+           sample_volconc,
            acq_fluid_volume_imaged,
            process_pixel) %>%
     distinct() %>%
@@ -125,6 +126,7 @@ transform_zooscan_data <- function(df) {
            distinct() %>%
  group_by(sample_id) %>% mutate(ghost_id=1:n()) %>% ungroup() 
 }
+
 
 
 
