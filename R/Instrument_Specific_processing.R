@@ -193,7 +193,7 @@ process_zooscan_data <- function(data, metadata) {
   }
   
   # ZooScan-specific unit conversions
-  data <- mutate(metadata,
+  data <- mutate(data,
                 pixelsize = unique(process_particle_pixel_size_mm) #,
                 #perimferet = object_feret * pixelsize
                 )
@@ -254,6 +254,7 @@ process_zooscan_data <- function(data, metadata) {
   
   #return(data)
 #}
+
 
 
 
