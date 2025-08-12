@@ -32,11 +32,7 @@ process_planktoscope_data <- function(data, metadata) {
         acq_celltype = coalesce(meta_acq_celltype, acq_celltype),
         acq_imaged_volume = coalesce(meta_acq_imaged_volume, acq_imaged_volume),
         process_pixel = coalesce(meta_process_pixel, process_pixel),
-        sample_dilution_factor = coalesce(meta_sample_dilution_factor, sample_dilution_factor),
-        object_major = coalesce(meta_object_major, object_major),
-        object_minor = coalesce(meta_object_minor, object_minor),
-        object_area_exc = coalesce(meta_object_area_exc, object_area_exc),
-        object_area = coalesce(meta_object_area, object_area)) %>%
+        sample_dilution_factor = coalesce(meta_sample_dilution_factor, sample_dilution_factor)) %>%
       # Remove the temporary metadata columns
       dplyr::select(-starts_with("meta_"))
   }
@@ -120,11 +116,7 @@ process_flowcam_data <- function(data, metadata) {
              acq_celltype = coalesce(meta_acq_celltype, acq_celltype),
              acq_fluid_volume_imaged = coalesce(meta_acq_fluid_volume_imaged, acq_fluid_volume_imaged),
              process_pixel = coalesce(meta_process_pixel, process_pixel),
-             sample_volconc = coalesce(meta_sample_volconc, sample_volconc),
-             object_major = coalesce(meta_object_major, object_major),
-             object_minor = coalesce(meta_object_minor, object_minor),
-             object_area_exc = coalesce(meta_object_area_exc, object_area_exc),
-             object_area = coalesce(meta_object_area, object_area)) %>%
+             sample_volconc = coalesce(meta_sample_volconc, sample_volconc)) %>%
       # Remove the temporary metadata columns
       dplyr::select(-starts_with("meta_"))
   }
@@ -195,11 +187,7 @@ process_zooscan_data <- function(data, metadata) {
       # Update the data frame columns with the metadata values, if available
       mutate(sample_tot_vol = coalesce(meta_sample_tot_vol, sample_tot_vol),
         acq_sub_part = coalesce(meta_acq_sub_part, acq_sub_part),
-        process_particle_pixel_size_mm = coalesce(meta_process_particle_pixel_size_mm, process_particle_pixel_size_mm),
-        object_major = coalesce(meta_object_major, object_major),
-        object_minor = coalesce(meta_object_minor, object_minor),
-        object_area_exc = coalesce(meta_object_area_exc, object_area_exc),
-        object_area = coalesce(meta_object_area, object_area)) %>%
+        process_particle_pixel_size_mm = coalesce(meta_process_particle_pixel_size_mm, process_particle_pixel_size_mm)) %>%
       # Remove the temporary metadata columns
       dplyr::select(-starts_with("meta_"))
   }
@@ -266,6 +254,7 @@ process_zooscan_data <- function(data, metadata) {
   
   #return(data)
 #}
+
 
 
 
