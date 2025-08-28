@@ -71,8 +71,8 @@ if (!is.null(mainpath) && mainpath != "") {
                      "rhizaria","bacillariophyta","dictyochophyceae","crustacea",
                      "copepoda","chaetognatha","tunicata","cnidaria","mollusca",
                      "coccolithophyceae","other_unidentified","plastics")
-  plankton_groups_colScale <- scale_colour_manual(name = "taxonomic group",values = plankton_groups_colors)
-  plankton_groups_colFill <- scale_fill_manual(name = "taxonomic group",values = plankton_groups_colors)
+  plankton_groups_colScale <- scale_colour_manual(name = "Taxonomic group",values = plankton_groups_colors)
+  plankton_groups_colFill <- scale_fill_manual(name = "Taxonomic group",values = plankton_groups_colors)
 
 
   # Compute biovolumes and BSS summary (warning : not normalized by size class)
