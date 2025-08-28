@@ -91,7 +91,7 @@ graph.project <- function(x, final_metadata, taxo, bv.type="elli", living.only=T
   # living/not-living/temporary
   print(ggplot(x, aes(x=factor(sample_num), y=BV, fill=n1)) +
           geom_bar(stat="identity") +
-          scale_fill_brewer("paired") +
+          scale_fill_grey() +
           scale_y_continuous("Biovolume (mm3.m-3)") +
           xlab(NULL) +
           ggtitle("Total biovolume") +
@@ -100,7 +100,7 @@ graph.project <- function(x, final_metadata, taxo, bv.type="elli", living.only=T
 
   print(ggplot(x, aes(x=factor(sample_num), y=AB, fill=n1)) +
           geom_bar(stat="identity") +
-          scale_fill_brewer("paired") +
+          scale_fill_grey() +
           scale_y_continuous("Abundance (ind.m-3)") +
           xlab(NULL) +
           ggtitle("Total abundance") +
@@ -330,3 +330,4 @@ print(ggplot(plot_data) +
 
 
 }
+
