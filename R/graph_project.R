@@ -91,19 +91,21 @@ graph.project <- function(x, final_metadata, taxo, bv.type="elli", living.only=T
   # living/not-living/temporary
   print(ggplot(x, aes(x=factor(sample_num), y=BV, fill=n1)) +
           geom_bar(stat="identity") +
-          scale_fill_brewer(palette = "Dark2", name = "Type") +
+          scale_fill_viridis_d(option = "D") +
           scale_y_continuous("Biovolume (mm3.m-3)") +
           xlab(NULL) +
           ggtitle("Total biovolume") +
+          labs(fill = "Type") +
           theme_minimal() +
           theme(axis.text.x = element_text(angle = 45,vjust = 0.5, hjust = 1)))
 
   print(ggplot(x, aes(x=factor(sample_num), y=AB, fill=n1)) +
           geom_bar(stat="identity") +
-          scale_fill_brewer(palette = "Dark2", name = "Type") +
+          scale_fill_viridis_d(option = "D") +
           scale_y_continuous("Abundance (ind.m-3)") +
           xlab(NULL) +
           ggtitle("Total abundance") +
+          labs(fill = "Type") +
           theme_minimal()+
           theme(axis.text.x = element_text(angle = 45,vjust = 0.5, hjust = 1)))
 
@@ -330,6 +332,7 @@ print(ggplot(plot_data) +
 
 
 }
+
 
 
 
