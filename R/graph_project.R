@@ -91,7 +91,7 @@ graph.project <- function(x, final_metadata, taxo, bv.type="elli", living.only=T
   # living/not-living/temporary
   print(ggplot(x, aes(x=factor(sample_num), y=BV, fill=n1)) +
           geom_bar(stat="identity") +
-          scale_fill_grey() +
+          scale_fill_brewer(palette = "Dark2", name = "Type") +
           scale_y_continuous("Biovolume (mm3.m-3)") +
           xlab(NULL) +
           ggtitle("Total biovolume") +
@@ -100,7 +100,7 @@ graph.project <- function(x, final_metadata, taxo, bv.type="elli", living.only=T
 
   print(ggplot(x, aes(x=factor(sample_num), y=AB, fill=n1)) +
           geom_bar(stat="identity") +
-          scale_fill_grey() +
+          scale_fill_brewer(palette = "Dark2", name = "Type") +
           scale_y_continuous("Abundance (ind.m-3)") +
           xlab(NULL) +
           ggtitle("Total abundance") +
@@ -110,7 +110,7 @@ graph.project <- function(x, final_metadata, taxo, bv.type="elli", living.only=T
   # living only
   N <- length(unique(x$Sub_type[x$n1=="living"]))
   # Total biovolume 
-  print(x %>% filter(n1=="living") %>%
+  print(x %>% filter(n1=="living" & Sub_type != "detritus") %>%
           ggplot(aes(x=factor(sample_num), y=BV, fill=Sub_type)) +
           geom_bar(stat="identity") +
           plankton_groups_colFill +
@@ -121,7 +121,7 @@ graph.project <- function(x, final_metadata, taxo, bv.type="elli", living.only=T
           theme(axis.text.x = element_text(angle = 45,vjust = 0.5, hjust = 1)))
 
   # Total abundance 
-  print(x %>% filter(n1=="living") %>%
+  print(x %>% filter(n1=="living" & Sub_type != "detritus") %>%
           ggplot(aes(x=factor(sample_num), y=AB, fill=Sub_type)) +
           geom_bar(stat="identity") +
           plankton_groups_colFill +
@@ -330,4 +330,5 @@ print(ggplot(plot_data) +
 
 
 }
+
 
