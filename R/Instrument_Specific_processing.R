@@ -159,7 +159,7 @@ process_flowcam_data <- function(data, metadata) {
     group_by(sample_id) %>% summarize(sample_imaged_volume = sum(acq_fluid_volume_imaged, na.rm = TRUE))
   data <- merge(data, vimgsample, "sample_id", all.x = TRUE)
   data <- mutate(data, conver.sample =  (sample_conc_vol_ml) /
-                   (acq_fluid_volume_imaged * sample_initial_col_vol_m3 * sample_volconc))
+                   (sample_imaged_volume * sample_initial_col_vol_m3 * sample_volconc))
   
   return(data)
 }
@@ -254,6 +254,7 @@ process_zooscan_data <- function(data, metadata) {
   
   #return(data)
 #}
+
 
 
 
