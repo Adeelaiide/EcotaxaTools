@@ -23,7 +23,7 @@ graph.project <- function(x, final_metadata, taxo, bv.type="elli", living.only=T
 
   x <- filter(x, type==bv.type) %>% merge(taxo, "object_annotation_hierarchy", all.x=T)
   t <- final_metadata %>% select(sample_id, sample_num, object_time, object_date, object_lat, object_lon) %>%
-    mutate(time=as.POSIXct(paste(object_date, object_time))) %>% select(sample_id, sample_num, time)
+    mutate(time=as.POSIXct(paste(object_date, object_time))) %>% select(sample_id, sample_num, time, object_lat, object_lon)
   x <- merge(x, t, all.x=T)
   x$max <- bv_to_esdum(x$max)
 
@@ -382,6 +382,7 @@ print(ggplot(plot_data) +
   sf_use_s2(TRUE)
 
 }
+
 
 
 
