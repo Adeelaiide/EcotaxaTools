@@ -258,25 +258,26 @@ print(rel_ab_constrained %>%
           ggtitle("Abundance of the non_living") +
           theme_minimal() +
           theme(axis.text.x = element_text(angle = 45,vjust = 0.5, hjust = 1)))
-  #AB map 
-print(ggplot() +
-          geom_sf(data = worldmap, color=NA, fill="gray54") +
-          geom_sf(data = meta.point, size=3, aes(color= AB)) +
-          scale_color_viridis_c() +
-          coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
-          ggtitle("Map of total AB per sample") +
-          theme_bw() +
-          theme(plot.title = element_text(hjust = 0.5, size = 10,face = "bold")))
 
-  #BV map
+#BV map
   print(ggplot() +
           geom_sf(data = worldmap, color=NA, fill="gray54") +
-          geom_sf(data = meta.point, size=3, aes(color= BV)) +
+          geom_sf(data = x, size=3, aes(color= BV)) +
           scale_color_viridis_c() +
           coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
           ggtitle("Map of total BV per sample") +
           theme_bw() +
           theme(plot.title = element_text(hjust = 0.5, size = 10,face = "bold")))  
+
+#AB map 
+print(ggplot() +
+          geom_sf(data = worldmap, color=NA, fill="gray54") +
+          geom_sf(data = x, size=3, aes(color= AB)) +
+          scale_color_viridis_c() +
+          coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
+          ggtitle("Map of total AB per sample") +
+          theme_bw() +
+          theme(plot.title = element_text(hjust = 0.5, size = 10,face = "bold")))
 
   # 4. NBSS on living
   if(living.only==T) x <- x %>% filter(n1=="living" & Sub_type != "detritus")
@@ -333,7 +334,7 @@ print(ggplot() +
  #Shannon map  
   print(ggplot() +
           geom_sf(data = worldmap, color=NA, fill="gray54") +
-          geom_sf(data = meta.point, size=3, aes(color= Shannon)) +
+          geom_sf(data = x, size=3, aes(color= Shannon)) +
           scale_color_viridis_c() +
           coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
           ggtitle("Map of diversity per sample") +
@@ -383,6 +384,7 @@ print(ggplot(plot_data) +
   sf_use_s2(TRUE)
 
 }
+
 
 
 
