@@ -332,14 +332,14 @@ print(ggplot() +
           scale_x_discrete(breaks = unique(x$sample_num)))
 
  #Shannon map  
-  #print(ggplot() +
-   #       geom_sf(data = worldmap, color=NA, fill="gray54") +
-    #      geom_sf(data = meta.point, size=3, aes(color= Shannon)) +
-      #    scale_color_viridis_c() +
-       #   coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
-       #   ggtitle("Map of diversity per sample") +
-       #   theme_bw() +
-        #  theme(plot.title = element_text(hjust = 0.5, size = 10,face = "bold")))    
+  print(ggplot() +
+          geom_sf(data = worldmap, color=NA, fill="gray54") +
+          geom_sf(data = meta.point, size=3, aes(color= Shannon=vegan::diversity(AB))) +
+          scale_color_viridis_c() +
+          coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
+          ggtitle("Map of diversity per sample") +
+          theme_bw() +
+          theme(plot.title = element_text(hjust = 0.5, size = 10,face = "bold")))    
 
   # trophic levels
  # Create a colum with the trophic categories
@@ -384,6 +384,7 @@ print(ggplot(plot_data) +
   sf_use_s2(TRUE)
 
 }
+
 
 
 
