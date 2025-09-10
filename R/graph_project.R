@@ -320,10 +320,10 @@ print(ggplot() +
           theme(axis.text.x = element_text(size = 7, vjust = 0.5, hjust = 0.5)))
 
   # diversity
-  print(x %>% group_by(object_annotation_category, sample_num) %>%
+ x <-x %>% group_by(object_annotation_category, sample_num) %>%
           summarise(AB=sum(AB, na.rm=T)) %>% group_by(sample_num) %>%
-          summarise(Shannon=vegan::diversity(AB)) %>%
-          ggplot(aes(x=factor(sample_num), y=Shannon)) +
+          summarise(Shannon=vegan::diversity(AB))
+     print (x %>% ggplot(aes(x=factor(sample_num), y=Shannon)) +
           geom_col() +
           coord_flip() +
           xlab(NULL) +
@@ -334,7 +334,7 @@ print(ggplot() +
  #Shannon map  
   print(ggplot() +
           geom_sf(data = worldmap, color=NA, fill="gray54") +
-          geom_sf(data = meta.point, size=3, aes(color= Shannon=vegan::diversity(AB))) +
+          geom_sf(data = meta.point, size=3, aes(color= Shannon)) +
           scale_color_viridis_c() +
           coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
           ggtitle("Map of diversity per sample") +
@@ -384,6 +384,7 @@ print(ggplot(plot_data) +
   sf_use_s2(TRUE)
 
 }
+
 
 
 
