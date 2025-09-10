@@ -45,8 +45,6 @@ graph.project <- function(x, final_metadata, taxo, bv.type="elli", living.only=T
  
   worldmap <- ne_countries(scale = 'medium', type = 'map_units', returnclass = 'sf') %>%
               st_filter(st_as_sfc(bbox_area))
-  meta.x <- filter(x, sample_id==unique(x$sample_id))
-  meta.point <- st_as_sf(meta.x, coords=c("object_lon","object_lat"), crs=st_crs(worldmap))
 
    # Set common color palette
   plankton_groups_colors <- c("#709699", #cyanobacteria
@@ -384,6 +382,7 @@ print(ggplot(plot_data) +
   sf_use_s2(TRUE)
 
 }
+
 
 
 
