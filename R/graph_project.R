@@ -45,6 +45,8 @@ graph.project <- function(x, final_metadata, taxo, bv.type="elli", living.only=T
  
   worldmap <- ne_countries(scale = 'medium', type = 'map_units', returnclass = 'sf') %>%
               st_filter(st_as_sfc(bbox_area))
+  meta.x <- filter(x, sample_id==unique(x$sample_id))
+  meta.point <- st_as_sf(meta.x, coords=c("object_lon","object_lat"), crs=st_crs(worldmap))
 
    # Set common color palette
   plankton_groups_colors <- c("#709699", #cyanobacteria
@@ -260,7 +262,7 @@ print(rel_ab_constrained %>%
 #BV map
   print(ggplot() +
           geom_sf(data = worldmap, color=NA, fill="gray54") +
-          geom_sf(data = x, size=3, aes(color= BV)) +
+          geom_sf(data = meta.point, size=3, aes(color= BV)) +
           scale_color_viridis_c() +
           coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
           ggtitle("Map of total BV per sample") +
@@ -270,7 +272,7 @@ print(rel_ab_constrained %>%
 #AB map 
 print(ggplot() +
           geom_sf(data = worldmap, color=NA, fill="gray54") +
-          geom_sf(data = x, size=3, aes(color= AB)) +
+          geom_sf(data = meta.point, size=3, aes(color= AB)) +
           scale_color_viridis_c() +
           coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
           ggtitle("Map of total AB per sample") +
@@ -332,7 +334,7 @@ print(ggplot() +
  #Shannon map  
   print(ggplot() +
           geom_sf(data = worldmap, color=NA, fill="gray54") +
-          geom_sf(data = x, size=3, aes(color= Shannon)) +
+          geom_sf(data = meta.point, size=3, aes(color= Shannon)) +
           scale_color_viridis_c() +
           coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
           ggtitle("Map of diversity per sample") +
@@ -382,6 +384,7 @@ print(ggplot(plot_data) +
   sf_use_s2(TRUE)
 
 }
+
 
 
 
