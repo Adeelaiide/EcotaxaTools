@@ -270,6 +270,7 @@ print(rel_ab_constrained %>%
           geom_sf(data = worldmap, color=NA, fill="gray54") +
           geom_sf(data = meta.point, size=1, aes(color= BV)) +
           scale_color_viridis_c() +
+          labs(color = "Biovolume (mm3.m-3)") +
           coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
           ggtitle("Map of total BV per sample") +
           theme_bw() +
@@ -280,6 +281,7 @@ print(ggplot() +
           geom_sf(data = worldmap, color=NA, fill="gray54") +
           geom_sf(data = meta.point, size=1, aes(color= AB)) +
           scale_color_viridis_c() +
+          labs(color = "Abundance (ind.m-3)")+
           coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
           ggtitle("Map of total AB per sample") +
           theme_bw() +
@@ -339,6 +341,7 @@ print (x %>% ggplot(aes(x=factor(sample_num), y=Shannon)) +
           geom_sf(data = worldmap, color=NA, fill="gray54") +
           geom_sf(data = meta.point, size=1, aes(color= Shannon)) +
           scale_color_viridis_c() +
+          labs(color = "Shannon Index") +
           coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
           ggtitle("Map of diversity per sample") +
           theme_bw() +
@@ -387,6 +390,7 @@ print(ggplot(plot_data) +
   sf_use_s2(TRUE)
 
 }
+
 
 
 
