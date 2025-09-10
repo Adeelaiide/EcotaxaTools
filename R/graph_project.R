@@ -27,6 +27,27 @@ graph.project <- function(x, final_metadata, taxo, bv.type="elli", living.only=T
   x <- merge(x, t, all.x=T)
   x$max <- bv_to_esdum(x$max)
 
+  # Set commun parameters for the maps
+   ex = 10
+  latmin <- min(x$object_lat, na.rm=T)-ex
+  lonmin <- min(x$object_lon, na.rm=T)-ex
+  latmax <- max(x$object_lat, na.rm=T)+ex
+  lonmax <- max(x$object_lon, na.rm=T)+ex
+
+  if(latmin<(-90)) latmin <- (-90)
+  if(lonmin<(-180)) lonmin <- -180
+  if(latmax>90) latmax <- 90
+  if(lonmax>180) lonmax <- 180
+
+  sf_use_s2(FALSE)
+
+ bbox_area <- st_bbox(c(xmin = lonmin, ymin = latmin, xmax = lonmax, ymax = latmax), crs = 4326)
+ 
+  worldmap <- ne_countries(scale = 'medium', type = 'map_units', returnclass = 'sf') %>%
+              st_filter(st_as_sfc(bbox_area))
+  meta.x <- filter(x, sample_id==unique(x$sample_id))
+  meta.point <- st_as_sf(meta.x, coords=c("object_lon","object_lat"), crs=st_crs(worldmap))
+
    # Set common color palette
   plankton_groups_colors <- c("#709699", #cyanobacteria
                "#F2F2F2", #detritus
@@ -330,28 +351,6 @@ print(ggplot(plot_data) +
   ggtitle("Trophic pyramid") + 
   theme_classic())
 
-# Map
-   ex = 10
-  latmin <- min(x$object_lat, na.rm=T)-ex
-  lonmin <- min(x$object_lon, na.rm=T)-ex
-  latmax <- max(x$object_lat, na.rm=T)+ex
-  lonmax <- max(x$object_lon, na.rm=T)+ex
-
-  if(latmin<(-90)) latmin <- (-90)
-  if(lonmin<(-180)) lonmin <- -180
-  if(latmax>90) latmax <- 90
-  if(lonmax>180) lonmax <- 180
-
-  sf_use_s2(FALSE)
-
- bbox_area <- st_bbox(c(xmin = lonmin, ymin = latmin, xmax = lonmax, ymax = latmax), crs = 4326)
- 
-  worldmap <- ne_countries(scale = 'medium', type = 'map_units', returnclass = 'sf') %>%
-              st_filter(st_as_sfc(bbox_area))
- #st_crop(xmin=lonmin, xmax=lonmax, ymax=latmax, ymin=latmin)
-  meta.x <- filter(x, sample_id==unique(x$sample_id))
-  meta.point <- st_as_sf(meta.x, coords=c("object_lon","object_lat"), crs=st_crs(worldmap))
-
 #AB map 
 print(ggplot() +
           geom_sf(data = worldmap, color=NA, fill="gray54") +
@@ -385,6 +384,7 @@ print(ggplot() +
   sf_use_s2(TRUE)
 
 }
+
 
 
 
