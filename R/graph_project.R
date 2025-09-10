@@ -342,8 +342,6 @@ print(ggplot(plot_data) +
   if(latmax>90) latmax <- 90
   if(lonmax>180) lonmax <- 180
 
-  x$time <- as.POSIXct(paste(x$object_date, x$object_time))
-
   sf_use_s2(FALSE)
 
  bbox_area <- st_bbox(c(xmin = lonmin, ymin = latmin, xmax = lonmax, ymax = latmax), crs = 4326)
@@ -387,6 +385,7 @@ print(ggplot() +
   sf_use_s2(TRUE)
 
 }
+
 
 
 
