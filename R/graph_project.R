@@ -258,6 +258,25 @@ print(rel_ab_constrained %>%
           ggtitle("Abundance of the non_living") +
           theme_minimal() +
           theme(axis.text.x = element_text(angle = 45,vjust = 0.5, hjust = 1)))
+  #AB map 
+print(ggplot() +
+          geom_sf(data = worldmap, color=NA, fill="gray54") +
+          geom_sf(data = meta.point, size=3, aes(color= AB)) +
+          scale_color_viridis_c() +
+          coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
+          ggtitle("Map of total AB per sample") +
+          theme_bw() +
+          theme(plot.title = element_text(hjust = 0.5, size = 10,face = "bold")))
+
+  #BV map
+  print(ggplot() +
+          geom_sf(data = worldmap, color=NA, fill="gray54") +
+          geom_sf(data = meta.point, size=3, aes(color= BV)) +
+          scale_color_viridis_c() +
+          coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
+          ggtitle("Map of total BV per sample") +
+          theme_bw() +
+          theme(plot.title = element_text(hjust = 0.5, size = 10,face = "bold")))  
 
   # 4. NBSS on living
   if(living.only==T) x <- x %>% filter(n1=="living" & Sub_type != "detritus")
@@ -311,6 +330,16 @@ print(rel_ab_constrained %>%
           theme_minimal() +
           scale_x_discrete(breaks = unique(x$sample_num)))
 
+ #Shannon map  
+  print(ggplot() +
+          geom_sf(data = worldmap, color=NA, fill="gray54") +
+          geom_sf(data = meta.point, size=3, aes(color= Shannon)) +
+          scale_color_viridis_c() +
+          coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
+          ggtitle("Map of diversity per sample") +
+          theme_bw() +
+          theme(plot.title = element_text(hjust = 0.5, size = 10,face = "bold")))    
+
   # trophic levels
  # Create a colum with the trophic categories
   x <- x %>% mutate(categorie = case_when(
@@ -349,41 +378,12 @@ print(ggplot(plot_data) +
   scale_y_continuous(breaks = plot_data$trophic_level_num)+
   labs(x = "Log Biovolume +1 (mm³⋅m⁻³)", y = NULL) +
   ggtitle("Trophic pyramid") + 
-  theme_classic())
-
-#AB map 
-print(ggplot() +
-          geom_sf(data = worldmap, color=NA, fill="gray54") +
-          geom_sf(data = meta.point, size=3, aes(color= AB)) +
-          scale_color_viridis_c() +
-          coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
-          ggtitle("Map of total AB per sample") +
-          theme_bw() +
-          theme(plot.title = element_text(hjust = 0.5, size = 10,face = "bold")))
-
-  #BV map
-  print(ggplot() +
-          geom_sf(data = worldmap, color=NA, fill="gray54") +
-          geom_sf(data = meta.point, size=3, aes(color= BV)) +
-          scale_color_viridis_c() +
-          coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
-          ggtitle("Map of total BV per sample") +
-          theme_bw() +
-          theme(plot.title = element_text(hjust = 0.5, size = 10,face = "bold")))              
-
- #Shannon map  
-  print(ggplot() +
-          geom_sf(data = worldmap, color=NA, fill="gray54") +
-          geom_sf(data = meta.point, size=3, aes(color= Shannon)) +
-          scale_color_viridis_c() +
-          coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
-          ggtitle("Map of diversity per sample") +
-          theme_bw() +
-          theme(plot.title = element_text(hjust = 0.5, size = 10,face = "bold")))                                                                 
+  theme_classic())                                                             
 
   sf_use_s2(TRUE)
 
 }
+
 
 
 
