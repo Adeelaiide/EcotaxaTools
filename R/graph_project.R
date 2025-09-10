@@ -274,7 +274,7 @@ print(rel_ab_constrained %>%
           coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
           ggtitle("Map of total BV per sample") +
           theme_bw() +
-          theme(plot.title = element_text(hjust = 0.5, size = 10,face = "bold")))  
+          theme(plot.title = element_text(hjust = 0.5, size = 10)))  
 
 #AB map 
 print(ggplot() +
@@ -285,7 +285,7 @@ print(ggplot() +
           coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
           ggtitle("Map of total AB per sample") +
           theme_bw() +
-          theme(plot.title = element_text(hjust = 0.5, size = 10,face = "bold")))
+          theme(plot.title = element_text(hjust = 0.5, size = 10)))
 
   # 4. NBSS on living
   if(living.only==T) x <- x %>% filter(n1=="living" & Sub_type != "detritus")
@@ -345,7 +345,7 @@ print (x %>% ggplot(aes(x=factor(sample_num), y=Shannon)) +
           coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
           ggtitle("Map of diversity per sample") +
           theme_bw() +
-          theme(plot.title = element_text(hjust = 0.5, size = 10,face = "bold")))    
+          theme(plot.title = element_text(hjust = 0.5, size = 10)))    
 
   # trophic levels
  # Create a colum with the trophic categories
@@ -390,6 +390,7 @@ print(ggplot(plot_data) +
   sf_use_s2(TRUE)
 
 }
+
 
 
 
