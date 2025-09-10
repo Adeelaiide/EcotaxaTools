@@ -26,6 +26,12 @@ graph.project <- function(x, final_metadata, taxo, bv.type="elli", living.only=T
     mutate(time=as.POSIXct(paste(object_date, object_time))) %>% select(sample_id, sample_num, time, object_lat, object_lon)
   x <- merge(x, t, all.x=T)
   x$max <- bv_to_esdum(x$max)
+ shannon_data <- x %>%
+  group_by(object_annotation_category, sample_num) %>%
+  summarise(AB = sum(AB, na.rm = TRUE), .groups = "drop") %>%
+  group_by(sample_num) %>%
+  summarise(Shannon = vegan::diversity(AB), .groups = "drop")
+  x <- left_join(x, shannon_data, by = "sample_num")
 
   # Set commun parameters for the maps
    ex = 10
@@ -320,10 +326,7 @@ print(ggplot() +
           theme(axis.text.x = element_text(size = 7, vjust = 0.5, hjust = 0.5)))
 
   # diversity
- x <-x %>% group_by(object_annotation_category, sample_num) %>%
-          summarise(AB=sum(AB, na.rm=T)) %>% group_by(sample_num) %>%
-          summarise(Shannon=vegan::diversity(AB))
-     print (x %>% ggplot(aes(x=factor(sample_num), y=Shannon)) +
+print (x %>% ggplot(aes(x=factor(sample_num), y=Shannon)) +
           geom_col() +
           coord_flip() +
           xlab(NULL) +
@@ -384,6 +387,7 @@ print(ggplot(plot_data) +
   sf_use_s2(TRUE)
 
 }
+
 
 
 
