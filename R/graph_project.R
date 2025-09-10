@@ -330,8 +330,64 @@ print(ggplot(plot_data) +
   ggtitle("Trophic pyramid") + 
   theme_classic())
 
+# Map
+   ex = 10
+  latmin <- min(x$object_lat, na.rm=T)-ex
+  lonmin <- min(x$object_lon, na.rm=T)-ex
+  latmax <- max(x$object_lat, na.rm=T)+ex
+  lonmax <- max(x$object_lon, na.rm=T)+ex
+
+  if(latmin<(-90)) latmin <- (-90)
+  if(lonmin<(-180)) lonmin <- -180
+  if(latmax>90) latmax <- 90
+  if(lonmax>180) lonmax <- 180
+
+  x$time <- as.POSIXct(paste(x$object_date, x$object_time))
+
+  sf_use_s2(FALSE)
+
+ bbox_area <- st_bbox(c(xmin = lonmin, ymin = latmin, xmax = lonmax, ymax = latmax), crs = 4326)
+ 
+  worldmap <- ne_countries(scale = 'medium', type = 'map_units', returnclass = 'sf') %>%
+              st_filter(st_as_sfc(bbox_area))
+ #st_crop(xmin=lonmin, xmax=lonmax, ymax=latmax, ymin=latmin)
+  meta.x <- filter(x, sample_id==unique(x$sample_id))
+  meta.point <- st_as_sf(meta.x, coords=c("object_lon","object_lat"), crs=st_crs(worldmap))
+
+#AB map 
+print(ggplot() +
+          geom_sf(data = worldmap, color=NA, fill="gray54") +
+          geom_sf(data = meta.point, size=3, aes(color= AB)) +
+          scale_color_viridis_c() +
+          coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
+          ggtitle("Map of total AB per sample") +
+          theme_bw() +
+          theme(plot.title = element_text(hjust = 0.5, size = 10,face = "bold")))
+
+  #BV map
+  print(ggplot() +
+          geom_sf(data = worldmap, color=NA, fill="gray54") +
+          geom_sf(data = meta.point, size=3, aes(color= BV)) +
+          scale_color_viridis_c() +
+          coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
+          ggtitle("Map of total BV per sample") +
+          theme_bw() +
+          theme(plot.title = element_text(hjust = 0.5, size = 10,face = "bold")))              
+
+ #Shannon map  
+  print(ggplot() +
+          geom_sf(data = worldmap, color=NA, fill="gray54") +
+          geom_sf(data = meta.point, size=3, aes(color= Shannon)) +
+          scale_color_viridis_c() +
+          coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
+          ggtitle("Map of diversity per sample") +
+          theme_bw() +
+          theme(plot.title = element_text(hjust = 0.5, size = 10,face = "bold")))                                                                 
+
+  sf_use_s2(TRUE)
 
 }
+
 
 
 
