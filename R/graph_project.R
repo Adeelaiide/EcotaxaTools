@@ -116,8 +116,11 @@ graph.project <- function(x, final_metadata, taxo, bv.type="elli", living.only=T
   # BIOVOLUME AND ABUNDANCE TOTAL OF THE PROJECT
   # ----------------------------------------------------------------------------
   # living/not-living/temporary
-  print(ggplot(x, aes(x=factor(sample_num), y=BV, fill=n1, color=n1)) +
-          geom_bar(position="fill",stat="identity") +
+  
+  print(x %>% group_by(n1,sample_num) %>% 
+          summarise(BV = sum(BV)) %>% 
+          ggplot(aes(x=factor(sample_num), y=BV, fill=n1)) +
+          geom_col(stat="identity") +
           scale_fill_viridis_d(option = "D") +
           scale_y_continuous("Biovolume (mm3.m-3)") +
           xlab(NULL) +
@@ -126,8 +129,10 @@ graph.project <- function(x, final_metadata, taxo, bv.type="elli", living.only=T
           theme_minimal() +
           theme(axis.text.x = element_text(angle = 45,vjust = 0.5, hjust = 1)))
 
-  print(ggplot(x, aes(x=factor(sample_num), y=AB, fill=n1, color=n1)) +
-          geom_bar(position="fill",stat="identity") +
+  print(x %>% group_by(n1,sample_num) %>% 
+          summarise(AB = sum(AB)) %>% 
+          ggplot(aes(x=factor(sample_num), y=AB, fill=n1)) +
+          geom_bar(stat="identity") +
           scale_fill_viridis_d(option = "D") +
           scale_y_continuous("Abundance (ind.m-3)") +
           xlab(NULL) +
@@ -140,23 +145,25 @@ graph.project <- function(x, final_metadata, taxo, bv.type="elli", living.only=T
   N <- length(unique(x$Sub_type[x$n1=="living"]))
   # Total biovolume 
   print(x %>% filter(n1=="living" & Sub_type != "detritus") %>%
-          ggplot(aes(x=factor(sample_num), y=BV, fill=Sub_type, color=Sub_type)) +
-          geom_bar(position="fill",stat="identity") +
+          group_by(Sub_type,sample_num) %>% summarise(BV=sum(BV)) %>% 
+          ggplot(aes(x=factor(sample_num), y=BV, fill=Sub_type)) +
+          geom_bar(stat="identity") +
           plankton_groups_colFill +
           scale_y_continuous("Biovolume (mm3.m-3)") +
           xlab(NULL) +
-          ggtitle("Totale biovolume of the living") +
+          ggtitle("Total biovolume of the living") +
           theme_minimal() +
           theme(axis.text.x = element_text(angle = 45,vjust = 0.5, hjust = 1)))
 
   # Total abundance 
   print(x %>% filter(n1=="living" & Sub_type != "detritus") %>%
-          ggplot(aes(x=factor(sample_num), y=AB, fill=Sub_type, color=Sub_type)) +
-          geom_bar(position="fill",stat="identity") +
+          group_by(Sub_type,sample_num) %>% summarise(AB=sum(AB)) %>% 
+          ggplot(aes(x=factor(sample_num), y=AB, fill=Sub_type)) +
+          geom_bar(stat="identity") +
           plankton_groups_colFill +
           scale_y_continuous("Abundance (ind.m-3)") +
           xlab(NULL) +
-          ggtitle("Totale abundance of the living") +
+          ggtitle("Total abundance of the living") +
           theme_minimal() +
           theme(axis.text.x = element_text(angle = 45,vjust = 0.5, hjust = 1)))
 
@@ -199,7 +206,7 @@ rel_bv_constrained <- x %>%
     filter(n1 == "living" & Sub_type != "detritus") %>%
     group_by(sample_num) %>%
     mutate(relative_BV = BV / sum(BV) * 100, rel_BV_constrained_rounded = constrain_round(relative_BV)) %>%
-    ungroup()    
+    ungroup()     
 
   # Verify that sums are exactly 100% for each sample
 cat("\n--- Sums for Constrained Rounded Biovolume (should be 100%) ---\n")
@@ -208,8 +215,9 @@ print(rel_bv_constrained %>%
         summarise(sum_constrained_BV = sum(rel_BV_constrained_rounded)))
   
 print(rel_bv_constrained %>%
-    ggplot(aes(x=factor(sample_num), y=rel_BV_constrained_rounded, fill=Sub_type, color=Sub_type)) +
-    geom_bar(position="fill",stat="identity") +
+    group_by(Sub_type,sample_num) %>% summarise(sum_constrained_BV = sum(rel_BV_constrained_rounded)) %>% 
+    ggplot(aes(x=factor(sample_num), y=sum_constrained_BV, fill=Sub_type)) +
+    geom_bar(stat="identity") +
     plankton_groups_colFill +
     scale_y_continuous("Relative biovolume (%)", limits = c(0, 100)) +
     xlab(NULL) +
@@ -231,10 +239,10 @@ print(rel_ab_constrained %>%
         group_by(sample_num) %>%
         summarise(sum_constrained_AB = sum(rel_AB_constrained_rounded)))
 
-       
 print(rel_ab_constrained %>%    
-    ggplot(aes(x=factor(sample_num), y=rel_AB_constrained_rounded, fill=Sub_type, color=Sub_type)) +
-    geom_bar(position="fill",stat="identity") +
+    group_by(Sub_type,sample_num) %>% summarise(sum_constrained_AB = sum(rel_AB_constrained_rounded)) %>% 
+    ggplot(aes(x=factor(sample_num), y=sum_constrained_AB, fill=Sub_type)) +
+    geom_bar(stat="identity") +
     plankton_groups_colFill +
     scale_y_continuous(" Relative abundance (%)", limits = c(0, 100)) +
     xlab(NULL) +
@@ -245,23 +253,23 @@ print(rel_ab_constrained %>%
   
   # not living only
   N <- length(unique(x$Sub_type[x$n1=="non_living"]))
-  print(x %>% filter(n1=="not-living") %>%
-          ggplot(aes(x=factor(sample_num), y=BV, fill=Sub_type, color=Sub_type)) +
-          geom_bar(position="fill",stat="identity") +
-          scale_fill_brewer(palette="Set2", na.value="grey") +
+  print(x %>% filter(n1=="not-living") %>% group_by(Sub_type,sample_num) %>% summarise(BV = sum(BV)) %>% 
+          ggplot(aes(x=factor(sample_num), y=BV, fill=Sub_type)) +
+          geom_bar(stat="identity") +
+          scale_fill_brewer(name = "Non living groups",palette="Set2", na.value="grey") +
           scale_y_continuous("Biovolume (mm3.m-3)") +
           xlab(NULL) +
-          ggtitle("Biovolume of the non_living") +
+          ggtitle("Biovolume of the non living") +
           theme_minimal() +
           theme(axis.text.x = element_text(angle = 45,vjust = 0.5, hjust = 1)))
 
-  print(x %>% filter(n1=="not-living") %>%
-          ggplot(aes(x=factor(sample_num), y=AB, fill=Sub_type, color=Sub_type)) +
-          geom_bar(position="fill",stat="identity") +
+  print(x %>% filter(n1=="not-living") %>% group_by(Sub_type,sample_num) %>% summarise(AB = sum(AB)) %>%
+          ggplot(aes(x=factor(sample_num), y=AB, fill=Sub_type)) +
+          geom_bar(stat="identity") +
           scale_fill_brewer(palette="Set2", na.value="grey") +
           scale_y_continuous("Abundance (ind.m-3)") +
           xlab(NULL) +
-          ggtitle("Abundance of the non_living") +
+          ggtitle("Abundance of the non living") +
           theme_minimal() +
           theme(axis.text.x = element_text(angle = 45,vjust = 0.5, hjust = 1)))
 
@@ -318,7 +326,7 @@ print(ggplot() +
           group_by(sample_num, class) %>% mutate(rel = BV/sum(BV, na.rm=T)*100) %>%
           group_by(sample_num, class, max, Sub_type) %>% summarise(rel=sum(rel, na.rm=T)) %>%
           ggplot(aes(x=max, y=rel, fill=Sub_type)) +
-          geom_col() +
+          geom_col(width=0.02) +
           plankton_groups_colFill +
           scale_y_continuous("BSS (%)") +
           scale_x_log10("Size (um)", labels = scales::trans_format('log10', scales::math_format(10^.x, format = function(x) scales::number(x, accuracy = 0.01)))) +
@@ -328,7 +336,8 @@ print(ggplot() +
           theme(axis.text.x = element_text(size = 7, vjust = 0.5, hjust = 0.5)))
 
   # diversity
-print (x %>% ggplot(aes(x=factor(sample_num), y=Shannon)) +
+print (x %>% group_by(sample_num) %>% summarise(Shannon = sum(Shannon)) %>% 
+          ggplot(aes(x=factor(sample_num), y=Shannon)) +
           geom_col() +
           coord_flip() +
           xlab(NULL) +
@@ -390,6 +399,7 @@ print(ggplot(plot_data) +
   sf_use_s2(TRUE)
 
 }
+
 
 
 
