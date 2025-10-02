@@ -11,7 +11,7 @@
 #' @examples BSS_table(x=tsv.file, NBSS=FALSE)
 
 BSS_table <- function(x, NBSS=F) {
-
+  options(dplyr.summarise.inform = FALSE)
   # You need to compute by unique acquisitions before grouping
 
   # resume plain
@@ -72,6 +72,7 @@ BSS_table <- function(x, NBSS=F) {
   return(resume)
 
 }
+
 
 
 
