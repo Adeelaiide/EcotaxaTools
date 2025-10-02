@@ -13,6 +13,7 @@
 #'
 #' @examples EcotaxaTools()
 EcotaxaTools <- function() {
+  options(dplyr.summarise.inform = FALSE)
   # Choose your instrument
   instru <- dlg_list(c("PlanktoScope", "FlowCam","ZooScan","IFCB"), title="Instrument")$res
 
@@ -145,17 +146,17 @@ if (!is.null(mainpath) && mainpath != "") {
   path.graph <- file.path(output,"graph")
 
   # for the original metadata (saved by check_metadata)
-  pdf(file.path(path.graph, "original_metadata.pdf"), paper="a4r")
+  pdf(file.path(path.graph, "original_metadata.pdf"),width = 10, paper="a4r")
   graph.metadata(read_csv2(file.path(output, "metadata", "original_metadata.csv")))
   dev.off()
 
   # for the edited metadata (using the returned 'processed_metadata')
-  pdf(file.path(path.graph, "metadata.pdf"), paper="a4r")
+  pdf(file.path(path.graph, "metadata.pdf"),width = 10, paper="a4r")
   graph.metadata(final_metadata)
   dev.off()
  
   # for the project
-  pdf(file.path(path.graph, "graph_project.pdf"), paper="a4r")
+  pdf(file.path(path.graph, "graph_project.pdf"),width = 10, paper="a4r")
   graph.project(bss, final_metadata, taxo)
   dev.off()
 
