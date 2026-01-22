@@ -17,6 +17,7 @@
 #' @import vegan
 #' @import tidyr
 #' @import viridis
+#' @import bslib
 #' @import htmltools
 #' @import shiny
 #' @import FactoMineR
