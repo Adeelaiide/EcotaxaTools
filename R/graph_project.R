@@ -20,19 +20,27 @@
 #'
 #' @examples graph.project(x=bss table of all the project, final_metadata, taxo=trophic_affiliation_of_organisms.csv, bv.type="elli", living.only=TRUE)
 graph.project <- function(x, final_metadata, taxo, bv.type="elli", living.only=T) {
-
+suppressMessages(sf::sf_use_s2(FALSE))
+  
+  # Select type of biovolume and add taxonomic units
   x <- filter(x, type==bv.type) %>% merge(taxo, "object_annotation_hierarchy", all.x=T)
+  
+  # Transform date & time and remove unnecessary metadata
   t <- final_metadata %>% select(sample_id, sample_num, object_time, object_date, object_lat, object_lon) %>%
     mutate(time=as.POSIXct(paste(object_date, object_time))) %>% select(sample_id, sample_num, time, object_lat, object_lon)
+  
   x <- merge(x, t, all.x=T)
   x$max <- bv_to_esdum(x$max)
- shannon_data <- x %>%
+ 
+  #Compute Shannon Index between categories of each sample
+  shannon_data <- x %>%
+  filter(Type=="living" & Sub_type != "detritus") %>% 
   group_by(object_annotation_category, sample_num) %>%
   summarise(AB = sum(AB, na.rm = TRUE), .groups = "drop") %>%
   group_by(sample_num) %>%
   summarise(Shannon = vegan::diversity(AB), .groups = "drop")
   x <- left_join(x, shannon_data, by = "sample_num")
-
+  
   # Set commun parameters for the maps
    ex = 10
   latmin <- min(x$object_lat, na.rm=T)-ex
@@ -51,12 +59,17 @@ graph.project <- function(x, final_metadata, taxo, bv.type="elli", living.only=T
  
   worldmap <- ne_countries(scale = 'medium', type = 'map_units', returnclass = 'sf') %>%
               st_filter(st_as_sfc(bbox_area))
-  meta.x <- filter(x, sample_id==unique(x$sample_id))
-  meta.point <- st_as_sf(meta.x, coords=c("object_lon","object_lat"), crs=st_crs(worldmap))
+  
+## Create a summary table for each station 
+  sample.point <- x %>% 
+    group_by(sample_id,sample_num,time,object_lat,object_lon,Shannon) %>% 
+    summarise(AB = sum(AB, na.rm = TRUE),BV = sum(BV, na.rm = TRUE), .groups = "drop") %>% 
+    st_as_sf(coords=c("object_lon","object_lat"), crs=st_crs(worldmap))
 
    # Set common color palette
   plankton_groups_colors <- c("#709699", #cyanobacteria
-               "#F2F2F2", #detritus
+               "#CD853F", #detritus
+               "#8EE5EE", #artefact
                "#FAFABA", #other
                "#C9C4FF", #ciliophora
                "#B5D493", #dinoflagellata
@@ -71,13 +84,14 @@ graph.project <- function(x, final_metadata, taxo, bv.type="elli", living.only=T
                "#C68181", #mollusca
                "#668F3B", #coccolithophyceae
                "#FFD3CF", #other_unidentified
-               "#0073BD" #plastics
+               "#0073BD", #plastics
+               "#FFA07A" #molt
                )
 
-  names(plankton_groups_colors)<- c("cyanobacteria","detritus","other","ciliophora","dinoflagellata",
+  names(plankton_groups_colors)<- c("cyanobacteria","detritus","artefact","other","ciliophora","dinoflagellata",
                      "rhizaria","bacillariophyta","dictyochophyceae","crustacea",
                      "copepoda","chaetognatha","tunicata","cnidaria","mollusca",
-                     "coccolithophyceae","other_unidentified","plastics")
+                     "coccolithophyceae","other_unidentified","plastics","molt")
   plankton_groups_colScale <- scale_colour_manual(name = "Taxonomic group",values = plankton_groups_colors)
   plankton_groups_colFill <- scale_fill_manual(name = "Taxonomic group",values = plankton_groups_colors)
 
@@ -85,7 +99,7 @@ graph.project <- function(x, final_metadata, taxo, bv.type="elli", living.only=T
   # ----------------------------------------------------------------------------
   div.all <- x %>% group_by(object_annotation_category) %>%
     summarise(AB=sum(AB, na.rm=T)) %>% select(AB) %>% vegan::diversity()
-  div <- x[x$n1=="living",] %>% group_by(object_annotation_category) %>%
+  div <- x[x$Type=="living",] %>% group_by(object_annotation_category) %>%
     summarise(AB=sum(AB, na.rm=T)) %>% select(AB) %>% vegan::diversity()
 
   text = paste0(
@@ -101,11 +115,11 @@ graph.project <- function(x, final_metadata, taxo, bv.type="elli", living.only=T
 
     "\n\n\nLIVING ONLY:\n",
     "\nNumber of samples:\n",
-    length(unique(x$sample_id[x$n1=="living"])),
+    length(unique(x$sample_id[x$Type=="living"])),
     "\nMean abundance (ind.m-3):\n",
-    round(mean(x$AB[x$n1=="living"], na.rm=T),2)," ~",round(sd(x$AB[x$n1=="living"], na.rm=T),2),
+    round(mean(x$AB[x$Type=="living"], na.rm=T),2)," ~",round(sd(x$AB[x$Type=="living"], na.rm=T),2),
     "\nMean biovolume (mm3.mm-3):\n",
-    round(mean(x$BV[x$n1=="living"], na.rm=T),2)," ~",round(sd(x$BV[x$n1=="living"], na.rm=T),2),
+    round(mean(x$BV[x$Type=="living"], na.rm=T),2)," ~",round(sd(x$BV[x$Type=="living"], na.rm=T),2),
     "\nShannon Index:\n",
     round(div,2))
 
@@ -117,9 +131,9 @@ graph.project <- function(x, final_metadata, taxo, bv.type="elli", living.only=T
   # ----------------------------------------------------------------------------
   # living/not-living/temporary
   
-  print(x %>% group_by(n1,sample_num) %>% 
-          summarise(BV = sum(BV)) %>% 
-          ggplot(aes(x=factor(sample_num), y=BV, fill=n1)) +
+  print(x %>% group_by(Type,sample_num) %>% 
+          summarise(BV = sum(BV),.groups = "drop") %>% 
+          ggplot(aes(x=factor(sample_num), y=BV, fill=Type)) +
           geom_col(stat="identity") +
           scale_fill_viridis_d(option = "D") +
           scale_y_continuous("Biovolume (mm3.m-3)") +
@@ -129,9 +143,9 @@ graph.project <- function(x, final_metadata, taxo, bv.type="elli", living.only=T
           theme_minimal() +
           theme(axis.text.x = element_text(angle = 45,vjust = 0.5, hjust = 1)))
 
-  print(x %>% group_by(n1,sample_num) %>% 
-          summarise(AB = sum(AB)) %>% 
-          ggplot(aes(x=factor(sample_num), y=AB, fill=n1)) +
+  print(x %>% group_by(Type,sample_num) %>% 
+          summarise(AB = sum(AB),.groups = "drop") %>% 
+          ggplot(aes(x=factor(sample_num), y=AB, fill=Type)) +
           geom_bar(stat="identity") +
           scale_fill_viridis_d(option = "D") +
           scale_y_continuous("Abundance (ind.m-3)") +
@@ -142,10 +156,10 @@ graph.project <- function(x, final_metadata, taxo, bv.type="elli", living.only=T
           theme(axis.text.x = element_text(angle = 45,vjust = 0.5, hjust = 1)))
 
   # living only
-  N <- length(unique(x$Sub_type[x$n1=="living"]))
+  N <- length(unique(x$Sub_type[x$Type=="living"]))
   # Total biovolume 
-  print(x %>% filter(n1=="living" & Sub_type != "detritus") %>%
-          group_by(Sub_type,sample_num) %>% summarise(BV=sum(BV)) %>% 
+  print(x %>% filter(Type=="living" & Sub_type != "detritus") %>%
+          group_by(Sub_type,sample_num) %>% summarise(BV=sum(BV),.groups = "drop") %>% 
           ggplot(aes(x=factor(sample_num), y=BV, fill=Sub_type)) +
           geom_bar(stat="identity") +
           plankton_groups_colFill +
@@ -156,8 +170,8 @@ graph.project <- function(x, final_metadata, taxo, bv.type="elli", living.only=T
           theme(axis.text.x = element_text(angle = 45,vjust = 0.5, hjust = 1)))
 
   # Total abundance 
-  print(x %>% filter(n1=="living" & Sub_type != "detritus") %>%
-          group_by(Sub_type,sample_num) %>% summarise(AB=sum(AB)) %>% 
+  print(x %>% filter(Type=="living" & Sub_type != "detritus") %>%
+          group_by(Sub_type,sample_num) %>% summarise(AB=sum(AB),.groups = "drop") %>% 
           ggplot(aes(x=factor(sample_num), y=AB, fill=Sub_type)) +
           geom_bar(stat="identity") +
           plankton_groups_colFill +
@@ -203,19 +217,19 @@ constrain_round <- function(values) {
   #Relative Biovolume
 rel_bv_constrained <- x %>% 
     #mutate(BV = replace_na(BV, 0)) %>%
-    filter(n1 == "living" & Sub_type != "detritus") %>%
+    filter(Type == "living" & Sub_type != "detritus") %>%
     group_by(sample_num) %>%
     mutate(relative_BV = BV / sum(BV) * 100, rel_BV_constrained_rounded = constrain_round(relative_BV)) %>%
     ungroup()     
 
   # Verify that sums are exactly 100% for each sample
 cat("\n--- Sums for Constrained Rounded Biovolume (should be 100%) ---\n")
-print(rel_bv_constrained %>%
-        group_by(sample_num) %>%
-        summarise(sum_constrained_BV = sum(rel_BV_constrained_rounded)))
+# print(rel_bv_constrained %>%
+#        group_by(sample_num) %>%
+#        summarise(sum_constrained_BV = sum(rel_BV_constrained_rounded)))
   
 print(rel_bv_constrained %>%
-    group_by(Sub_type,sample_num) %>% summarise(sum_constrained_BV = sum(rel_BV_constrained_rounded)) %>% 
+    group_by(Sub_type,sample_num) %>% summarise(sum_constrained_BV = sum(rel_BV_constrained_rounded),.groups = "drop") %>% 
     ggplot(aes(x=factor(sample_num), y=sum_constrained_BV, fill=Sub_type)) +
     geom_bar(stat="identity") +
     plankton_groups_colFill +
@@ -228,19 +242,19 @@ print(rel_bv_constrained %>%
   # Relative abundance
  rel_ab_constrained <- x %>% 
     #mutate(AB = replace_na(AB, 0)) %>%
-    filter(n1 == "living" & Sub_type != "detritus") %>%
+    filter(Type == "living" & Sub_type != "detritus") %>%
     group_by(sample_num) %>%
     mutate(relative_AB = AB / sum(AB) * 100, rel_AB_constrained_rounded = constrain_round(relative_AB)) %>%
     ungroup() 
   
   # Verify that sums are exactly 100% for each sample
 cat("\n--- Sums for Constrained Rounded Abundance (should be 100%) ---\n")
-print(rel_ab_constrained %>%
-        group_by(sample_num) %>%
-        summarise(sum_constrained_AB = sum(rel_AB_constrained_rounded)))
+# print(rel_ab_constrained %>%
+#        group_by(sample_num) %>%
+#        summarise(sum_constrained_AB = sum(rel_AB_constrained_rounded)))
 
 print(rel_ab_constrained %>%    
-    group_by(Sub_type,sample_num) %>% summarise(sum_constrained_AB = sum(rel_AB_constrained_rounded)) %>% 
+    group_by(Sub_type,sample_num) %>% summarise(sum_constrained_AB = sum(rel_AB_constrained_rounded),.groups = "drop") %>% 
     ggplot(aes(x=factor(sample_num), y=sum_constrained_AB, fill=Sub_type)) +
     geom_bar(stat="identity") +
     plankton_groups_colFill +
@@ -252,21 +266,21 @@ print(rel_ab_constrained %>%
 
   
   # not living only
-  N <- length(unique(x$Sub_type[x$n1=="non_living"]))
-  print(x %>% filter(n1=="not-living") %>% group_by(Sub_type,sample_num) %>% summarise(BV = sum(BV)) %>% 
+  N <- length(unique(x$Sub_type[x$Type=="non_living"]))
+  print(x %>% filter(Type=="non_living") %>% group_by(Sub_type,sample_num) %>% summarise(BV = sum(BV),.groups = "drop") %>% 
           ggplot(aes(x=factor(sample_num), y=BV, fill=Sub_type)) +
           geom_bar(stat="identity") +
-          scale_fill_brewer(name = "Non living groups",palette="Set2", na.value="grey") +
+          plankton_groups_colFill +
           scale_y_continuous("Biovolume (mm3.m-3)") +
           xlab(NULL) +
           ggtitle("Biovolume of the non living") +
           theme_minimal() +
           theme(axis.text.x = element_text(angle = 45,vjust = 0.5, hjust = 1)))
 
-  print(x %>% filter(n1=="not-living") %>% group_by(Sub_type,sample_num) %>% summarise(AB = sum(AB)) %>%
+  print(x %>% filter(Type=="non_living") %>% group_by(Sub_type,sample_num) %>% summarise(AB = sum(AB),.groups = "drop") %>%
           ggplot(aes(x=factor(sample_num), y=AB, fill=Sub_type)) +
           geom_bar(stat="identity") +
-          scale_fill_brewer(palette="Set2", na.value="grey") +
+          plankton_groups_colFill +
           scale_y_continuous("Abundance (ind.m-3)") +
           xlab(NULL) +
           ggtitle("Abundance of the non living") +
@@ -276,7 +290,7 @@ print(rel_ab_constrained %>%
 #BV map
   print(ggplot() +
           geom_sf(data = worldmap, color=NA, fill="gray54") +
-          geom_sf(data = meta.point, size=1, aes(color= BV)) +
+          geom_sf(data = sample.point, size=1, aes(color= BV)) +
           scale_color_viridis_c() +
           labs(color = "Biovolume (mm3.m-3)") +
           coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
@@ -287,7 +301,7 @@ print(rel_ab_constrained %>%
 #AB map 
 print(ggplot() +
           geom_sf(data = worldmap, color=NA, fill="gray54") +
-          geom_sf(data = meta.point, size=1, aes(color= AB)) +
+          geom_sf(data = sample.point, size=1, aes(color= AB)) +
           scale_color_viridis_c() +
           labs(color = "Abundance (ind.m-3)")+
           coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
@@ -296,10 +310,10 @@ print(ggplot() +
           theme(plot.title = element_text(hjust = 0.5, size = 10)))
 
   # 4. NBSS on living
-  if(living.only==T) x <- x %>% filter(n1=="living" & Sub_type != "detritus")
+  if(living.only==T) NBSS <- x %>% filter(Type=="living" & Sub_type != "detritus")
 
-  print(x %>%
-          group_by(sample_num, max, class) %>% summarise(BV=sum(BV/norm, na.rm=T), time=unique(time)) %>%
+  print(NBSS %>%
+          group_by(sample_num, max, class) %>% summarise(BV=sum(BV/norm, na.rm=T), time=unique(time),.groups = "drop") %>%
           ggplot(aes(x=max, fill=BV, y=factor(sample_num))) +
           geom_tile() +
           ylab(NULL) +
@@ -309,11 +323,11 @@ print(ggplot() +
           theme_minimal()
           )
 
-  print(x %>% group_by(sample_num, max, time) %>% summarise(BV=sum(BV/norm, na.rm=T)) %>%
+  print(NBSS %>% group_by(sample_num, max, time) %>% summarise(BV=sum(BV/norm, na.rm=T),.groups = "drop") %>%
           ggplot(aes(x=max, y=BV)) +
-          geom_line() +
-          facet_wrap(~sample_num, strip.position="top") +
-          scale_x_log10("Size (um)", labels = scales::trans_format('log10', scales::math_format(10^.x, format = function(x) scales::number(x, accuracy = 0.01)))) +
+          geom_point() +
+         # facet_wrap(~sample_num, strip.position="top") +
+          scale_x_log10("Size (µm)", labels = scales::trans_format('log10', scales::math_format(10^.x, format = function(x) scales::number(x, accuracy = 0.01)))) +
           scale_y_log10("NBSS (mm3.mm-3.m-3)", labels=trans_format('log10',math_format(10^.x))) +
           ggtitle("NBSS on the living") +
           theme_minimal()+
@@ -321,16 +335,16 @@ print(ggplot() +
 
 
   # Relative BSS
-  N <- length(unique(x$Sub_type))
+ 
   print(x %>%
-          group_by(sample_num, class) %>% mutate(rel = BV/sum(BV, na.rm=T)*100) %>%
-          group_by(sample_num, class, max, Sub_type) %>% summarise(rel=sum(rel, na.rm=T)) %>%
+          group_by(class) %>% mutate(rel = BV/sum(BV, na.rm=T)*100) %>%
+          group_by(class, max, Sub_type) %>% summarise(rel=sum(rel, na.rm=T),.groups = "drop") %>%
           ggplot(aes(x=max, y=rel, fill=Sub_type)) +
           geom_col(width=0.02) +
           plankton_groups_colFill +
           scale_y_continuous("BSS (%)") +
-          scale_x_log10("Size (um)", labels = scales::trans_format('log10', scales::math_format(10^.x, format = function(x) scales::number(x, accuracy = 0.01)))) +
-          facet_wrap(~sample_num, strip.position="top") +
+          scale_x_log10("Size (µm)", labels = scales::trans_format('log10', scales::math_format(10^.x, format = function(x) scales::number(x, accuracy = 0.01)))) +
+          #facet_wrap(~sample_num, strip.position="top") +
           ggtitle("Relative BSS") +
           theme_minimal()+
           theme(axis.text.x = element_text(size = 7, vjust = 0.5, hjust = 0.5)))
@@ -348,7 +362,7 @@ print (x %>% group_by(sample_num) %>% summarise(Shannon = sum(Shannon)) %>%
  #Shannon map  
   print(ggplot() +
           geom_sf(data = worldmap, color=NA, fill="gray54") +
-          geom_sf(data = meta.point, size=1, aes(color= Shannon)) +
+          geom_sf(data = sample.point, size=1, aes(color= Shannon)) +
           scale_color_viridis_c() +
           labs(color = "Shannon Index") +
           coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
@@ -399,6 +413,7 @@ print(ggplot(plot_data) +
   sf_use_s2(TRUE)
 
 }
+
 
 
 
