@@ -95,10 +95,11 @@ compute_bv <- function(path, output, metadata = NULL, instru) {
  
   print(paste0("done : ", unique(data$sample_id)))
 
-  options(dplyr.summarise.inform = TRUE)
+  options(dplyr.summarise.inform = FALSE)
 
   return(data)
 }
+
 
 
 
