@@ -13,8 +13,10 @@
 # ordonner par datetime
 
 graph.metadata <- function(final_metadata) {
+  suppressMessages(sf::sf_use_s2(FALSE))
+  
   # 1. MAP
-  ex = 3
+  ex = 7
   latmin <- min(final_metadata$object_lat, na.rm=T)-ex
   lonmin <- min(final_metadata$object_lon, na.rm=T)-ex
   latmax <- max(final_metadata$object_lat, na.rm=T)+ex
@@ -39,7 +41,7 @@ graph.metadata <- function(final_metadata) {
           ggtitle("Sampling map") +
           theme_bw())
 
-  sf_use_s2(TRUE)
+  #sf_use_s2(TRUE)
 
   # 2. DATE and TIME
   print(ggplot(final_metadata, aes(x=time, y=reorder(sample_id, time, decreasing=T), color=as.factor(ghost_id))) +
@@ -81,5 +83,6 @@ graph.metadata <- function(final_metadata) {
     if(a>nb) a = nb
   }
 }
+
 
 
