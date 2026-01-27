@@ -31,8 +31,8 @@ graph.sample <- function(x, final_metadata, taxo, bv.type="elli", living.only=T)
 
   # Filter living
   if (living.only==T) {
-    x <- filter(x, n1=="living")
-    taxo <- filter(taxo, n1=="living")
+    x <- filter(x, Type=="living")
+    taxo <- filter(taxo, Type=="living")
   }
 
   # Set common color palette
@@ -63,9 +63,9 @@ graph.sample <- function(x, final_metadata, taxo, bv.type="elli", living.only=T)
   plankton_groups_colFill <- scale_fill_manual(name = "taxonomic group",values = plankton_groups_colors)
  
  # ------------------------------------------------------------------------------
-  # Resume
+  # Text summary for the sample 
   div <- x %>% group_by(object_annotation_category) %>%
-    summarise(AB=sum(AB, na.rm=T)) %>% select(AB) %>% vegan::diversity()
+    summarise(AB=sum(AB, na.rm=T),.groups = "drop") %>% select(AB) %>% vegan::diversity()
   text = paste0(
     "\n\nTotal abundance (ind.m-3):\n",
     round(sum(x$AB, na.rm=T),2),
@@ -81,7 +81,7 @@ graph.sample <- function(x, final_metadata, taxo, bv.type="elli", living.only=T)
   tot <- sum(sum(x$AB, na.rm=T))
 
   p2 <- x %>% group_by(Sub_type) %>%
-    summarise(per=sum(AB, na.rm=T)/tot*100) %>%
+    summarise(per=sum(AB, na.rm=T)/tot*100,.groups = "drop") %>%
     ggplot(aes(x="", y=per, fill=Sub_type)) +
     geom_bar(stat="identity", width=1, size=0.15, color="black") +
     plankton_groups_colFill +
@@ -94,7 +94,7 @@ graph.sample <- function(x, final_metadata, taxo, bv.type="elli", living.only=T)
   tot <- sum(sum(x$BV, na.rm=T))
 
   p3 <- x %>% group_by(Sub_type) %>%
-    summarise(per=sum(BV, na.rm=T)/tot*100) %>%
+    summarise(per=sum(BV, na.rm=T)/tot*100,.groups = "drop") %>%
     ggplot(aes(x="", y=per, fill=Sub_type)) +
     geom_bar(stat="identity", width=0.25, size=0.15, color="black") +
     plankton_groups_colFill +
@@ -104,7 +104,7 @@ graph.sample <- function(x, final_metadata, taxo, bv.type="elli", living.only=T)
     theme(plot.title = element_text(hjust = 0.5, vjust = -4,size = 10,face = "bold"))
 
   # NBSS
-  p4 <- x %>% group_by(max) %>% summarise(BV=sum(BV/norm, na.rm=T)) %>%
+  p4 <- x %>% group_by(max) %>% summarise(BV=sum(BV/norm, na.rm=T),.groups = "drop") %>%
     ggplot(aes(x=bv_to_esdum(max), y=BV)) +
      geom_point(size=2, fill="lightgrey", colour="black",shape=21) +
     scale_x_log10("Size on ESD (\u00b5m)") +
@@ -114,7 +114,7 @@ graph.sample <- function(x, final_metadata, taxo, bv.type="elli", living.only=T)
     theme(plot.title = element_text(hjust = 0.5, size = 10,face = "bold"), legend.text = element_text(size = 0.5))
 
   # BSS
-  p5 <- x %>% group_by(max) %>% summarise(BV=sum(BV, na.rm=T)) %>%
+  p5 <- x %>% group_by(max) %>% summarise(BV=sum(BV, na.rm=T),.groups = "drop") %>%
     ggplot(aes(x=bv_to_esdum(max), y=BV)) +
     geom_point(size=2, fill="lightgrey", colour="black",shape=21) +
     scale_x_log10("Size on ESD (\u00b5m)") +
@@ -126,7 +126,7 @@ graph.sample <- function(x, final_metadata, taxo, bv.type="elli", living.only=T)
   # BV compo/size class
   p6 <- x %>% group_by(Sub_type, max, class) %>%
     group_by(class) %>% mutate(per = BV/sum(BV, na.rm=T)*100) %>%
-    group_by(class, max, Sub_type) %>% summarise(per=sum(per, na.rm=T)) %>%
+    group_by(class, max, Sub_type) %>% summarise(per=sum(per, na.rm=T),.groups = "drop") %>%
     ggplot(aes(x=bv_to_esdum(max), y=per, fill=Sub_type)) +
     geom_col(position = "fill", width = 0.02) +
     plankton_groups_colFill +
@@ -176,7 +176,7 @@ p7<-ggplot(plot_data) +
   theme_classic() +
   theme(plot.title = element_text(hjust = 0.5, size = 10,face = "bold"), legend.text = element_text(size = 0.5))
 
-  # Map
+  # Map of sampling 
    ex = 10
   latmin <- min(final_metadata$object_lat, na.rm=T)-ex
   lonmin <- min(final_metadata$object_lon, na.rm=T)-ex
@@ -190,26 +190,28 @@ p7<-ggplot(plot_data) +
 
   final_metadata$time <- as.POSIXct(paste(final_metadata$object_date, final_metadata$object_time))
 
-  sf_use_s2(FALSE)
+  #sf_use_s2(FALSE)
 
  bbox_area <- st_bbox(c(xmin = lonmin, ymin = latmin, xmax = lonmax, ymax = latmax), crs = 4326)
  
   worldmap <- ne_countries(scale = 'medium', type = 'map_units', returnclass = 'sf') %>%
               st_filter(st_as_sfc(bbox_area))
- #st_crop(xmin=lonmin, xmax=lonmax, ymax=latmax, ymin=latmin)
-  meta.x <- filter(final_metadata, sample_id==unique(x$sample_id))
-  meta.point <- st_as_sf(meta.x, coords=c("object_lon","object_lat"), crs=st_crs(worldmap))
+ 
+ #Isolate sampling point 
+sample.point <- final_metadata %>% filter(sample_id==unique(x$sample_id)) %>% 
+    st_as_sf(coords=c("object_lon","object_lat"), crs=st_crs(worldmap))
 
-p8 <-ggplot() +
+ p8 <-ggplot() +
           geom_sf(data = worldmap, color=NA, fill="gray54") +
-          geom_sf(data = meta.point, size=1, color="red") +
+          geom_sf(data = sample.point, size=1, color="red") +
           coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
           ggtitle("Sampling map") +
           theme_bw() +
           theme(plot.title = element_text(hjust = 0.5, size = 10,face = "bold"))
 
-  sf_use_s2(TRUE)
- 
+  #sf_use_s2(TRUE)
+
+ # Merge all the plot in common figure
   ptot <- ggarrange(p1, p2, p3, p7, p5, p4, p6, p8,
                  common.legend = T, legend="bottom",
                  ncol=4, nrow=2) %>%
@@ -219,3 +221,4 @@ p8 <-ggplot() +
 
   return(ptot)
 }
+
