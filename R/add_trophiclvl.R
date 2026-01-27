@@ -21,8 +21,8 @@ add.trophiclvl <- function(taxo, output){
   zoo <- merge(taxo, zo, all.x=T)
   zoo$Type[zoo$n1=="temporary"] <- "temporary"
   zoo$Sub_type[zoo$n1=="temporary"] <- "temporary"
-  zoo$Type[zoo$n1=="not-living"] <- "non_living"
-  zoo$Sub_type[zoo$n1=="not-living"] <- zoo$n2[zoo$n1=="not-living"]
+  #zoo$Type[zoo$n1=="not-living"] <- "non_living" #Do not allows to create non_living categories
+  #zoo$Sub_type[zoo$n1=="not-living"] <- zoo$n2[zoo$n1=="not-living"] #Generates too many categories
   zoo$Value[zoo$Type=="non_living"] <- -1
 
   # find  objects who are not in the otu database
@@ -34,7 +34,7 @@ add.trophiclvl <- function(taxo, output){
 
   if(sum(is.na(zoo$Type)>0)) {
     yesno2 <- dlg_message(paste(c("These taxa do not exist in the database. Would you like to create them?\n",
-                                  "If no, you can also import an existing database or ignore them.\n",non)),
+                                  "If no, you can also import an existing database or ignore them.\n",non[1:(length(non)/2)])),
                           type="yesno")$res
     if(yesno2=="yes") {
       # You can edit the new taxa in the database
@@ -43,16 +43,16 @@ add.trophiclvl <- function(taxo, output){
                            col_options = list(Category = c(liste.choix$Category),
                                               Trophic = c(liste.value$Trophic)), viewer="pane")
 
-      replace <- replace %>% separate(Category, into=c("Type","Sub_type")) %>%
+      replace <- replace %>% separate(Category, into=c("Type","Sub_type"),">") %>%
         merge(liste.value, "Trophic") %>% select(-Trophic)
       zo <- bind_rows(zo, replace) %>% as.data.frame()
-      write_csv2(zo, file.path(output,"summary", "trophic_affiliation_of_organisms.csv"))
+      write_csv(zo, file.path(output,"summary", "trophic_affiliation_of_organisms.csv"))
       # Restart the process and ignore if NA
       zoo <- merge(taxo, zo, all.x=T)
       zoo$Type[zoo$n1=="temporary"] <- "temporary"
       zoo$Sub_type[zoo$n1=="temporary"] <- "temporary"
-      zoo$Type[zoo$n1=="not_living"] <- "non_living"
-      zoo$Sub_type[zoo$n1=="not_living"] <- zoo$n2[zoo$n1=="not_living"]
+      #zoo$Type[zoo$n1=="not_living"] <- "non_living" #Do not allows to create non_living categories
+      #zoo$Sub_type[zoo$n1=="not_living"] <- zoo$n2[zoo$n1=="not_living"] #Generates too many categories
       zoo$Value[zoo$Type=="non_living"] <- -1
       zoo$Type[is.na(zoo$Type)] <- "temporary"
       zoo$Sub_type[is.na(zoo$Type)] <- "temporary"
@@ -67,8 +67,8 @@ add.trophiclvl <- function(taxo, output){
         zoo <- merge(taxo, zo, all.x=T)
         zoo$Type[zoo$n1=="temporary"] <- "temporary"
         zoo$Sub_type[zoo$n1=="temporary"] <- "temporary"
-        zoo$Type[zoo$n1=="not-living"] <- "non_living"
-        zoo$Sub_type[zoo$n1=="not-living"] <- zoo$n2[zoo$n1=="not-living"]
+        #zoo$Type[zoo$n1=="not-living"] <- "non_living" #Do not allows to create non_living categories
+        #zoo$Sub_type[zoo$n1=="not-living"] <- zoo$n2[zoo$n1=="not-living"] #Generates too many categories
         zoo$Value[zoo$Type=="non_living"] <- -1
         zoo$Type[is.na(zoo$Type)] <- "temporary"
         zoo$Sub_type[is.na(zoo$Type)] <- "temporary"
@@ -81,3 +81,4 @@ add.trophiclvl <- function(taxo, output){
   }
   return(zoo)
 }
+
