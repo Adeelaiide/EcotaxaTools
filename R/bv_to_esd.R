@@ -9,5 +9,6 @@
 #'
 #' @examples bv_to_esdum(x=Biovolume)
 bv_to_esdum <- function(x) {
-  x <- sqrt(sqrt(3/4*x/pi))*2*1000
+  x<- (6 *x/pi)^(1/3)*1000
 }
+
