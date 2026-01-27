@@ -30,7 +30,7 @@ suppressMessages(sf::sf_use_s2(FALSE))
     mutate(time=as.POSIXct(paste(object_date, object_time))) %>% select(sample_id, sample_num, time, object_lat, object_lon)
   
   x <- merge(x, t, all.x=T)
-  x$max <- bv_to_esdum(x$max)
+  x$ESD <- bv_to_esdum(x$max)
  
   #Compute Shannon Index between categories of each sample
   shannon_data <- x %>%
@@ -313,51 +313,50 @@ print(ggplot() +
   if(living.only==T) NBSS <- x %>% filter(Type=="living" & Sub_type != "detritus")
 
   print(NBSS %>%
-          group_by(sample_num, max, class) %>% summarise(BV=sum(BV/norm, na.rm=T), time=unique(time),.groups = "drop") %>%
-          ggplot(aes(x=max, fill=BV, y=factor(sample_num))) +
+          group_by(sample_num, ESD, class) %>% summarise(BV=sum(BV/norm, na.rm=T), time=unique(time),.groups = "drop") %>%
+          ggplot(aes(x=ESD, fill=BV, y=factor(sample_num))) +
           geom_tile() +
           ylab(NULL) +
-          scale_x_log10("Size (um)",labels = scales::trans_format('log10', scales::math_format(10^.x, format = function(x) scales::number(x, accuracy = 0.01)))) +
+          scale_x_log10(name = "Size (µm)",breaks = scales::log_breaks(n = 10),labels = scales::label_number()) +
           scale_fill_viridis("NBSS (mm3.mm-3.m-3)", labels=trans_format('log10',math_format(10^.x)), trans="log10", option="turbo") +
-          ggtitle("NBSS on the living") +
-          theme_minimal()
-          )
+          ggtitle("Normalized Biomass Size Spectra of all stations (equivalent to abundance)") +
+          theme_bw()+
+          theme(axis.text = element_text(size = 10, vjust = 0.5, hjust = 0.5), plot.title = element_text(hjust = 0.5)))
 
-  print(NBSS %>% group_by(sample_num, max, time) %>% summarise(BV=sum(BV/norm, na.rm=T),.groups = "drop") %>%
-          ggplot(aes(x=max, y=BV)) +
+  print(NBSS %>% group_by(sample_num, ESD, time) %>% summarise(BV=sum(BV/norm, na.rm=T),.groups = "drop") %>%
+          ggplot(aes(x=ESD, y=BV)) +
           geom_point() +
-         # facet_wrap(~sample_num, strip.position="top") +
-          scale_x_log10("Size (µm)", labels = scales::trans_format('log10', scales::math_format(10^.x, format = function(x) scales::number(x, accuracy = 0.01)))) +
-          scale_y_log10("NBSS (mm3.mm-3.m-3)", labels=trans_format('log10',math_format(10^.x))) +
-          ggtitle("NBSS on the living") +
-          theme_minimal()+
-          theme(axis.text.x = element_text(size = 7, vjust = 0.5, hjust = 0.5)))
-
-
-  # Relative BSS
- 
-  print(x %>%
-          group_by(class) %>% mutate(rel = BV/sum(BV, na.rm=T)*100) %>%
-          group_by(class, max, Sub_type) %>% summarise(rel=sum(rel, na.rm=T),.groups = "drop") %>%
-          ggplot(aes(x=max, y=rel, fill=Sub_type)) +
-          geom_col(width=0.02) +
-          plankton_groups_colFill +
-          scale_y_continuous("BSS (%)") +
-          scale_x_log10("Size (µm)", labels = scales::trans_format('log10', scales::math_format(10^.x, format = function(x) scales::number(x, accuracy = 0.01)))) +
           #facet_wrap(~sample_num, strip.position="top") +
-          ggtitle("Relative BSS") +
-          theme_minimal()+
-          theme(axis.text.x = element_text(size = 7, vjust = 0.5, hjust = 0.5)))
+          scale_x_log10(name = "Size (µm)",breaks = scales::log_breaks(n = 10),labels = scales::label_number()) +
+          scale_y_log10("NBSS (mm3.mm-3.m-3)", labels=trans_format('log10',math_format(10^.x))) +
+          ggtitle("Normalized Biomass Size Spectra of all stations (equivalent to abundance)") +
+          theme_bw()+
+          theme(axis.text = element_text(size = 10, vjust = 0.5, hjust = 0.5), plot.title = element_text(hjust = 0.5)))
 
-  # diversity
-print (x %>% group_by(sample_num) %>% summarise(Shannon = sum(Shannon)) %>% 
+
+  # Biovolume Composition per size class 
+ 
+  print(NBSS %>%
+          group_by(class) %>% mutate(rel = BV/sum(BV, na.rm=T)*100) %>%
+          group_by(class, ESD, Sub_type) %>% summarise(rel=sum(rel, na.rm=T),.groups = "drop") %>%
+          ggplot(aes(x=ESD, y=rel, fill=Sub_type)) +
+          geom_col(width=0.03) +
+          plankton_groups_colFill +
+          scale_y_continuous("Biovolume (%)") +
+          scale_x_log10(name = "Size (µm)",breaks = scales::log_breaks(n = 10),labels = scales::label_number()) +
+          #facet_wrap(~sample_num, strip.position="top") +
+          ggtitle("Biovolume composition per size class") +
+          theme_classic()+
+          theme(axis.text = element_text(size = 10, vjust = 0.5, hjust = 0.5), plot.title = element_text(hjust = 0.5,face = "bold")))
+
+  # Plot of Shannon index 
+print (NBSS %>% group_by(sample_num) %>% summarise(Shannon = first(Shannon), .groups = "drop") %>% 
           ggplot(aes(x=factor(sample_num), y=Shannon)) +
-          geom_col() +
-          coord_flip() +
+          geom_point() +
           xlab(NULL) +
-          ggtitle("Diversity") +
-          theme_minimal() +
-          scale_x_discrete(breaks = unique(x$sample_num)))
+          ggtitle("Shannon index [0-5]") +
+         theme_bw()+
+         theme(axis.text = element_text(size = 10, vjust = 0.5, hjust = 0.5), plot.title = element_text(hjust = 0.5)))
 
  #Shannon map  
   print(ggplot() +
@@ -370,9 +369,9 @@ print (x %>% group_by(sample_num) %>% summarise(Shannon = sum(Shannon)) %>%
           theme_bw() +
           theme(plot.title = element_text(hjust = 0.5, size = 10)))    
 
-  # trophic levels
+  # trophic levels on the living
  # Create a colum with the trophic categories
-  x <- x %>% mutate(categorie = case_when(
+  NBSS <- NBSS %>% mutate(categorie = case_when(
       Value == 1 ~ "Phototrophs",
       Value == 1.5 ~ "Mixotrophs",
       Value == 2 ~ "Grazers",
@@ -392,7 +391,7 @@ print (x %>% group_by(sample_num) %>% summarise(Shannon = sum(Shannon)) %>%
   "None" = "#555555")
 
  # Calculus of the required variables for geom_rect: xmin, ymin, xmax, and ymax
- plot_data <- x %>%
+ plot_data <- NBSS %>%
   mutate(trophic_level_num = Value,
     half_width = log(BV + 1), 
     xmin = -half_width,
@@ -408,11 +407,13 @@ print(ggplot(plot_data) +
   scale_y_continuous(breaks = plot_data$trophic_level_num)+
   labs(x = "Log Biovolume +1 (mm³⋅m⁻³)", y = NULL) +
   ggtitle("Trophic pyramid") + 
-  theme_classic())                                                             
+  theme_classic()+
+  theme(axis.text = element_text(size = 10, vjust = 0.5, hjust = 0.5), plot.title = element_text(hjust = 0.5)))                                                             
 
   sf_use_s2(TRUE)
 
 }
+
 
 
 
