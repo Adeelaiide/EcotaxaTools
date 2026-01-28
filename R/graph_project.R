@@ -47,7 +47,7 @@ suppressMessages(sf::sf_use_s2(FALSE))
   living.x <- left_join(living.x, shannon_data, by = "sample_num")
   
   # Set commun parameters for the maps
-   ex = 10
+   ex = 7
   latmin <- min(x$object_lat, na.rm=T)-ex
   lonmin <- min(x$object_lon, na.rm=T)-ex
   latmax <- max(x$object_lat, na.rm=T)+ex
@@ -69,7 +69,8 @@ suppressMessages(sf::sf_use_s2(FALSE))
   sample.point <- living.x %>% 
     group_by(sample_id,sample_num,time,object_lat,object_lon,Shannon) %>% 
     summarise(AB = sum(AB, na.rm = TRUE),BV = sum(BV, na.rm = TRUE), .groups = "drop") %>% 
-    st_as_sf(coords=c("object_lon","object_lat"), crs=st_crs(worldmap))%>% 
+    st_as_sf(coords=c("object_lon","object_lat"), crs=st_crs(worldmap))
+  sample.point <- sample.point %>% 
     bind_cols(st_coordinates(sample.point))
 
    # Set common color palette
@@ -298,7 +299,8 @@ print(rel_ab_constrained %>%
           geom_sf(data = worldmap, color=NA, fill="gray54") +
           geom_sf(data = sample.point, size=2, aes(color= BV)) +
           geom_text_repel(data = sample.point,aes(X, Y, label = sample_num),
-                          size = 4, box.padding = 0.15, min.segment.length = 1, seed = 42) +
+                          size = 4,max.overlaps = Inf, box.padding = 0.15, 
+                          point.padding = 0.15, min.segment.length = 0.3, seed = 42) +
           scale_color_viridis_c(option = "H") +
           labs(color = "Biovolume (mm3.m-3)", x = NULL, y = NULL) +
           coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
@@ -311,7 +313,8 @@ print(ggplot() +
           geom_sf(data = worldmap, color=NA, fill="gray54") +
           geom_sf(data = sample.point, size=2, aes(color= AB)) +
           geom_text_repel(data = sample.point,aes(X, Y, label = sample_num),
-                        size = 4, box.padding = 0.15, min.segment.length = 1, seed = 42) +
+                          size = 4,max.overlaps = Inf, box.padding = 0.15, 
+                          point.padding = 0.15, min.segment.length = 0.3, seed = 42) +
           scale_color_viridis_c(option = "H") +
           labs(color = "Abundance (ind.m-3)", x = NULL, y = NULL)+
           coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
@@ -371,7 +374,8 @@ print (sample.point %>%
           geom_sf(data = worldmap, color=NA, fill="gray54") +
           geom_sf(data = sample.point, size=2, aes(color= Shannon)) +
           geom_text_repel(data = sample.point,aes(X, Y, label = sample_num),
-                          size = 4, box.padding = 0.15, min.segment.length = 1, seed = 42) +
+                          size = 4,max.overlaps = Inf, box.padding = 0.15, 
+                          point.padding = 0.15, min.segment.length = 0.3, seed = 42) +
           scale_color_viridis_c() +
           labs(color = "Shannon Index", x = NULL, y = NULL) +
           coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
@@ -423,6 +427,7 @@ print(ggplot(plot_data) +
   sf_use_s2(TRUE)
 
 }
+
 
 
 
