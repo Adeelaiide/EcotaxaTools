@@ -27,62 +27,77 @@ graph.metadata <- function(final_metadata) {
   if(latmax>90) latmax <- 90
   if(lonmax>180) lonmax <- 180
 
-  final_metadata$time <- as.POSIXct(paste(final_metadata$object_date, final_metadata$object_time))
-
   sf_use_s2(FALSE)
-
+  bbox_area <- st_bbox(c(xmin = lonmin, ymin = latmin, xmax = lonmax, ymax = latmax), crs = 4326)
+  
   worldmap <- ne_countries(scale = 'medium', type = 'map_units', returnclass = 'sf') %>%
-    st_crop(xmin=lonmin, xmax=lonmax, ymax=latmax, ymin=latmin)
-  meta.point <- st_as_sf(final_metadata, coords=c("object_lon","object_lat"), crs=st_crs(worldmap))
+    st_filter(st_as_sfc(bbox_area))
 
-  print(ggplot() +
+  #Adjusting dataset to be plotable
+  final_metadata$time <- as.POSIXct(paste(final_metadata$object_date, final_metadata$object_time))
+  sample.point <- st_as_sf(final_metadata, coords=c("object_lon","object_lat"), crs=st_crs(worldmap))
+  sample.point <- sample.point %>% bind_cols(st_coordinates(sample.point))
+
+  #Create a trackline of the samples 
+  track.line <- sample.point %>%
+    arrange(time) %>%              # ordre chronologique
+    summarise(do_union = FALSE) %>% # garde l’ordre des points
+    st_cast("LINESTRING")
+  
+   print(ggplot() +
           geom_sf(data = worldmap, color=NA, fill="gray54") +
-          geom_sf(data = meta.point, size=1, aes(color=time)) +
+          geom_sf(data = sample.point, size=2, aes(color=time)) +
+          geom_sf(data = track.line, color = "black", linewidth = 0.1) +
+          geom_text_repel(data = sample.point,aes(X, Y, label = sample_num),
+                          size = 3,max.overlaps = Inf, box.padding = 0.15, point.padding = 0.15, min.segment.length = 0.3, seed = 42) +
+          coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
+          scale_color_viridis_c(option = "H",name = "Date",
+                                breaks = scales::pretty_breaks(n = 5), labels = function(x) format(as.POSIXct(x, origin = "1970-01-01"), "%d %b"))+
+          labs(x=NULL,y=NULL)+
           ggtitle("Sampling map") +
-          theme_bw())
+          theme_bw()+
+          theme(axis.text = element_text(size = 10),plot.title = element_text(hjust = 0.5, face = "bold")))
 
   #sf_use_s2(TRUE)
 
   # 2. DATE and TIME
   print(ggplot(final_metadata, aes(x=time, y=reorder(sample_id, time, decreasing=T), color=as.factor(ghost_id))) +
           geom_point(position=position_dodge(width=0.3), size=3) +
-          labs(color="Acq. number") +
-          xlab(NULL) +
-          ylab(NULL) +
+          labs(color="Acq. number",x=NULL,y=NULL) +
           scale_y_discrete() +
-          theme_minimal() +
+          theme_bw() +
           ggtitle("Number of acquisition per sample") +
-          theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1),
-                legend.position = "right"))
+          theme(axis.text = element_text(size=10),legend.position = "right",plot.title = element_text(hjust = 0.5, face = "bold")))
 
-  # 3. METADATA
-  metadata.long <- final_metadata %>% pivot_longer(c(where(is.numeric), -ghost_id, -object_lat, -object_lon, -percentValidated)) %>% arrange(time)
-  id <- unique(final_metadata$sample_id)
-  nb <- length(id)
-  n <- ceiling(nb/10)
-  a = 1
+  #   # 3. METADATA - Useless
+#   metadata.long <- final_metadata %>% pivot_longer(c(where(is.numeric), -ghost_id, -object_lat, -object_lon, -percentValidated)) %>% arrange(time)
+#   id <- unique(final_metadata$sample_id)
+#   nb <- length(id)
+#   n <- ceiling(nb/10)
+#   a = 1
+# 
+#   for (i in 1:n) {
+#     b = a + 9
+#     if(b>nb) b = nb
+#     temp <- metadata.long %>% filter(sample_id %in% id[a:b])
+#     temp$sample_id <- gsub("_", " ", temp$sample_id )
+#     print(ggplot(temp, aes(x=reorder(sample_id,time), fill=as.factor(ghost_id), y=value)) +
+#             geom_bar(stat="identity", position=position_dodge()) +
+#             scale_fill_brewer(palette="Paired") +
+#             scale_x_discrete(labels = label_wrap(10)) +
+#             labs(fill="Acq. number") +
+#             xlab(NULL) +
+#             ylab(NULL) +
+#             theme_bw() +
+#             ggtitle("Metadata values per acquisition and per sample") +
+#             theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1, size = 8),
+#                   legend.position = "right") +
+#             facet_wrap(~name, scales="free_y", ncol=1))
+#     a = b + 1 # conditions
+#     if(a>nb) a = nb
+#   }
+# }
 
-  for (i in 1:n) {
-    b = a + 9
-    if(b>nb) b = nb
-    temp <- metadata.long %>% filter(sample_id %in% id[a:b])
-    temp$sample_id <- gsub("_", " ", temp$sample_id )
-    print(ggplot(temp, aes(x=reorder(sample_id,time), fill=as.factor(ghost_id), y=value)) +
-            geom_bar(stat="identity", position=position_dodge()) +
-            scale_fill_brewer(palette="Paired") +
-            scale_x_discrete(labels = label_wrap(10)) +
-            labs(fill="Acq. number") +
-            xlab(NULL) +
-            ylab(NULL) +
-            theme_bw() +
-            ggtitle("Metadata values per acquisition and per sample") +
-            theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1, size = 8),
-                  legend.position = "right") +
-            facet_wrap(~name, scales="free_y", ncol=1))
-    a = b + 1 # conditions
-    if(a>nb) a = nb
-  }
-}
 
 
 
