@@ -209,6 +209,7 @@ sample.point <- sample.point %>% bind_cols(st_coordinates(sample.point))
                           size = 4, box.padding = 0.5, point.padding = 0.5,
                           min.segment.length = 1, seed = 42) +
           coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
+          labs(x=NULL,y=NULL)+
           ggtitle("Sampling map") +
           theme_bw() +
           theme(plot.title = element_text(hjust = 0.5, size = 10,face = "bold"))
@@ -225,5 +226,6 @@ sample.point <- sample.point %>% bind_cols(st_coordinates(sample.point))
 
   return(ptot)
 }
+
 
 
