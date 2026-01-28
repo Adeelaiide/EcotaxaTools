@@ -69,7 +69,8 @@ suppressMessages(sf::sf_use_s2(FALSE))
   sample.point <- living.x %>% 
     group_by(sample_id,sample_num,time,object_lat,object_lon,Shannon) %>% 
     summarise(AB = sum(AB, na.rm = TRUE),BV = sum(BV, na.rm = TRUE), .groups = "drop") %>% 
-    st_as_sf(coords=c("object_lon","object_lat"), crs=st_crs(worldmap))
+    st_as_sf(coords=c("object_lon","object_lat"), crs=st_crs(worldmap))%>% 
+    bind_cols(st_coordinates(sample.point))
 
    # Set common color palette
   plankton_groups_colors <- c("#709699", #cyanobacteria
@@ -143,10 +144,10 @@ suppressMessages(sf::sf_use_s2(FALSE))
           scale_fill_viridis_d(option = "D") +
           scale_y_continuous("Biovolume (mm3.m-3)", expand = expansion(mult = c(0, 0.05))) +
           xlab(NULL) +
-          ggtitle("Total biovolume of each sample") +
+          ggtitle("Total biovolume per sample") +
           labs(fill = "Type") +
           theme_bw() +
-          theme(axis.text = element_text(size = 10,vjust = 0.5, hjust = 1),plot.title = element_text(hjust = 0.5, face = "bold")))
+          theme(axis.text = element_text(size = 10),plot.title = element_text(hjust = 0.5, face = "bold")))
 
   print(x %>% group_by(Type,sample_num) %>% 
           summarise(AB = sum(AB),.groups = "drop") %>% 
@@ -155,10 +156,10 @@ suppressMessages(sf::sf_use_s2(FALSE))
           scale_fill_viridis_d(option = "D") +
           scale_y_continuous("Abundance (ind.m-3)", expand = expansion(mult = c(0, 0.05))) +
           xlab(NULL) +
-          ggtitle("Total abundance of each sample") +
+          ggtitle("Total abundance per sample") +
           labs(fill = "Type") +
           theme_bw() +
-          theme(axis.text = element_text(size = 10,vjust = 0.5, hjust = 1),plot.title = element_text(hjust = 0.5, face = "bold")))
+          theme(axis.text = element_text(size = 10),plot.title = element_text(hjust = 0.5, face = "bold")))
 
   ## living only
   
@@ -170,9 +171,9 @@ suppressMessages(sf::sf_use_s2(FALSE))
           plankton_groups_colFill +
           scale_y_continuous("Biovolume (mm3.m-3)", expand = expansion(mult = c(0, 0.05))) +
           xlab(NULL) +
-          ggtitle("Total living biovolume of each sample") +
+          ggtitle("Biovolume of the living per sample") +
           theme_bw() +
-          theme(axis.text = element_text(size = 10,vjust = 0.5, hjust = 1),plot.title = element_text(hjust = 0.5, face = "bold")))
+          theme(axis.text = element_text(size = 10),plot.title = element_text(hjust = 0.5, face = "bold")))
 
   # Total abundance 
   print(living.x %>% 
@@ -182,9 +183,9 @@ suppressMessages(sf::sf_use_s2(FALSE))
           plankton_groups_colFill +
           scale_y_continuous("Abundance (ind.m-3)", expand = expansion(mult = c(0, 0.05))) +
           xlab(NULL) +
-          ggtitle("Total living abundance of each sample") +
+          ggtitle("Abundance of the living per sample") +
           theme_bw() +
-          theme(axis.text = element_text(size = 10,vjust = 0.5, hjust = 1),plot.title = element_text(hjust = 0.5, face = "bold")))
+          theme(axis.text = element_text(size = 10),plot.title = element_text(hjust = 0.5, face = "bold")))
 
 
 # ----------------------------------------------------------------------
@@ -221,130 +222,130 @@ constrain_round <- function(values) {
 }
 
   #Relative Biovolume
-rel_bv_constrained <- x %>% 
+rel_bv_constrained <- living.x %>% 
     #mutate(BV = replace_na(BV, 0)) %>%
-    filter(Type == "living" & Sub_type != "detritus") %>%
     group_by(sample_num) %>%
     mutate(relative_BV = BV / sum(BV) * 100, rel_BV_constrained_rounded = constrain_round(relative_BV)) %>%
     ungroup()     
 
   # Verify that sums are exactly 100% for each sample
 cat("\n--- Sums for Constrained Rounded Biovolume (should be 100%) ---\n")
-# print(rel_bv_constrained %>%
-#        group_by(sample_num) %>%
-#        summarise(sum_constrained_BV = sum(rel_BV_constrained_rounded)))
+ print(rel_bv_constrained %>%
+        group_by(sample_num) %>%
+        summarise(sum_constrained_BV = sum(rel_BV_constrained_rounded)))
   
 print(rel_bv_constrained %>%
     group_by(Sub_type,sample_num) %>% summarise(sum_constrained_BV = sum(rel_BV_constrained_rounded),.groups = "drop") %>% 
     ggplot(aes(x=factor(sample_num), y=sum_constrained_BV, fill=Sub_type)) +
     geom_bar(stat="identity") +
     plankton_groups_colFill +
-    scale_y_continuous("Relative biovolume (%)", limits = c(0, 100)) +
+    scale_y_continuous("Relative biovolume (%)", limits = c(0, 100), expand = c(0,0)) +
     xlab(NULL) +
     ggtitle("Relative biovolume of the living per sample (Constrained Rounded)") +
-    theme_minimal() +
-    theme(axis.text.x = element_text(angle = 45,vjust = 0.5, hjust = 1)))
+    theme_bw() +
+    theme(axis.text = element_text(size = 10),plot.title = element_text(hjust = 0.5, face = "bold")))
   
   # Relative abundance
- rel_ab_constrained <- x %>% 
+ rel_ab_constrained <- living.x %>% 
     #mutate(AB = replace_na(AB, 0)) %>%
-    filter(Type == "living" & Sub_type != "detritus") %>%
     group_by(sample_num) %>%
     mutate(relative_AB = AB / sum(AB) * 100, rel_AB_constrained_rounded = constrain_round(relative_AB)) %>%
     ungroup() 
   
   # Verify that sums are exactly 100% for each sample
 cat("\n--- Sums for Constrained Rounded Abundance (should be 100%) ---\n")
-# print(rel_ab_constrained %>%
-#        group_by(sample_num) %>%
-#        summarise(sum_constrained_AB = sum(rel_AB_constrained_rounded)))
+ print(rel_ab_constrained %>%
+        group_by(sample_num) %>%
+        summarise(sum_constrained_AB = sum(rel_AB_constrained_rounded)))
 
 print(rel_ab_constrained %>%    
     group_by(Sub_type,sample_num) %>% summarise(sum_constrained_AB = sum(rel_AB_constrained_rounded),.groups = "drop") %>% 
     ggplot(aes(x=factor(sample_num), y=sum_constrained_AB, fill=Sub_type)) +
     geom_bar(stat="identity") +
     plankton_groups_colFill +
-    scale_y_continuous(" Relative abundance (%)", limits = c(0, 100)) +
+    scale_y_continuous(" Relative abundance (%)", limits = c(0, 100), expand = c(0,0)) +
     xlab(NULL) +
     ggtitle("Relative abundance of the living per sample (Constrained Rounded)") +
-    theme_minimal() +
-    theme(axis.text.x = element_text(angle = 45,vjust = 0.5, hjust = 1)))
-
+    theme_bw() +
+    theme(axis.text = element_text(size = 10),plot.title = element_text(hjust = 0.5, face = "bold")))
   
-  # not living only
+  # Condition in case the dataset do not have non_living objects
   N <- length(unique(x$Sub_type[x$Type=="non_living"]))
+  if(N >= 1){
+    
   print(x %>% filter(Type=="non_living") %>% group_by(Sub_type,sample_num) %>% summarise(BV = sum(BV),.groups = "drop") %>% 
           ggplot(aes(x=factor(sample_num), y=BV, fill=Sub_type)) +
           geom_bar(stat="identity") +
           plankton_groups_colFill +
-          scale_y_continuous("Biovolume (mm3.m-3)") +
+          scale_y_continuous("Biovolume (mm3.m-3)", expand = expansion(mult = c(0, 0.05))) +
           xlab(NULL) +
-          ggtitle("Biovolume of the non living") +
-          theme_minimal() +
-          theme(axis.text.x = element_text(angle = 45,vjust = 0.5, hjust = 1)))
+          ggtitle("Biovolume of the non living per sample") +
+          theme_bw() +
+          theme(axis.text = element_text(size = 10),plot.title = element_text(hjust = 0.5, face = "bold")))
 
   print(x %>% filter(Type=="non_living") %>% group_by(Sub_type,sample_num) %>% summarise(AB = sum(AB),.groups = "drop") %>%
           ggplot(aes(x=factor(sample_num), y=AB, fill=Sub_type)) +
           geom_bar(stat="identity") +
           plankton_groups_colFill +
-          scale_y_continuous("Abundance (ind.m-3)") +
+          scale_y_continuous("Abundance (ind.m-3)", expand = expansion(mult = c(0, 0.05))) +
           xlab(NULL) +
-          ggtitle("Abundance of the non living") +
-          theme_minimal() +
-          theme(axis.text.x = element_text(angle = 45,vjust = 0.5, hjust = 1)))
-
+          ggtitle("Abundance of the non living per sample") +
+          theme_bw() +
+          theme(axis.text = element_text(size = 10),plot.title = element_text(hjust = 0.5, face = "bold")))
+          }
 #BV map
   print(ggplot() +
           geom_sf(data = worldmap, color=NA, fill="gray54") +
           geom_sf(data = sample.point, size=2, aes(color= BV)) +
-          geom_sf_text(data = sample.point,aes(label = sample_num),nudge_y = 0.3,size = 4) +
-          scale_color_viridis_c() +
+          geom_text_repel(data = sample.point,aes(X, Y, label = sample_num),
+                          size = 4, box.padding = 0.15, min.segment.length = 1, seed = 42) +
+          scale_color_viridis_c(option = "H") +
           labs(color = "Biovolume (mm3.m-3)", x = NULL, y = NULL) +
           coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
-          ggtitle("Map of total Biovolume per sample") +
+          ggtitle("Biovolume of the living per sample") +
           theme_bw() +
-          theme(plot.title = element_text(hjust = 0.5,face = "bold")))  
+          theme(axis.text = element_text(size = 10), plot.title = element_text(hjust = 0.5, face = "bold")))   
 
 #AB map 
 print(ggplot() +
           geom_sf(data = worldmap, color=NA, fill="gray54") +
           geom_sf(data = sample.point, size=2, aes(color= AB)) +
-          geom_sf_text(data = sample.point,aes(label = sample_num),nudge_y = 0.3,size = 4) +
-          scale_color_viridis_c() +
+          geom_text_repel(data = sample.point,aes(X, Y, label = sample_num),
+                        size = 4, box.padding = 0.15, min.segment.length = 1, seed = 42) +
+          scale_color_viridis_c(option = "H") +
           labs(color = "Abundance (ind.m-3)", x = NULL, y = NULL)+
           coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
-          ggtitle("Map of total Abundance per sample") +
+          ggtitle("Abundance of the living per sample") +
           theme_bw() +
-          theme(plot.title = element_text(hjust = 0.5,face = "bold")))
+          theme(axis.text = element_text(size = 10), plot.title = element_text(hjust = 0.5, face = "bold")))
 
   # 4. NBSS on living
-  if(living.only==T) NBSS <- x %>% filter(Type=="living" & Sub_type != "detritus")
-
-  print(NBSS %>%
+  
+  print(living.x %>%
           group_by(sample_num, ESD, class) %>% summarise(BV=sum(BV/norm, na.rm=T), time=unique(time),.groups = "drop") %>%
           ggplot(aes(x=ESD, fill=BV, y=factor(sample_num))) +
           geom_tile() +
           ylab(NULL) +
           scale_x_log10(name = "Size (µm)",breaks = scales::log_breaks(n = 10),labels = scales::label_number()) +
           scale_fill_viridis("NBSS (mm3.mm-3.m-3)", labels=trans_format('log10',math_format(10^.x)), trans="log10", option="turbo") +
-          ggtitle("Normalized Biomass Size Spectra of all stations (equivalent to abundance)") +
+          ggtitle("Normalized Biomass Size Spectra of all samples (equivalent to abundance)") +
           theme_bw()+
-          theme(axis.text = element_text(size = 10, vjust = 0.5, hjust = 0.5), plot.title = element_text(hjust = 0.5,face = "bold")))
+          theme(axis.text = element_text(size = 10), plot.title = element_text(hjust = 0.5,face = "bold")))
 
-  print(NBSS %>% group_by(sample_num, ESD, time) %>% summarise(BV=sum(BV/norm, na.rm=T),.groups = "drop") %>%
+  print(living.x %>% group_by(sample_num, ESD, time) %>% summarise(BV=sum(BV/norm, na.rm=T),.groups = "drop") %>%
           ggplot(aes(x=ESD, y=BV)) +
           geom_point() +
           #facet_wrap(~sample_num, strip.position="top") +
           scale_x_log10(name = "Size (µm)",breaks = scales::log_breaks(n = 10),labels = scales::label_number()) +
           scale_y_log10("NBSS (mm3.mm-3.m-3)", labels=trans_format('log10',math_format(10^.x))) +
-          ggtitle("Normalized Biomass Size Spectra of all stations (equivalent to abundance)") +
+          ggtitle("Normalized Biomass Size Spectra of all samples (equivalent to abundance)") +
           theme_bw()+
-          theme(axis.text = element_text(size = 10, vjust = 0.5, hjust = 0.5), plot.title = element_text(hjust = 0.5,face = "bold")))
+          theme(axis.text = element_text(size = 10), plot.title = element_text(hjust = 0.5,face = "bold")))
 
 
   # Biovolume Composition per size class 
  
-  print(NBSS %>%
+  print(living.x %>%
           group_by(class) %>% mutate(rel = BV/sum(BV, na.rm=T)*100) %>%
           group_by(class, ESD, Sub_type) %>% summarise(rel=sum(rel, na.rm=T),.groups = "drop") %>%
           ggplot(aes(x=ESD, y=rel, fill=Sub_type)) +
@@ -355,31 +356,32 @@ print(ggplot() +
           #facet_wrap(~sample_num, strip.position="top") +
           ggtitle("Biovolume composition per size class") +
           theme_classic()+
-          theme(axis.text = element_text(size = 10, vjust = 0.5, hjust = 0.5), plot.title = element_text(hjust = 0.5,face = "bold")))
+          theme(axis.text = element_text(size = 10), plot.title = element_text(hjust = 0.5,face = "bold")))
 
   # Plot of Shannon index 
-print (NBSS %>% group_by(sample_num) %>% summarise(Shannon = first(Shannon), .groups = "drop") %>% 
+print (sample.point %>% 
           ggplot(aes(x=factor(sample_num), y=Shannon)) +
           geom_point() +
           labs(y = "Shannon index [0-5]", x = NULL) +
          theme_bw()+
-         theme(axis.text = element_text(size = 10, vjust = 0.5, hjust = 0.5)))
+         theme(axis.text = element_text(size = 10), plot.title = element_text(hjust = 0.5,face = "bold")))
 
  #Shannon map  
   print(ggplot() +
           geom_sf(data = worldmap, color=NA, fill="gray54") +
           geom_sf(data = sample.point, size=2, aes(color= Shannon)) +
-          geom_sf_text(data = sample.point,aes(label = sample_num),nudge_y = 0.3,size = 4) +
+          geom_text_repel(data = sample.point,aes(X, Y, label = sample_num),
+                          size = 4, box.padding = 0.15, min.segment.length = 1, seed = 42) +
           scale_color_viridis_c() +
           labs(color = "Shannon Index", x = NULL, y = NULL) +
           coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
           ggtitle("Map of diversity per sample") +
           theme_bw() +
-          theme(plot.title = element_text(hjust = 0.5,face = "bold")))    
+          theme(axis.text = element_text(size = 10), plot.title = element_text(hjust = 0.5,face = "bold")))   
 
   # trophic levels on the living
  # Create a colum with the trophic categories
-  NBSS <- NBSS %>% mutate(categorie = case_when(
+  living.x <- living.x %>% mutate(categorie = case_when(
       Value == 1 ~ "Phototrophs",
       Value == 1.5 ~ "Mixotrophs",
       Value == 2 ~ "Grazers",
@@ -399,7 +401,7 @@ print (NBSS %>% group_by(sample_num) %>% summarise(Shannon = first(Shannon), .gr
   "None" = "#555555")
 
  # Calculus of the required variables for geom_rect: xmin, ymin, xmax, and ymax
- plot_data <- NBSS %>%
+ plot_data <- living.x %>%
   mutate(trophic_level_num = Value,
     half_width = log(BV + 1), 
     xmin = -half_width,
@@ -416,11 +418,12 @@ print(ggplot(plot_data) +
   labs(x = "Log Biovolume +1 (mm³⋅m⁻³)", y = NULL) +
   ggtitle("Trophic pyramid") + 
   theme_classic()+
-  theme(axis.text = element_text(size = 10, vjust = 0.5, hjust = 0.5), plot.title = element_text(hjust = 0.5,face = "bold")))                                                             
+  theme(axis.text = element_text(size = 10), plot.title = element_text(hjust = 0.5,face = "bold")))                                                             
 
   sf_use_s2(TRUE)
 
 }
+
 
 
 
