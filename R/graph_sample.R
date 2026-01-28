@@ -128,10 +128,10 @@ graph.sample <- function(x, final_metadata, taxo, bv.type="elli", living.only=T)
     group_by(class) %>% mutate(per = BV/sum(BV, na.rm=T)*100) %>%
     group_by(class, max, Sub_type) %>% summarise(per=sum(per, na.rm=T),.groups = "drop") %>%
     ggplot(aes(x=bv_to_esdum(max), y=per, fill=Sub_type)) +
-    geom_col(position = "fill", width = 0.02) +
+    geom_col(position = "fill", width = 0.03) +
     plankton_groups_colFill +
-    ylab("Biovolume (%)") +
-    scale_x_log10("Size on ESD (\u00b5m)") +
+    scale_y_continuous("Biovolume (%)", expand = c(0, 0)) +
+    scale_x_log10(name = "Size on ESD (\u00b5m)",breaks = scales::log_breaks(n = 10),labels = scales::label_number()) +
     ggtitle("Biovolume composition per size class") +
     theme_classic() +
     theme(plot.title = element_text(hjust = 0.5, size = 10,face = "bold"), legend.text = element_text(size = 0.5))
@@ -200,10 +200,14 @@ p7<-ggplot(plot_data) +
  #Isolate sampling point 
 sample.point <- final_metadata %>% filter(sample_id==unique(x$sample_id)) %>% 
     st_as_sf(coords=c("object_lon","object_lat"), crs=st_crs(worldmap))
+sample.point <- sample.point %>% bind_cols(st_coordinates(sample.point))
 
  p8 <-ggplot() +
           geom_sf(data = worldmap, color=NA, fill="gray54") +
           geom_sf(data = sample.point, size=1, color="red") +
+          geom_text_repel(data = sample.point,aes(X, Y, label = sample_num),
+                          size = 4, box.padding = 0.5, point.padding = 0.5,
+                          min.segment.length = 1, seed = 42) +
           coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
           ggtitle("Sampling map") +
           theme_bw() +
@@ -221,4 +225,5 @@ sample.point <- final_metadata %>% filter(sample_id==unique(x$sample_id)) %>%
 
   return(ptot)
 }
+
 
