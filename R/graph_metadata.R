@@ -96,8 +96,4 @@ graph.metadata <- function(final_metadata) {
 #     a = b + 1 # conditions
 #     if(a>nb) a = nb
 #   }
-# }
-
-
-
-
+ }
