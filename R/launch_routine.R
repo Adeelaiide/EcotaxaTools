@@ -132,8 +132,9 @@ if (!is.null(mainpath) && mainpath != "") {
     dir.create(file.path(path.graph,"global raw analysis"))
   }
   path.graph_project <- file.path(path.graph,"global raw analysis")
-                  
-  graph.project(bss, final_metadata, taxo)
+  print("Creating graphical output for the whole project")
+  
+  graph.project(bss, final_metadata, taxo,path.graph_project)
   
   #### for each sample - Create directory + Plot graphic per sample
   if (!file.exists(file.path(path.graph,"raw analysis per sample"))) {
