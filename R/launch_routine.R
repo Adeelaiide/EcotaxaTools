@@ -124,7 +124,7 @@ if (!is.null(mainpath) && mainpath != "") {
 
   #### for the edited metadata (using the returned 'processed_metadata')
   
-  graph.metadata(final_metadata)
+  graph.metadata(final_metadata,path.graph)
   
  
   #### for the project - Create directory + Plot graphics
