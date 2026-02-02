@@ -223,9 +223,10 @@ sample.point <- sample.point %>% bind_cols(st_coordinates(sample.point))
     annotate_figure(top=unique(x$sample_id), fig.lab.face="bold")
 
   # sf_use_s2(TRUE)
-
+  print(paste0("done : ", unique(x$sample_id)))
   return(ptot)
 }
+
 
 
 
