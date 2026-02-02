@@ -42,7 +42,7 @@ graph.metadata <- function(final_metadata) {
     summarise(do_union = FALSE) %>% # garde l’ordre des points
     st_cast("LINESTRING")
   
-   print(ggplot() +
+   p1 <- ggplot() +
           geom_sf(data = worldmap, color=NA, fill="gray54") +
           geom_sf(data = sample.point, size=2, aes(color=time)) +
           geom_sf(data = track.line, color = "black", linewidth = 0.1) +
@@ -54,21 +54,21 @@ graph.metadata <- function(final_metadata) {
           labs(x=NULL,y=NULL)+
           ggtitle("Sampling map") +
           theme_bw()+
-          theme(axis.text = element_text(size = 10),plot.title = element_text(hjust = 0.5, face = "bold")))
-   ggsave(filename= file.path(path.graph, "Sampling map.png"),
+          theme(axis.text = element_text(size = 10),plot.title = element_text(hjust = 0.5, face = "bold"))
+   ggsave(p1, filename= file.path(path.graph, "Sampling map.png"),
           width=297, height=210, units = "mm")
 
   #sf_use_s2(TRUE)
 
   # 2. DATE and TIME
-  print(ggplot(final_metadata, aes(x=time, y=reorder(sample_id, time, decreasing=T), color=as.factor(ghost_id))) +
+  p1 <- ggplot(final_metadata, aes(x=time, y=reorder(sample_id, time, decreasing=T), color=as.factor(ghost_id))) +
           geom_point(position=position_dodge(width=0.3), size=3) +
           labs(color="Acq. number",x=NULL,y=NULL) +
           scale_y_discrete() +
           theme_bw() +
           ggtitle("Number of acquisition per sample") +
-          theme(axis.text = element_text(size=10),legend.position = "right",plot.title = element_text(hjust = 0.5, face = "bold")))
-  ggsave(filename= file.path(path.graph, "Number of acquisition per sample.png"),
+          theme(axis.text = element_text(size=10),legend.position = "right",plot.title = element_text(hjust = 0.5, face = "bold"))
+  ggsave(p1, filename= file.path(path.graph, "Number of acquisition per sample.png"),
          width=297, height=210, units = "mm") 
   #   # 3. METADATA - Useless
 #   metadata.long <- final_metadata %>% pivot_longer(c(where(is.numeric), -ghost_id, -object_lat, -object_lon, -percentValidated)) %>% arrange(time)
