@@ -133,6 +133,8 @@ suppressMessages(sf::sf_use_s2(FALSE))
   print(ggplot() +
           annotate("text", x = 1, y=10, size=3, label = text) +
           theme_void())
+  ggsave(filename= file.path(path.graph_project, "Summary of project.png"),
+         width=297, height=210, units = "mm")
 
   # BIOVOLUME AND ABUNDANCE TOTAL OF THE PROJECT
   # ----------------------------------------------------------------------------
@@ -149,6 +151,8 @@ suppressMessages(sf::sf_use_s2(FALSE))
           labs(fill = "Type") +
           theme_bw() +
           theme(axis.text = element_text(size = 10),plot.title = element_text(hjust = 0.5, face = "bold")))
+    ggsave(filename= file.path(path.graph_project, "Total biovolume per sample.png"),
+         width=297, height=210, units = "mm")
 
   print(x %>% group_by(Type,sample_num) %>% 
           summarise(AB = sum(AB),.groups = "drop") %>% 
@@ -161,6 +165,8 @@ suppressMessages(sf::sf_use_s2(FALSE))
           labs(fill = "Type") +
           theme_bw() +
           theme(axis.text = element_text(size = 10),plot.title = element_text(hjust = 0.5, face = "bold")))
+  ggsave(filename= file.path(path.graph_project, "Total abundance per sample.png"),
+         width=297, height=210, units = "mm")
 
   ## living only
   
@@ -175,6 +181,8 @@ suppressMessages(sf::sf_use_s2(FALSE))
           ggtitle("Biovolume of the living per sample") +
           theme_bw() +
           theme(axis.text = element_text(size = 10),plot.title = element_text(hjust = 0.5, face = "bold")))
+    ggsave(filename= file.path(path.graph_project, "Biovolume of the living per sample.png"),
+         width=297, height=210, units = "mm")
 
   # Total abundance 
   print(living.x %>% 
@@ -187,6 +195,8 @@ suppressMessages(sf::sf_use_s2(FALSE))
           ggtitle("Abundance of the living per sample") +
           theme_bw() +
           theme(axis.text = element_text(size = 10),plot.title = element_text(hjust = 0.5, face = "bold")))
+  ggsave(filename= file.path(path.graph_project, "Abundance of the living per sample.png"),
+         width=297, height=210, units = "mm")
 
 
 # ----------------------------------------------------------------------
@@ -245,6 +255,8 @@ print(rel_bv_constrained %>%
     ggtitle("Relative biovolume of the living per sample (Constrained Rounded)") +
     theme_bw() +
     theme(axis.text = element_text(size = 10),plot.title = element_text(hjust = 0.5, face = "bold")))
+ggsave(filename= file.path(path.graph_project, "Relative biovolume of the living per sample.png"),
+       width=297, height=210, units = "mm")
   
   # Relative abundance
  rel_ab_constrained <- living.x %>% 
@@ -269,6 +281,8 @@ print(rel_ab_constrained %>%
     ggtitle("Relative abundance of the living per sample (Constrained Rounded)") +
     theme_bw() +
     theme(axis.text = element_text(size = 10),plot.title = element_text(hjust = 0.5, face = "bold")))
+  ggsave(filename= file.path(path.graph_project, "Relative abundance of the living per sample.png"),
+       width=297, height=210, units = "mm")
   
   # Condition in case the dataset do not have non_living objects
   N <- length(unique(x$Sub_type[x$Type=="non_living"]))
@@ -283,6 +297,8 @@ print(rel_ab_constrained %>%
           ggtitle("Biovolume of the non living per sample") +
           theme_bw() +
           theme(axis.text = element_text(size = 10),plot.title = element_text(hjust = 0.5, face = "bold")))
+    ggsave(filename= file.path(path.graph_project, "Biovolume of the non living per sample.png"),
+           width=297, height=210, units = "mm")
 
   print(x %>% filter(Type=="non_living") %>% group_by(Sub_type,sample_num) %>% summarise(AB = sum(AB),.groups = "drop") %>%
           ggplot(aes(x=factor(sample_num), y=AB, fill=Sub_type)) +
@@ -293,6 +309,8 @@ print(rel_ab_constrained %>%
           ggtitle("Abundance of the non living per sample") +
           theme_bw() +
           theme(axis.text = element_text(size = 10),plot.title = element_text(hjust = 0.5, face = "bold")))
+    ggsave(filename= file.path(path.graph_project, "Abundance of the non living per sample.png"),
+         width=297, height=210, units = "mm")
           }
 #BV map
   print(ggplot() +
@@ -306,7 +324,9 @@ print(rel_ab_constrained %>%
           coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
           ggtitle("Biovolume of the living per sample") +
           theme_bw() +
-          theme(axis.text = element_text(size = 10), plot.title = element_text(hjust = 0.5, face = "bold")))   
+          theme(axis.text = element_text(size = 10), plot.title = element_text(hjust = 0.5, face = "bold")))
+  ggsave(filename= file.path(path.graph_project, "Map of biovolume.png"),
+         width=297, height=210, units = "mm")
 
 #AB map 
 print(ggplot() +
@@ -321,6 +341,8 @@ print(ggplot() +
           ggtitle("Abundance of the living per sample") +
           theme_bw() +
           theme(axis.text = element_text(size = 10), plot.title = element_text(hjust = 0.5, face = "bold")))
+  ggsave(filename= file.path(path.graph_project, "Map of abundance.png"),
+       width=297, height=210, units = "mm")
 
   # 4. NBSS on living
   
@@ -334,6 +356,8 @@ print(ggplot() +
           ggtitle("Normalized Biomass Size Spectra of all samples (equivalent to abundance)") +
           theme_bw()+
           theme(axis.text = element_text(size = 10), plot.title = element_text(hjust = 0.5,face = "bold")))
+  ggsave(filename= file.path(path.graph_project, "NBSS per sample.png"),
+         width=297, height=210, units = "mm")
 
   print(living.x %>% group_by(sample_num, ESD, time) %>% summarise(BV=sum(BV/norm, na.rm=T),.groups = "drop") %>%
           ggplot(aes(x=ESD, y=BV)) +
@@ -344,6 +368,8 @@ print(ggplot() +
           ggtitle("Normalized Biomass Size Spectra of all samples (equivalent to abundance)") +
           theme_bw()+
           theme(axis.text = element_text(size = 10), plot.title = element_text(hjust = 0.5,face = "bold")))
+    ggsave(filename= file.path(path.graph_project, "Total NBSS.png"),
+         width=297, height=210, units = "mm")
 
 
   # Biovolume Composition per size class 
@@ -360,6 +386,8 @@ print(ggplot() +
           ggtitle("Biovolume composition per size class") +
           theme_classic()+
           theme(axis.text = element_text(size = 10), plot.title = element_text(hjust = 0.5,face = "bold")))
+  ggsave(filename= file.path(path.graph_project, "Biovolume composition per size class.png"),
+         width=297, height=210, units = "mm")
 
   # Plot of Shannon index 
 print (sample.point %>% 
@@ -368,6 +396,8 @@ print (sample.point %>%
           labs(y = "Shannon index [0-5]", x = NULL) +
          theme_bw()+
          theme(axis.text = element_text(size = 10), plot.title = element_text(hjust = 0.5,face = "bold")))
+  ggsave(filename= file.path(path.graph_project, "Shannon Index per sample.png"),
+       width=297, height=210, units = "mm")
 
  #Shannon map  
   print(ggplot() +
@@ -381,7 +411,9 @@ print (sample.point %>%
           coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
           ggtitle("Map of diversity per sample") +
           theme_bw() +
-          theme(axis.text = element_text(size = 10), plot.title = element_text(hjust = 0.5,face = "bold")))   
+          theme(axis.text = element_text(size = 10), plot.title = element_text(hjust = 0.5,face = "bold")))  
+  ggsave(filename= file.path(path.graph_project, "Map of Shannon Index.png"),
+         width=297, height=210, units = "mm")
 
   # trophic levels on the living
  # Create a colum with the trophic categories
@@ -422,11 +454,14 @@ print(ggplot(plot_data) +
   labs(x = "Log Biovolume +1 (mm³⋅m⁻³)", y = NULL) +
   ggtitle("Trophic pyramid") + 
   theme_classic()+
-  theme(axis.text = element_text(size = 10), plot.title = element_text(hjust = 0.5,face = "bold")))                                                             
+  theme(axis.text = element_text(size = 10), plot.title = element_text(hjust = 0.5,face = "bold")))
+ggsave(filename= file.path(path.graph_project, "Trophic pyramid of all samples.png"),
+       width=297, height=210, units = "mm")
 
   sf_use_s2(TRUE)
 
 }
+
 
 
 
