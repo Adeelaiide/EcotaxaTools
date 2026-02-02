@@ -10,8 +10,6 @@
 #'
 #' @examples graph.metadata(metadata.file from check_metadata)
 
-# ordonner par datetime
-
 graph.metadata <- function(final_metadata) {
   suppressMessages(sf::sf_use_s2(FALSE))
   
@@ -57,6 +55,8 @@ graph.metadata <- function(final_metadata) {
           ggtitle("Sampling map") +
           theme_bw()+
           theme(axis.text = element_text(size = 10),plot.title = element_text(hjust = 0.5, face = "bold")))
+   ggsave(filename= file.path(path.graph, "Sampling map.png"),
+          width=297, height=210, units = "mm")
 
   #sf_use_s2(TRUE)
 
@@ -68,7 +68,8 @@ graph.metadata <- function(final_metadata) {
           theme_bw() +
           ggtitle("Number of acquisition per sample") +
           theme(axis.text = element_text(size=10),legend.position = "right",plot.title = element_text(hjust = 0.5, face = "bold")))
-
+  ggsave(filename= file.path(path.graph, "Number of acquisition per sample.png"),
+         width=297, height=210, units = "mm") 
   #   # 3. METADATA - Useless
 #   metadata.long <- final_metadata %>% pivot_longer(c(where(is.numeric), -ghost_id, -object_lat, -object_lon, -percentValidated)) %>% arrange(time)
 #   id <- unique(final_metadata$sample_id)
@@ -97,3 +98,4 @@ graph.metadata <- function(final_metadata) {
 #     if(a>nb) a = nb
 #   }
  }
+
