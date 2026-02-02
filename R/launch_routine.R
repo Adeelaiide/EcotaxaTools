@@ -122,17 +122,25 @@ if (!is.null(mainpath) && mainpath != "") {
   #graph.metadata(read_csv2(file.path(output, "metadata", "original_metadata.csv")))
   #dev.off()
 
-  # for the edited metadata (using the returned 'processed_metadata')
-  pdf(file.path(path.graph, "metadata.pdf"),width = 10, paper="a4r")
+  #### for the edited metadata (using the returned 'processed_metadata')
+  
   graph.metadata(final_metadata)
-  dev.off()
+  
  
-  # for the project
-  pdf(file.path(path.graph, "graph_project.pdf"),width = 10, paper="a4r")
+  #### for the project - Create directory + Plot graphics
+  if (!file.exists(file.path(path.graph,"global raw analysis"))) {
+    dir.create(file.path(path.graph,"global raw analysis"))
+  }
+  path.graph_project <- file.path(path.graph,"global raw analysis")
+                  
   graph.project(bss, final_metadata, taxo)
-  dev.off()
-
-  # for each sample
+  
+  #### for each sample - Create directory + Plot graphic per sample
+  if (!file.exists(file.path(path.graph,"raw analysis per sample"))) {
+    dir.create(file.path(path.graph,"raw analysis per sample"))
+  }
+  path.graph_sample <- file.path(path.graph,"raw analysis per sample")
+  
   for (i in unique(bss$sample_id)) {
     bss %>% filter(sample_id==i) %>% graph.sample(final_metadata, taxo) %>%
       ggsave(filename=file.path(path.graph, paste0(i,".jpg")),
