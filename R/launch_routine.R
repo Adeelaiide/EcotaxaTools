@@ -101,8 +101,14 @@ if (!is.null(mainpath) && mainpath != "") {
   # Replacing all the NA in case the original metadata was selected
   final_metadata <- metadata
   final_metadata[is.na(final_metadata)] <- 1
-
+  
+  # Create final processed table for the user - Compute the ESD + Delete unnecessary metadata
+  final_dataset <- merge(final_metadata, bss, all.x=T) %>% mutate(ESD=bv_to_esdum(max)) %>% 
+                  select(-ghost_id, -percentValidated)
+  
+  
   # Saving tables
+  write_csv2(final_dataset, file.path(path.summary, "Processed database.csv"))
   write_csv2(final_metadata, file.path(path.summary, "metadata_used.csv"))
   write_csv2(bss, file.path(path.summary, "BSS.csv"))
   write_csv2(res, file.path(path.summary, "summary_all.csv"))

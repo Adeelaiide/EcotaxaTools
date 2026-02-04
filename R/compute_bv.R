@@ -54,16 +54,19 @@ compute_bv <- function(path, output, metadata = NULL, instru) {
                  BV_plain = (4 / 3) * pi * R3_plain,
                  AB = 1)
 
+  ## Create logarithmic size classes to compute NBSS afterward
 
   # Biovolume class parameters (common)
   smin = 1e-12 # minimum size
   smax = 1e4 # maximum size
   k = 2^(1/4) # bin
 
-  nb <- ceiling(log(smax / smin, base = k))
-  x <- smin * k^(1:nb)
-  x1 <- c(0, diff(x))
+  nb <- ceiling(log(smax / smin, base = k)) # Number of different classes
+  x <- smin * k^(1:nb) # BV value of each class
+  x1 <- c(0, diff(x)) # Size between each class
 
+  ## For each Biovolume, this function retrieves the lower (min) and upper (max)
+  ## size classe, the ID of the upper class and the size of the class (norm) 
   class.f <- function(y) {
     a <- x[x <= y][which.min(abs(x[x <= y] - y))]
     b <- x[x > y][which.min(abs(x[x > y] - y))]
@@ -78,6 +81,7 @@ compute_bv <- function(path, output, metadata = NULL, instru) {
     return(tot)
   }
 
+  #Apply this function to the three different biovolume computed 
   classes <- sapply(data$BV_plain, class.f) %>% t %>% as.data.frame %>% sapply(as.numeric)
   colnames(classes) <- paste0(colnames(classes), "_plain")
   data <- cbind(data, classes)
