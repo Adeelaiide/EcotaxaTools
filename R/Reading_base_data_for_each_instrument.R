@@ -99,14 +99,14 @@ transform_zooscan_data <- function(df) {
     mutate(unique_id = paste(acq_id, sample_scan_operator, 
                              object_date, object_time,
                              object_lat, object_lon, acq_sub_part, sep = "_")) %>%
+    # Ensure all columns exist, creating NA columns if they are missing
+    mutate(sample_tot_vol = ifelse("sample_tot_vol" %in% colnames(.), sample_tot_vol, NA),
+           acq_sub_part = ifelse("acq_sub_part" %in% colnames(.), acq_sub_part, NA),
+           process_particle_pixel_size_mm = ifelse("process_particle_pixel_size_mm" %in% colnames(.), process_particle_pixel_size_mm, NA)) %>%
    group_by(unique_id) %>%
     mutate(number_object = n(),
             percentValidated = sum(object_annotation_status == "validated", na.rm = TRUE) / n() * 100) %>%
   ungroup() %>%
-  # Ensure all columns exist, creating NA columns if they are missing
-   mutate(sample_tot_vol = ifelse("sample_tot_vol" %in% colnames(.), sample_tot_vol, NA),
-          acq_sub_part = ifelse("acq_sub_part" %in% colnames(.), acq_sub_part, NA),
-          process_particle_pixel_size_mm = ifelse("process_particle_pixel_size_mm" %in% colnames(.), process_particle_pixel_size_mm, NA)) %>%
     select(sample_id,
            acq_id,
            unique_id,
