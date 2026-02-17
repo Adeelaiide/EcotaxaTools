@@ -103,8 +103,10 @@ if (!is.null(mainpath) && mainpath != "") {
   final_metadata[is.na(final_metadata)] <- 1
   
   # Create final processed table for the user - Compute the ESD + Delete unnecessary metadata
-  final_dataset <- merge(final_metadata, bss, all.x=T) %>% mutate(ESD=bv_to_esdum(max)) %>% 
-                  select(-ghost_id, -percentValidated)
+  final_dataset <- merge(final_metadata, bss, all.x=T) %>% 
+                   mutate(ESD=bv_to_esdum(max)) %>% 
+                   merge(taxo[,c("object_annotation_hierarchy","Type","Sub_type","Value")], all.x = T) %>% 
+                   select(-ghost_id, -percentValidated)
   
   
   # Saving tables
@@ -154,7 +156,13 @@ if (!is.null(mainpath) && mainpath != "") {
              width=297, height=210, units = "mm")
   }
 
-
+  # # Ask for multivariate analysis
+  # yesno <- dlg_message("Do you want to continue the pipeline with multivariate analysis (still in progress)", type="yesno")$res
+  # 
+  # if(yesno=="yes") {
+  #   multivariates_analysis()} 
+  # else {print("End of the script.")
+  #   }
 
   print("End of the script.")
 }
