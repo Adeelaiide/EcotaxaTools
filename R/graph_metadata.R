@@ -11,7 +11,7 @@
 #'
 #' @examples graph.metadata(metadata.file from check_metadata)
 
-graph.metadata <- function(final_metadata,path) {
+graph.metadata <- function(data,path) {
   suppressMessages(sf::sf_use_s2(FALSE))
   
   # 1. MAP
@@ -33,21 +33,20 @@ graph.metadata <- function(final_metadata,path) {
     st_filter(st_as_sfc(bbox_area))
 
   #Adjusting dataset to be plotable
-  final_metadata$time <- as.POSIXct(paste(final_metadata$object_date, final_metadata$object_time))
-  sample.point <- st_as_sf(final_metadata, coords=c("object_lon","object_lat"), crs=st_crs(worldmap))
-  sample.point <- sample.point %>% bind_cols(st_coordinates(sample.point))
-
+  sample.point <- data %>% select(sample_id,sample_num,object_lat,object_lon,time,ghost_id) %>% distinct() %>% 
+    st_as_sf(coords=c("object_lon","object_lat"), crs=st_crs(worldmap),remove = F)
+  
   #Create a trackline of the samples 
   track.line <- sample.point %>%
     arrange(time) %>%              # ordre chronologique
     summarise(do_union = FALSE) %>% # garde l’ordre des points
     st_cast("LINESTRING")
   
-   p1 <- ggplot() +
+ggplot() +
           geom_sf(data = worldmap, color=NA, fill="gray54") +
           geom_sf(data = sample.point, size=2, aes(color=time)) +
           geom_sf(data = track.line, color = "black", linewidth = 0.1) +
-          geom_text_repel(data = sample.point,aes(X, Y, label = sample_num),
+          geom_text_repel(data = sample.point,aes(object_lon, object_lat, label = sample_num),
                           size = 3,max.overlaps = Inf, box.padding = 0.15, point.padding = 0.15, min.segment.length = 0.3, seed = 42) +
           coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
           scale_color_viridis_c(option = "H",name = "Date",
@@ -56,20 +55,20 @@ graph.metadata <- function(final_metadata,path) {
           ggtitle("Sampling map") +
           theme_bw()+
           theme(axis.text = element_text(size = 10),plot.title = element_text(hjust = 0.5, face = "bold"))
-   ggsave(p1, filename= file.path(path, "Sampling map.png"),
+   ggsave(filename= file.path(path, "Sampling map.png"),
           width=297, height=210, units = "mm")
 
   #sf_use_s2(TRUE)
 
   # 2. DATE and TIME
-  p1 <- ggplot(final_metadata, aes(x=time, y=reorder(sample_id, time, decreasing=T), color=as.factor(ghost_id))) +
+ggplot(data, aes(x=time, y=reorder(sample_id, time, decreasing=T), color=as.factor(ghost_id))) +
           geom_point(position=position_dodge(width=0.3), size=3) +
           labs(color="Acq. number",x=NULL,y=NULL) +
           scale_y_discrete() +
           theme_bw() +
           ggtitle("Number of acquisition per sample") +
           theme(axis.text = element_text(size=10),legend.position = "right",plot.title = element_text(hjust = 0.5, face = "bold"))
-  ggsave(p1, filename= file.path(path, "Number of acquisition per sample.png"),
+  ggsave(filename= file.path(path, "Number of acquisition per sample.png"),
          width=297, height=210, units = "mm") 
   #   # 3. METADATA - Useless
 #   metadata.long <- final_metadata %>% pivot_longer(c(where(is.numeric), -ghost_id, -object_lat, -object_lon, -percentValidated)) %>% arrange(time)

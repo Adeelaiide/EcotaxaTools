@@ -111,8 +111,7 @@ if (!is.null(mainpath) && mainpath != "") {
   # Create final processed table for the user - Compute the ESD + Delete unnecessary metadata
   final_dataset <- merge(final_metadata, bss, all.x=T) %>% 
                    mutate(ESD=bv_to_esdum(max)) %>% 
-                   merge(taxo[,c("object_annotation_hierarchy","Type","Sub_type","Value","Trophic_lvl")], all.x = T) %>% 
-                   select(-ghost_id, -percentValidated)
+                   merge(taxo[,c("object_annotation_hierarchy","Type","Sub_type","Value","Trophic_lvl")], all.x = T) 
   
   
   # Saving tables
@@ -138,7 +137,7 @@ if (!is.null(mainpath) && mainpath != "") {
 
   #### for the edited metadata (using the returned 'processed_metadata')
   
-  graph.metadata(final_metadata,path.graph)
+  graph.metadata(final_dataset,path.graph)
   
  
   #### for the project - Create directory + Plot graphics
