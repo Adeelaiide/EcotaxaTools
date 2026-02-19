@@ -97,6 +97,12 @@ if (!is.null(mainpath) && mainpath != "") {
 
   # For the taxonomy
   taxo <- add.taxo(unique(bss$object_annotation_hierarchy)) %>% add.trophiclvl(., output)
+  
+  # Create a colum with the trophic categories
+  taxo <- taxo %>% mutate(Trophic_lvl = case_when( Value == 1 ~ "Phototrophs", Value == 1.5 ~ "Mixotrophs",
+                                                   Value == 2 ~ "Grazers", Value == 2.5 ~ "Omnivorous",
+                                                   Value == 3 ~ "Predators", Value == 3.5 ~ "Unknown",
+                                                   Value == -1 ~ "None"))
 
   # Replacing all the NA in case the original metadata was selected
   final_metadata <- metadata
@@ -105,7 +111,7 @@ if (!is.null(mainpath) && mainpath != "") {
   # Create final processed table for the user - Compute the ESD + Delete unnecessary metadata
   final_dataset <- merge(final_metadata, bss, all.x=T) %>% 
                    mutate(ESD=bv_to_esdum(max)) %>% 
-                   merge(taxo[,c("object_annotation_hierarchy","Type","Sub_type","Value")], all.x = T) %>% 
+                   merge(taxo[,c("object_annotation_hierarchy","Type","Sub_type","Value","Trophic_lvl")], all.x = T) %>% 
                    select(-ghost_id, -percentValidated)
   
   
