@@ -24,6 +24,7 @@ add.trophiclvl <- function(taxo, output){
   #zoo$Type[zoo$n1=="not-living"] <- "non_living" #Do not allows to create non_living categories
   #zoo$Sub_type[zoo$n1=="not-living"] <- zoo$n2[zoo$n1=="not-living"] #Generates too many categories
   zoo$Value[zoo$Type=="non_living"] <- -1
+  zoo$Value[zoo$Type=="temporary"] <- 3.5
 
   # find  objects who are not in the otu database
   liste.choix <- zo %>% mutate(Category=paste0(zo$Type,">",zo$Sub_type)) %>%
@@ -54,6 +55,7 @@ add.trophiclvl <- function(taxo, output){
       #zoo$Type[zoo$n1=="not_living"] <- "non_living" #Do not allows to create non_living categories
       #zoo$Sub_type[zoo$n1=="not_living"] <- zoo$n2[zoo$n1=="not_living"] #Generates too many categories
       zoo$Value[zoo$Type=="non_living"] <- -1
+      zoo$Value[zoo$Type=="temporary"] <- 3.5
       zoo$Type[is.na(zoo$Type)] <- "temporary"
       zoo$Sub_type[is.na(zoo$Type)] <- "temporary"
 
@@ -70,6 +72,7 @@ add.trophiclvl <- function(taxo, output){
         #zoo$Type[zoo$n1=="not-living"] <- "non_living" #Do not allows to create non_living categories
         #zoo$Sub_type[zoo$n1=="not-living"] <- zoo$n2[zoo$n1=="not-living"] #Generates too many categories
         zoo$Value[zoo$Type=="non_living"] <- -1
+        zoo$Value[zoo$Type=="temporary"] <- 3.5
         zoo$Type[is.na(zoo$Type)] <- "temporary"
         zoo$Sub_type[is.na(zoo$Type)] <- "temporary"
       } else{
