@@ -164,10 +164,10 @@ if (!is.null(mainpath) && mainpath != "") {
    if(yesno=="yes") {
      
      #### Create  output directory + start analysis
-     if (!file.exists(file.path(path.graph,"multivariates analysis"))) {
-       dir.create(file.path(path.graph,"multivariates analysis"))
+     if (!file.exists(file.path(output,"multivariates analysis"))) {
+       dir.create(file.path(output,"multivariates analysis"))
      }
-     path.analysis <- file.path(path.graph,"multivariates analysis")
+     path.analysis <- file.path(output,"multivariates analysis")
      print("Creating graphical output for multivariates analysis")
      
      multivariates_analysis(final_dataset, path.analysis)
