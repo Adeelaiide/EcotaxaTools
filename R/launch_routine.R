@@ -155,14 +155,24 @@ if (!is.null(mainpath) && mainpath != "") {
       ggsave(filename=file.path(path.graph_sample, paste0(i,".jpg")),
              width=297, height=210, units = "mm")
   }
-
-  # # Ask for multivariate analysis
-  # yesno <- dlg_message("Do you want to continue the pipeline with multivariate analysis (still in progress)", type="yesno")$res
-  # 
-  # if(yesno=="yes") {
-  #   multivariates_analysis()} 
-  # else {print("End of the script.")
-  #   }
-
+  
+  # MULTIVARIATE ANALYSIS
+  # ------------------------------------------------------------------------------
+   # Ask for multivariate analysis
+   yesno <- dlg_message("Do you want to continue the pipeline with multivariate analysis (still in progress)", type="yesno")$res
+   
+   if(yesno=="yes") {
+     
+     #### Create  output directory + start analysis
+     if (!file.exists(file.path(path.graph,"multivariates analysis"))) {
+       dir.create(file.path(path.graph,"multivariates analysis"))
+     }
+     path.analysis <- file.path(path.graph,"multivariates analysis")
+     print("Creating graphical output for multivariates analysis")
+     
+     multivariates_analysis(final_dataset, path.analysis)
+     }else{
+       print("End of the script.")
+       }
   print("End of the script.")
 }
