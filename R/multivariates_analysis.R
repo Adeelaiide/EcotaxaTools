@@ -44,8 +44,8 @@ data <- switch(choice,
                "Abundance per plankton group" = dataset %>% group_by(sample_id, sample_num, object_lat, object_lon, Sub_type) %>% 
                  summarise(value = sum(AB, na.rm = TRUE), .groups = "keep") %>% spread(Sub_type,value,fill = 0) %>% arrange(sample_num),
                
-               "Abundance per trophic group" = dataset %>% group_by(sample_id, sample_num, object_lat, object_lon, Value) %>% 
-                 summarise(value = sum(AB, na.rm = TRUE), .groups = "keep") %>% spread(Value,value,fill = 0) %>% arrange(sample_num),
+               "Abundance per trophic group" = dataset %>% group_by(sample_id, sample_num, object_lat, object_lon, Trophic_lvl) %>% 
+                 summarise(value = sum(AB, na.rm = TRUE), .groups = "keep") %>% spread(Trophic_lvl,value,fill = 0) %>% arrange(sample_num),
                
                "Biovolume per taxo" = dataset %>% group_by(sample_id, sample_num, object_lat, object_lon, object_annotation_category) %>% 
                  summarise(value = sum(BV, na.rm = TRUE), .groups = "keep") %>% spread(object_annotation_category,value,fill = 0) %>% arrange(sample_num),
@@ -53,10 +53,14 @@ data <- switch(choice,
                "Biovolume per plankton group" = dataset %>% group_by(sample_id, sample_num, object_lat, object_lon, Sub_type) %>% 
                  summarise(value = sum(BV, na.rm = TRUE), .groups = "keep") %>% spread(Sub_type,value,fill = 0) %>% arrange(sample_num),
                
-               "Biovolume per trophic group" = dataset %>% group_by(sample_id, sample_num, object_lat, object_lon, Value) %>% 
-                 summarise(value = sum(BV, na.rm = TRUE), .groups = "keep") %>% spread(Value,value,fill = 0) %>% arrange(sample_num)
+               "Biovolume per trophic group" = dataset %>% group_by(sample_id, sample_num, object_lat, object_lon, Trophic_lvl) %>% 
+                 summarise(value = sum(BV, na.rm = TRUE), .groups = "keep") %>% spread(Trophic_lvl,value,fill = 0) %>% arrange(sample_num)
 )
                
+## Select taxa to analyse for the multivariates analysis
+
+data <- select_taxa_to_analyse(data,path)
+
 ## Choose normalisation
 
 norm_list <- c("No normalisation",
@@ -68,7 +72,7 @@ norm_list <- c("No normalisation",
                "Box-Cox")
 
 norm_choice <- dlg_list(norm_list,
-                        title = "With what normalisation?",
+                        title = "Do you want to normalise your data ?",
                         multiple = FALSE)$res
 
 data_stat <- switch(norm_choice,
