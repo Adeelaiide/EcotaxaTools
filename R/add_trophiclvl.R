@@ -54,10 +54,10 @@ add.trophiclvl <- function(taxo, output){
       zoo$Sub_type[zoo$n1=="temporary"] <- "temporary"
       #zoo$Type[zoo$n1=="not_living"] <- "non_living" #Do not allows to create non_living categories
       #zoo$Sub_type[zoo$n1=="not_living"] <- zoo$n2[zoo$n1=="not_living"] #Generates too many categories
-      zoo$Value[zoo$Type=="non_living"] <- -1
-      zoo$Value[zoo$Type=="temporary"] <- 3.5
       zoo$Type[is.na(zoo$Type)] <- "temporary"
       zoo$Sub_type[is.na(zoo$Type)] <- "temporary"
+      zoo$Value[zoo$Type=="non_living"] <- -1
+      zoo$Value[zoo$Type=="temporary"] <- 3.5
 
     } else {
       yesno3 <- dlg_message("Do you want to import an existing database ? If no, they will be classified as temporary.",
@@ -70,11 +70,11 @@ add.trophiclvl <- function(taxo, output){
         zoo$Type[zoo$n1=="temporary"] <- "temporary"
         zoo$Sub_type[zoo$n1=="temporary"] <- "temporary"
         #zoo$Type[zoo$n1=="not-living"] <- "non_living" #Do not allows to create non_living categories
-        #zoo$Sub_type[zoo$n1=="not-living"] <- zoo$n2[zoo$n1=="not-living"] #Generates too many categories
-        zoo$Value[zoo$Type=="non_living"] <- -1
-        zoo$Value[zoo$Type=="temporary"] <- 3.5
+        #zoo$Sub_type[zoo$n1=="not-living"] <- zoo$n2[zoo$n1=="not-living"] #Generates too many categorie
         zoo$Type[is.na(zoo$Type)] <- "temporary"
         zoo$Sub_type[is.na(zoo$Type)] <- "temporary"
+        zoo$Value[zoo$Type=="non_living"] <- -1
+        zoo$Value[zoo$Type=="temporary"] <- 3.5
       } else{
         # You can ignore them
         zoo$Type[is.na(zoo$Type)] <- "temporary"
