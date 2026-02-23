@@ -1037,7 +1037,7 @@ living>Eukaryota>Opisthokonta>Holozoa>Metazoa>Arthropoda>Crustacea>Maxillopoda>C
 living>Eukaryota>Opisthokonta>Holozoa>Metazoa>Arthropoda>Crustacea>Maxillopoda>Copepoda>Siphonostomatoida>Caligus;living;copepoda;3
 living>Eukaryota>Opisthokonta>Holozoa>Metazoa>Arthropoda>Crustacea>Maxillopoda>Copepoda>with visible lipid sac>side;living;copepoda;2
 living>Eukaryota>Opisthokonta>Holozoa>Metazoa>Arthropoda>Crustacea>Maxillopoda>Copepoda>with visible lipid sac>top>bottom;living;copepoda;2
-living>Eukaryota>Opisthokonta>Holozoa>Metazoa>Arthropoda>Crustacea>Maxillopoda>Crustacea>nauplii;living;small_grazers;2
+living>Eukaryota>Opisthokonta>Holozoa>Metazoa>Arthropoda>Crustacea>Maxillopoda>Crustacea>nauplii;living;copepoda;2
 living>Eukaryota>Opisthokonta>Holozoa>Metazoa>Arthropoda>Crustacea>Maxillopoda>Crustacea>part;non_living;detritus;-1
 living>Eukaryota>Opisthokonta>Holozoa>Metazoa>Arthropoda>Crustacea>Maxillopoda>Thecostraca>Cirripedia;living;crustacea;2
 living>Eukaryota>Opisthokonta>Holozoa>Metazoa>Arthropoda>Crustacea>Maxillopoda>Thecostraca>Cirripedia>cirrus;living;crustacea;2
@@ -1504,42 +1504,42 @@ living>pennate diatom;living;bacillariophyta;1
 nano;living;other;1
 not-found;non_living;detritus;-1
 not-living;non_living;detritus;-1
-not-living>artefact;non_living;detritus;-1
-not-living>artefact>artefact black;non_living;detritus;-1
-not-living>artefact>badfocus;non_living;detritus;-1
-not-living>artefact>badfocus>background;non_living;detritus;-1
+not-living>artefact;non_living;artefact;-1
+not-living>artefact>artefact black;non_living;artefact;-1
+not-living>artefact>badfocus;non_living;artefact;-1
+not-living>artefact>badfocus>background;non_living;artefact;-1
 not-living>artefact>badfocus>badfocus>aggregate;non_living;detritus;-1
 not-living>artefact>badfocus>mc+badfocus>aggregate>elongated;non_living;detritus;-1
 not-living>artefact>badfocus>mc+badfocus>aggregate>fluffy;non_living;detritus;-1
 not-living>artefact>badfocus>mc+badfocus>aggregate>fluffy>to>badfocus>aggregate>dense;non_living;detritus;-1
 not-living>artefact>badfocus>mc+badfocus>aggregate>fluffy>to>badfocus>rhizaria;living;rhizaria;1.5
 not-living>artefact>badfocus>mc+badfocus>aggregates>to>badfocus>crustacea;living;crustacea;2.5
-not-living>artefact>bead;non_living;detritus;-1
-not-living>artefact>blurry;non_living;detritus;-1
-not-living>artefact>bubble;non_living;detritus;-1
-not-living>artefact>cut;non_living;detritus;-1
-not-living>artefact>dry;non_living;detritus;-1
-not-living>artefact>ghost;non_living;detritus;-1
-not-living>artefact>htm>htm01;non_living;detritus;-1
-not-living>artefact>htm>htm02;non_living;detritus;-1
-not-living>artefact>reflection;living;detritus;-1
+not-living>artefact>bead;non_living;artefact;-1
+not-living>artefact>blurry;non_living;artefact;-1
+not-living>artefact>bubble;non_living;artefact;-1
+not-living>artefact>cut;non_living;artefact;-1
+not-living>artefact>dry;non_living;artefact;-1
+not-living>artefact>ghost;non_living;artefact;-1
+not-living>artefact>htm>htm01;non_living;artefact;-1
+not-living>artefact>htm>htm02;non_living;artefact;-1
+not-living>artefact>reflection;non_living;artefact;-1
 not-living>cristal;non_living;detritus;-1
-not-living>crystal;living;other_unidentified;3.5
+not-living>crystal;non_living;detritus;-1
 not-living>detritus;non_living;detritus;-1
 not-living>detritus>aggregates;non_living;detritus;-1
 not-living>detritus>borax;non_living;detritus;-1
 not-living>detritus>copepod carapace;non_living;detritus;-1
 not-living>detritus>copepod>look>alike;living;copepoda;3.5
 not-living>detritus>dark;non_living;detritus;-1
-not-living>detritus>detritus>copepodo;living;detritus;-1
+not-living>detritus>detritus>copepodo;non_living;detritus;-1
 not-living>detritus>detritus>dark;non_living;detritus;-1
 not-living>detritus>dubious;non_living;detritus;-1
 not-living>detritus>elongated;non_living;detritus;-1
 not-living>detritus>exuviae;non_living;detritus;-1
 not-living>detritus>fecal pellets;non_living;detritus;-1
 not-living>detritus>fiber;non_living;detritus;-1
-not-living>detritus>fiber>aggregate;living;detritus;-1
-not-living>detritus>fiber>very>long;living;detritus;-1
+not-living>detritus>fiber>aggregate;non_living;detritus;-1
+not-living>detritus>fiber>very>long;non_living;detritus;-1
 not-living>detritus>filament;non_living;detritus;-1
 not-living>detritus>fluffy;non_living;detritus;-1
 not-living>detritus>large;non_living;detritus;-1
@@ -1555,7 +1555,7 @@ not-living>detritus>spine;non_living;detritus;-1
 not-living>detritus>transparent;non_living;detritus;-1
 not-living>faecal pellet;non_living;detritus;-1
 not-living>feces;non_living;detritus;-1
-not-living>geometric>disc>light;living;detritus;-1
+not-living>geometric>disc>light;non_living;detritus;-1
 not-living>geometric>rectangle;non_living;detritus;-1
 not-living>geometric>rectangle>dark>broken;non_living;detritus;-1
 not-living>geometric>rectangle>multiple;non_living;other;-1
