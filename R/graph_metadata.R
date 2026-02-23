@@ -16,10 +16,10 @@ graph.metadata <- function(data,path) {
   
   # 1. MAP
   ex = 7
-  latmin <- min(final_dataset$object_lat, na.rm=T)-ex
-  lonmin <- min(final_dataset$object_lon, na.rm=T)-ex
-  latmax <- max(final_dataset$object_lat, na.rm=T)+ex
-  lonmax <- max(final_dataset$object_lon, na.rm=T)+ex
+  latmin <- min(data$object_lat, na.rm=T)-ex
+  lonmin <- min(data$object_lon, na.rm=T)-ex
+  latmax <- max(data$object_lat, na.rm=T)+ex
+  lonmax <- max(data$object_lon, na.rm=T)+ex
 
   if(latmin<(-90)) latmin <- (-90)
   if(lonmin<(-180)) lonmin <- -180
