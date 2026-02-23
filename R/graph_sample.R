@@ -160,7 +160,7 @@ p7<-ggplot(plot_data) +
   theme(plot.title = element_text(hjust = 0.5, size = 10,face = "bold"), legend.text = element_text(size = 0.5))
 
   # Map of sampling 
-   ex = 5
+   ex = 10
   latmin <- min(x$object_lat, na.rm=T)-ex
   lonmin <- min(x$object_lon, na.rm=T)-ex
   latmax <- max(x$object_lat, na.rm=T)+ex
@@ -179,14 +179,14 @@ p7<-ggplot(plot_data) +
               st_filter(st_as_sfc(bbox_area))
  
  #Isolate sampling point 
-sample.point <- x %>% filter(sample_id==unique(x$sample_id)) %>% 
+sample.point <- x %>% select(sample_id,sample_num,object_lat,object_lon,time) %>% distinct() %>%
     st_as_sf(coords=c("object_lon","object_lat"), crs=st_crs(worldmap),remove = F)
 
  p8 <-ggplot() +
           geom_sf(data = worldmap, color=NA, fill="gray54") +
           geom_sf(data = sample.point, size=1, color="red") +
           geom_text_repel(data = sample.point,aes(object_lon,object_lat, label = sample_num),
-                          size = 4, box.padding = 0.5, point.padding = 0.5,
+                          size = 4, box.padding = 0.2, point.padding = 0.5,
                           min.segment.length = 1, seed = 42) +
           coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
           labs(x=NULL,y=NULL)+
