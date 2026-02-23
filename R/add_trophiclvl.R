@@ -48,6 +48,7 @@ add.trophiclvl <- function(taxo, output){
         merge(liste.value, "Trophic") %>% select(-Trophic)
       zo <- bind_rows(zo, replace) %>% as.data.frame()
       write_csv(zo, file.path(output,"summary", "trophic_affiliation_of_organisms.csv"))
+      
       # Restart the process and ignore if NA
       zoo <- merge(taxo, zo, all.x=T)
       zoo$Type[zoo$n1=="temporary"] <- "temporary"
@@ -64,7 +65,7 @@ add.trophiclvl <- function(taxo, output){
                             type="yesno")$res
       if(yesno3=="yes"){
         # You can also import an already edited table
-        zo <- file.choose() %>% read_csv2()
+        zo <- file.choose() %>% read.csv(sep=",")
         # Restart the process and ignore if NA
         zoo <- merge(taxo, zo, all.x=T)
         zoo$Type[zoo$n1=="temporary"] <- "temporary"
@@ -77,8 +78,9 @@ add.trophiclvl <- function(taxo, output){
         zoo$Value[zoo$Type=="temporary"] <- 3.5
       } else{
         # You can ignore them
-        zoo$Type[is.na(zoo$Type)] <- "temporary"
         zoo$Sub_type[is.na(zoo$Type)] <- "temporary"
+        zoo$Value[is.na(zoo$Type)] <- 3.5
+        zoo$Type[is.na(zoo$Type)] <- "temporary"
       }
     }
   }
