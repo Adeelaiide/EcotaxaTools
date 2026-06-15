@@ -12,19 +12,27 @@
 #' @export
 #'
 #' @examples add.taxo(object_hierarchy_vector)
-add.taxo <- function(object_hierarchy_vector){
-
-  # rep.last is a function that allow to copy the last taxonomic level available to the lower levels if they are not provided.
-  rep.last <- function(x) {
-    for (i in 2:length(x)) {if(is.na(x[i])) x[i] <- x[i-1]}
-    return(x)}
-
-  # separate by the delim ">" into columns
-  taxo <- data.frame(n=object_hierarchy_vector) %>%
-    separate_wider_delim(n, delim=">", names_sep = "", too_few = "align_start", cols_remove=F) %>%
-    apply(1, rep.last) %>% t() %>% as.data.frame() %>%
-    rename(object_annotation_hierarchy=nn) %>%
-    mutate(object_annotation_hierarchy2 = gsub("<",">",object_annotation_hierarchy))
-
+add.taxo <- function(object_hierarchy_vector) {
+  # 1. Create initial data frame
+  taxo <- data.frame(object_annotation_hierarchy = object_hierarchy_vector)
+  
+  # 2. Dynamically determine max taxonomic depth to name columns cleanly
+  max_depth <- max(stringr::str_count(object_hierarchy_vector, ">")) + 1
+  col_names <- paste0("n", 1:max_depth)
+  
+  # 3. Process using native, vectorized tidyverse operations
+  taxo <- taxo %>%
+    separate_wider_delim(
+      cols = object_annotation_hierarchy,
+      delim = ">",
+      names = col_names,
+      too_few = "align_start",
+      cols_remove = FALSE
+    ) %>%
+    tidyr::fill(all_of(col_names), .direction = "down") %>%
+    mutate(
+      object_annotation_hierarchy2 = stringr::str_replace_all(object_annotation_hierarchy, "<", ">")
+    )
+  
   return(taxo)
 }
