@@ -56,11 +56,6 @@ if (!is.null(mainpath) && mainpath != "") {
   }
   path.graph <- file.path(output,"graph")
 
-  # for the original metadata (saved by check_metadata) - Commented as not very informative
-  #pdf(file.path(path.graph, "original_metadata.pdf"),width = 10, paper="a4r")
-  #graph.metadata(read_csv2(file.path(output, "metadata", "original_metadata.csv")))
-  #dev.off()
-
   #### for the edited metadata (using the returned 'processed_metadata')
   
   graph.metadata(final_dataset,path.graph)
