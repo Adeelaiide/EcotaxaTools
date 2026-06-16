@@ -1,5 +1,3 @@
-
-
 #' graph.sample
 #'
 #' Return ggplot graphics to summarise one sample.
