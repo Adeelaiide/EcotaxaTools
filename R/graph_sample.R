@@ -10,7 +10,7 @@
 #' 5. Relative NBSS
 #' 6. Map
 #'
-#' @param x processed dataset created by ecotaxa_tools.R
+#' @param x processed dataset created by final_dataset.R
 #' @param bv.type elli, plain or riddled biovolume
 #' @param living.only TRUE by default
 #'
