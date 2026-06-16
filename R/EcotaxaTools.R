@@ -43,7 +43,11 @@ if (!is.null(mainpath) && mainpath != "") {
   }
   output <- file.path(mainpath, paste0("EcoTaxa_data_analysis_",format(Sys.time(), "%Y-%m-%d %H%M")))
 
- 
+   # COMPUTE DATA
+  # ------------------------------------------------------------------------------
+
+  final_dataset <- final_dataset(path, output, instru)
+  
   # GRAPHICAL OUPUTS
   # ------------------------------------------------------------------------------
   # Create directory
