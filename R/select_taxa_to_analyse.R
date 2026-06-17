@@ -1,6 +1,6 @@
 #' select_taxa_to_analyse
 #'
-#' Allow user to keep or remove taxonomical groups of interest for analysis.
+#' Allow user to keep or remove taxonomic groups of interest for analysis.
 #'
 #' 
 #' @param data dataframe generated during multivariates_analysis.R. It is Species X Samples
