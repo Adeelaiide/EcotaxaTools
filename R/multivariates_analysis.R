@@ -1,5 +1,4 @@
 ## Multivariate analysis 
-## To add : Data to exclude 
 
 multivariates_analysis <- function(data,path, bv.type="elli", living.only=T) {
 
