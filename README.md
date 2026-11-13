@@ -38,7 +38,7 @@ Each instrument page lists the mandatory EcoTaxa metadata, their expected units 
 
 ```r
 install.packages("devtools")
-devtools::install_github("HZaccomer/EcotaxaTools", force = TRUE)
+devtools::install_github("Adeelaiide/EcotaxaTools", force = TRUE)
 ```
 
 ## Quick start (with the test datasets)

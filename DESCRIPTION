@@ -2,8 +2,8 @@ Package: EcotaxaTools
 Type: Package
 Title: EcoTaxa tools for quantitative imagery instruments
 Version: 0.2.0
-Author: A. Perruchon
-Maintainer: <adelaide.perruchon@imev-mer.fr>
+Author: A. Perruchon; H. Zaccomer
+Maintainer: <adelaide.perruchon@imev-mer.fr> ; <hugo.zaccomer@imev-mer.fr>
 Description: This package can compute biovolumes, abundance, size spectra and trophic level from an tsv file exported from Ecotaxa and gives an overview of the data of quantitative imaging instruments.
 License: GPL (>= 3)
 Encoding: UTF-8
@@ -23,6 +23,7 @@ Depends: dplyr,
          vegan,
          tidyr,
          viridis,
+         bslib,
          htmltools,
          shiny,
          FactoMineR,
