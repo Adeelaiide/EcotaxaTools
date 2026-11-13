@@ -1,4 +1,4 @@
-#' ecotaxa_tools
+#' final_dataset
 #'
 #' This function merges all tsv exported from Ecotaxa to a single database combining metadata,
 #'  raw data, and quantitative descriptors (abundance, biovolume, etc.).
@@ -12,9 +12,9 @@
 #' @return A processed dataset called final_dataset
 #' @export
 #'
-#' @examples ecotaxa_tools(path= path,output= output = "PlanktoScope")
+#' @examples final_dataset(path= path,output= output = "PlanktoScope")
 
-ecotaxa_tools <- function(path,output,instru){
+final_dataset <- function(path,output,instru){
   
   # COMPUTE DATA
   # ------------------------------------------------------------------------------

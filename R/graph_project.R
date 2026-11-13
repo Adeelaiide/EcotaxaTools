@@ -12,7 +12,7 @@
 #' 8. Shannon index (diversity) graph and map
 #' 9. Trophic pyramid of the project
 #'
-#' @param x processed database constructed in ecotaxa_tools.R
+#' @param x processed database constructed in final_dataset.R
 #' @param path path to save each graphic
 #' @param bv.type elli, plain or riddled biovolume. default is "elli"
 #' @param living.only TRUE by default, for NBSS plots

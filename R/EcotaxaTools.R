@@ -43,11 +43,11 @@ if (!is.null(mainpath) && mainpath != "") {
   }
   output <- file.path(mainpath, paste0("EcoTaxa_data_analysis_",format(Sys.time(), "%Y-%m-%d %H%M")))
 
-  # COMPUTE DATA
+   # COMPUTE DATA
   # ------------------------------------------------------------------------------
 
-  final_dataset <- ecotaxa_tools(path, output, instru)
- 
+  final_dataset <- final_dataset(path, output, instru)
+  
   # GRAPHICAL OUPUTS
   # ------------------------------------------------------------------------------
   # Create directory
@@ -55,11 +55,6 @@ if (!is.null(mainpath) && mainpath != "") {
     dir.create(file.path(output,"graph"))
   }
   path.graph <- file.path(output,"graph")
-
-  # for the original metadata (saved by check_metadata) - Commented as not very informative
-  #pdf(file.path(path.graph, "original_metadata.pdf"),width = 10, paper="a4r")
-  #graph.metadata(read_csv2(file.path(output, "metadata", "original_metadata.csv")))
-  #dev.off()
 
   #### for the edited metadata (using the returned 'processed_metadata')
   

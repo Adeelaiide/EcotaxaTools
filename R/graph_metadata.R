@@ -38,8 +38,8 @@ graph.metadata <- function(data,path) {
   
   #Create a trackline of the samples 
   track.line <- sample.point %>%
-    arrange(time) %>%              # ordre chronologique
-    summarise(do_union = FALSE) %>% # garde l’ordre des points
+    arrange(time) %>%              
+    summarise(do_union = FALSE) %>% 
     st_cast("LINESTRING")
   
 ggplot() +
@@ -58,7 +58,7 @@ ggplot() +
    ggsave(filename= file.path(path, "Sampling map.png"),
           width=297, height=210, units = "mm")
 
-  #sf_use_s2(TRUE)
+
 
   # 2. DATE and TIME
 ggplot(data, aes(x=time, y=reorder(sample_id, time, decreasing=T), color=as.factor(ghost_id))) +
@@ -70,32 +70,6 @@ ggplot(data, aes(x=time, y=reorder(sample_id, time, decreasing=T), color=as.fact
           theme(axis.text = element_text(size=10),legend.position = "right",plot.title = element_text(hjust = 0.5, face = "bold"))
   ggsave(filename= file.path(path, "Number of acquisition per sample.png"),
          width=297, height=210, units = "mm") 
-  #   # 3. METADATA - Useless
-#   metadata.long <- final_metadata %>% pivot_longer(c(where(is.numeric), -ghost_id, -object_lat, -object_lon, -percentValidated)) %>% arrange(time)
-#   id <- unique(final_metadata$sample_id)
-#   nb <- length(id)
-#   n <- ceiling(nb/10)
-#   a = 1
-# 
-#   for (i in 1:n) {
-#     b = a + 9
-#     if(b>nb) b = nb
-#     temp <- metadata.long %>% filter(sample_id %in% id[a:b])
-#     temp$sample_id <- gsub("_", " ", temp$sample_id )
-#     print(ggplot(temp, aes(x=reorder(sample_id,time), fill=as.factor(ghost_id), y=value)) +
-#             geom_bar(stat="identity", position=position_dodge()) +
-#             scale_fill_brewer(palette="Paired") +
-#             scale_x_discrete(labels = label_wrap(10)) +
-#             labs(fill="Acq. number") +
-#             xlab(NULL) +
-#             ylab(NULL) +
-#             theme_bw() +
-#             ggtitle("Metadata values per acquisition and per sample") +
-#             theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1, size = 8),
-#                   legend.position = "right") +
-#             facet_wrap(~name, scales="free_y", ncol=1))
-#     a = b + 1 # conditions
-#     if(a>nb) a = nb
-#   }
+
  }
 

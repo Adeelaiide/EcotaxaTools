@@ -1,9 +1,8 @@
 ## Multivariate analysis 
-## To add : Data to exclude 
 
 multivariates_analysis <- function(data,path, bv.type="elli", living.only=T) {
 
-# Set commun parameters for the maps------------------------------------------
+# Set common parameters for the maps------------------------------------------
 ex = 3
 latmin <- min(data$object_lat, na.rm=T)-ex
 lonmin <- min(data$object_lon, na.rm=T)-ex
