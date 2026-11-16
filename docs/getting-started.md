@@ -23,7 +23,7 @@ All mandatory metadata must be filled in, in the expected units. The list depend
 In RStudio:
 
 ```r
-library(EcotaxaTools)
+library(EcoTaxaToolBox)
 EcoTaxa_Tool_Box()
 ```
 

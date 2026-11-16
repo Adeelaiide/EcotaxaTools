@@ -1,6 +1,6 @@
-# EcoTaxa Tools Box Pipeline (R)
+# EcoTaxa_Tool_Box Pipeline (R)
 
-The EcoTaxa Tools Box is an open-source pipeline designed to process and explore taxonomically annotated images hosted on [EcoTaxa](https://ecotaxa.obs-vlfr.fr/). An equivalent version is available in MATLAB: [zoemgt/EcoTaxa-Tools-Box-Pipeline](https://github.com/zoemgt/EcoTaxa-Tools-Box-Pipeline).
+The EcoTaxa Tool Box is an open-source pipeline designed to process and explore taxonomically annotated images hosted on [EcoTaxa](https://ecotaxa.obs-vlfr.fr/). An equivalent version is available in MATLAB: [zoemgt/EcoTaxa-Tools-Box-Pipeline](https://github.com/zoemgt/EcoTaxa-Tools-Box-Pipeline).
 
 It reads the tsv files exported from EcoTaxa for one instrument and computes key ecological descriptors for each sample. Each instrument has specific variable names and units: the pipeline accounts for them, so that the descriptors are computed in the same way and expressed in the same units whatever the instrument (FlowCam, PlanktoScope, ZooScan). For each sample, it computes:
 
@@ -37,7 +37,7 @@ Each instrument page lists the mandatory EcoTaxa metadata, their expected units 
 
 ```r
 install.packages("devtools")
-devtools::install_github("Adeelaiide/EcotaxaTools", force = TRUE)
+devtools::install_github("Adeelaiide/EcoTaxa_Tool_Box", force = TRUE)
 ```
 
 ## Quick start (with the test datasets)
@@ -52,7 +52,7 @@ Small test datasets (3 samples per instrument) are available in the `test_data/`
 
 1. In RStudio, run:
    ```r
-   library(EcotaxaTools)
+   library(EcoTaxaToolBox)
    EcoTaxa_Tool_Box()
    ```
 2. Choose the instrument in the list (e.g. **PlanktoScope**).
