@@ -1,5 +1,5 @@
 
-#' EcotaxaTools
+#' EcoTaxa_Tool_Box
 #'
 #' A routine to compute biovolumes and save updated csv files. Save also summary tables for each taxonomic group and figures to check the data.
 #' 1. Choose a directory and create a new one inside to save results.

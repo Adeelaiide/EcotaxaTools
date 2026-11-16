@@ -1,4 +1,4 @@
-Package: EcotaxaTools
+Package: EcoTaxaToolBox
 Type: Package
 Title: EcoTaxa tools for quantitative imagery instruments
 Version: 0.2.0
@@ -29,6 +29,6 @@ Depends: dplyr,
          FactoMineR,
          ggrepel,
          factoextra
-RoxygenNote: 7.2.3
-URL: https://github.com/Adeelaiide/EcoaTaxaTools
-BugReports: https://github.com/Adeelaiide/EcoaTaxaTools/issues
+RoxygenNote: 7.3.3
+URL: https://github.com/Adeelaiide/EcoTaxa_Tool_Box
+BugReports: https://github.com/Adeelaiide/EcoTaxa_Tool_Box/issues

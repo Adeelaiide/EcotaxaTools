@@ -4,7 +4,7 @@
 \alias{check_metadata}
 \title{check_metadata}
 \usage{
-check_metadata(path, output)
+check_metadata(path, output, instru)
 }
 \arguments{
 \item{path}{path to the directory containing all the tsv files}
@@ -12,7 +12,7 @@ check_metadata(path, output)
 \item{output}{path to the output directory where the results are saved}
 }
 \value{
-return a metadata resume of the directory and save the results
+return a metadata summary of the directory and save the results
 }
 \description{
 Check the metadata of all samples in a project and allows to edit the metadata in a shiny app.
