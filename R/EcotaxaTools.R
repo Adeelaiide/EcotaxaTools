@@ -11,11 +11,11 @@
 #' @return Biovolumes, dataframes and summary tables, figures to check the data.
 #' @export
 #'
-#' @examples EcotaxaTools()
-EcotaxaTools <- function() {
+#' @examples EcoTaxa_Tool_Box()
+EcoTaxa_Tool_Box <- function() {
   options(dplyr.summarise.inform = FALSE)
   # Choose your instrument
-  instru <- dlg_list(c("PlanktoScope", "FlowCam","ZooScan","IFCB"), title="Instrument")$res
+  instru <- dlg_list(c("PlanktoScope", "FlowCam","ZooScan"), title="Instrument")$res
 
   # Files 
   start <- dlg_message("Please select the data directory. All the tsv files in this directory will be processed.", type="okcancel")$res

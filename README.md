@@ -25,7 +25,6 @@ At the end, `EcotaxaTools()` offers an optional module for multivariate analyses
 | [ZooScan](docs/instruments/zooscan.md) | > 200 µm | Several size fractions per sample, sub-sampling via `acq_sub_part` |
 | [FlowCam](docs/instruments/flowcam.md) | 20–200 µm | One fraction per sample |
 | [PlanktoScope](docs/instruments/planktoscope.md) | 20–200 µm | Concentration and dilution factors |
-| [IFCB](docs/instruments/ifcb.md) | 10–150 µm | Listed in the menu, but not yet implemented in the R version |
 
 Each instrument page lists the mandatory EcoTaxa metadata, their expected units and the volume conversion formula.
 
@@ -54,7 +53,7 @@ Small test datasets (3 samples per instrument) are available in the `test_data/`
 1. In RStudio, run:
    ```r
    library(EcotaxaTools)
-   EcotaxaTools()
+   EcoTaxa_Tool_Box()
    ```
 2. Choose the instrument in the list (e.g. **PlanktoScope**).
 3. Select the test folder of your instrument (e.g. `test_data/planktoscope/`).

@@ -2,7 +2,7 @@
 
 This page walks you through a complete run of the EcoTaxa Tools Box (R version), from the EcoTaxa export to the figures. The pipeline is interactive: each step is a dialog window or an editor in RStudio. The tables below list the windows in the order in which they appear, and what to answer.
 
-Instrument-specific metadata are described in the instrument pages: [ZooScan](instruments/zooscan.md) · [FlowCam](instruments/flowcam.md) · [PlanktoScope](instruments/planktoscope.md) · [IFCB](instruments/ifcb.md).
+Instrument-specific metadata are described in the instrument pages: [ZooScan](instruments/zooscan.md) · [FlowCam](instruments/flowcam.md) · [PlanktoScope](instruments/planktoscope.md) .
 
 ## 1. Before you start
 
@@ -24,14 +24,14 @@ In RStudio:
 
 ```r
 library(EcotaxaTools)
-EcotaxaTools()
+EcoTaxa_Tool_Box()
 ```
 
 ## 3. Processing the tsv files
 
 | Window | What to do |
 |---|---|
-| *Instrument* | Choose PlanktoScope, FlowCam, ZooScan or IFCB. |
+| *Instrument* | Choose PlanktoScope, FlowCam or ZooScan. |
 | *Please select the data directory* | Click OK, then select the folder with your tsv files (one file per sample). All tsv files in this folder are processed. |
 | Warning on acquisitions (only if a sample has several acquisitions) | Check that all acquisitions belong to the same sample. If not, create a separate tsv file for the additional acquisition and restart. |
 | *You can now edit metadata* | Click OK. The metadata of all samples open in an editor in RStudio (see below). |
