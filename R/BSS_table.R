@@ -19,7 +19,6 @@ BSS_table <- function(x, NBSS=F) {
                                  unique_id,
                                  object_annotation_category,
                                  object_annotation_hierarchy,
-                                 object_id,
                                  class=size_class.id_plain,
                                  norm=size_class.norm_plain,
                                  min=size_class.min_plain,
@@ -27,7 +26,7 @@ BSS_table <- function(x, NBSS=F) {
     summarise(AB=sum(AB * conver.sample, na.rm=T),
               BV=sum(BV_plain * conver.sample, na.rm=T)) %>%
     group_by(object_annotation_category, object_annotation_hierarchy,
-             sample_id,object_id, class, norm, min, max) %>%
+             sample_id,class, norm, min, max) %>%
     summarise(AB=sum(AB, na.rm=T),
               BV=sum(BV, na.rm=T)) %>%
     mutate(type="plain") %>% ungroup()
@@ -37,7 +36,6 @@ BSS_table <- function(x, NBSS=F) {
                                    unique_id,
                                    object_annotation_category,
                                    object_annotation_hierarchy,
-                                   object_id,
                                    class=size_class.id_riddled,
                                    norm=size_class.norm_riddled,
                                    min=size_class.min_riddled,
@@ -45,7 +43,7 @@ BSS_table <- function(x, NBSS=F) {
     summarise(AB=sum(AB * conver.sample, na.rm=T),
               BV=sum(BV_riddled * conver.sample, na.rm=T)) %>%
     group_by(object_annotation_category, object_annotation_hierarchy,
-             sample_id,object_id, class, norm, min, max) %>%
+             sample_id, class, norm, min, max) %>%
     summarise(AB=sum(AB, na.rm=T),
               BV=sum(BV, na.rm=T)) %>%
     mutate(type="riddled") %>% ungroup()
@@ -55,7 +53,6 @@ BSS_table <- function(x, NBSS=F) {
                                 unique_id,
                                 object_annotation_category,
                                 object_annotation_hierarchy,
-                                object_id,
                                 class=size_class.id_elli,
                                 norm=size_class.norm_elli,
                                 min=size_class.min_elli,
@@ -63,7 +60,7 @@ BSS_table <- function(x, NBSS=F) {
     summarise(AB=sum(AB * conver.sample, na.rm=T),
               BV=sum(BV_elli * conver.sample, na.rm=T)) %>%
     group_by(object_annotation_category, object_annotation_hierarchy,
-             sample_id,object_id, class, norm, min, max) %>%
+             sample_id, class, norm, min, max) %>%
     summarise(AB=sum(AB, na.rm=T),
               BV=sum(BV, na.rm=T)) %>%
     mutate(type="elli") %>% ungroup()
