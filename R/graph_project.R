@@ -41,6 +41,23 @@ suppressMessages(sf::sf_use_s2(FALSE))
   #Merge to the living dataset
   living.x <- left_join(living.x, shannon_data, by = "sample_num")
   
+  # Map with NBSS slop coefficient per sample 
+  NBSS_slope <- living.x %>% group_by(sample_num, class) %>%
+    #Compute NBSS for each size class
+    summarise(NBSS = sum(BV, na.rm = TRUE) / first(norm),
+              ESD = first(ESD),.groups = "drop")%>% 
+    filter(NBSS > 0, ESD > 0) %>% 
+    group_by(sample_num) %>%
+    #Fit a linear model for each station to estimate the slope 
+    #and the intercept of the spectrum
+    summarise(slope = coef(lm(log10(NBSS) ~ log10(ESD)))[2],
+              intercept = coef(lm(log10(NBSS) ~ log10(ESD)))[1],
+              r2 = summary(lm(log10(NBSS) ~ log10(ESD)))$r.squared,
+              .groups = "drop")
+  
+  #Merge to the living dataset
+  living.x <- left_join(living.x, NBSS_slope, by = "sample_num")
+  
   # Set commun parameters for the maps
    ex = 5
   latmin <- min(x$object_lat, na.rm=T)-ex
@@ -62,7 +79,7 @@ suppressMessages(sf::sf_use_s2(FALSE))
   
 ## Create a summary table for each station, use the living dataset as we compute AB / BV
   sample.point <- living.x %>% 
-    group_by(sample_id,sample_num,time,object_lat,object_lon,Shannon) %>% 
+    group_by(sample_id,sample_num,time,object_lat,object_lon,Shannon,slope,intercept,r2) %>% 
     summarise(AB = sum(AB, na.rm = TRUE),BV = sum(BV, na.rm = TRUE), .groups = "drop") %>% 
     st_as_sf(coords=c("object_lon","object_lat"), crs=st_crs(worldmap),remove = F)
 
@@ -375,7 +392,24 @@ print(rel_ab_constrained %>%
           theme(axis.text = element_text(size = 10), plot.title = element_text(hjust = 0.5,face = "bold")))
     ggsave(filename= file.path(path, "Total NBSS.png"),
          width=297, height=210, units = "mm")
-
+    
+    #NBSS slop map 
+    print(ggplot() +
+            geom_sf(data = worldmap, color=NA, fill="gray54") +
+            geom_sf(data = sample.point, size=2, aes(color= slope)) +
+            geom_text_repel(data = sample.point,aes(object_lon, object_lat, label = sample_num),
+                            size = 4,max.overlaps = Inf, box.padding = 0.15, 
+                            point.padding = 0.15, min.segment.length = 0.3, seed = 42) +
+            scale_color_viridis_c(option = "H") +
+            labs(color = "NBSS slope", x = NULL, y = NULL)+
+            coord_sf(xlim = c(lonmin, lonmax), ylim = c(latmin, latmax), crs = st_crs(worldmap), expand = FALSE) +
+            ggtitle("NBSS slope for each station") +
+            theme_bw() +
+            theme(axis.text = element_text(size = 10), plot.title = element_text(hjust = 0.5, face = "bold")))
+    ggsave(filename= file.path(path, "Map of NBSS slopes.png"),
+           width=297, height=210, units = "mm")
+  
+ 
 
     # 7. BIOVOLUME COMPOSITION PER SIZE CLASS
     # ----------------------------------------------------------------------------
