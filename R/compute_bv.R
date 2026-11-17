@@ -57,8 +57,8 @@ compute_bv <- function(path, output, metadata = NULL, instru) {
   ## Create logarithmic size classes to compute NBSS afterward
 
   # Biovolume class parameters (common)
-  smin = 1e-12 # minimum size
-  smax = 1e4 # maximum size
+  smin = 1e-12 # minimum biovolume
+  smax = 1e4 # maximum biovolume
   k = 2^(1/4) # bin
 
   nb <- ceiling(log(smax / smin, base = k)) # Number of different classes
